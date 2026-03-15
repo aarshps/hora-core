@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+GH_CONFIG_DIR="$(cd "$(git rev-parse --show-toplevel)/.." && pwd)/.gh-aarshps" exec gh "$@"
