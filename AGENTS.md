@@ -17,9 +17,17 @@
 - Do not modify sibling repos or their agent instructions unless the user explicitly asks for that repo to be changed.
 - Assume other agents may be active in other repos with different GitHub accounts. Keep all auth, config, and workflow changes scoped to this repo unless the user explicitly broadens scope.
 
+## Repo Skills
+
+- Repo-local skills live under `.github/skills/<skill-name>/SKILL.md`.
+- Before substantial repo-specific work, inspect `.github/skills` and open only the skills that match the task.
+- Read `docs/agent-resume.md` before resuming paused work or when a task depends on recent repo history.
+- When you change a repo-specific workflow, update the matching skill or the resume doc in the same change so the next agent does not need to rediscover it.
+
 ## Skill Authoring
 
 - Skills created for this repo must be granular and focused. Each skill should do one narrow job well.
-- Keep each `SKILL.md` to 100 lines or fewer. If a skill starts to exceed that, split it into smaller skills or move detail into `references/` or `scripts/`.
+- Keep each `SKILL.md` to 100 lines or fewer, including frontmatter and blank lines. If a skill starts to exceed that, split it into smaller skills or move detail into `references/` or `scripts/`.
 - Do not bundle multiple workflows, domains, or variants into one broad skill unless they are inseparable in practice.
 - Keep the main skill file procedural and minimal. Put reusable implementation in scripts and detailed context in references.
+- Keep durable repo state, recent handoff notes, and temporary operator preferences in `docs/agent-resume.md`, not inside `SKILL.md`.
