@@ -137,11 +137,17 @@
   generalize these four (method-only) into `.github/skills/`. `app-performance-standards`
   stays app-local (no baseline-profile evidence in Pathivu). `m3-dynamic-colors` /
   `app-readiness-policy` remain app-local.
-- **Machine-global skills (`~/.claude/skills/hora-app-release`, `hora-launcher-icon`):**
-  superseded by hora-core's canonical versions (synced copies are byte-identical per both
-  app agents). They create a name-collision risk for an in-app agent that sees both.
-  End-state decision pending with the user (retire vs. keep) — Varisankya deferred adding
-  `hora-app-release` to its sync set until this is sorted.
+- **Machine-global skills retired (user decision 2026-06-16).** `~/.claude/skills/`
+  previously held `hora-app-release` + `hora-launcher-icon`; both removed now that
+  hora-core is canonical and apps sync from it (they were a name-collision risk for an
+  in-app agent seeing both). `~/.claude/skills/` is now empty. Before deleting, diffed
+  them against the canonical versions: the `hora-app-release` global's app-specific
+  detail is preserved in Pathivu's `android/CLAUDE.md` + Varisankya's stub; the
+  `hora-launcher-icon` global's one durable family-level fact — the launcher face is
+  **Baloo 2 Bold** (Manjari rejected) — was folded into the canonical
+  `hora-launcher-icon` skill first (the rest was obsolete per-app tuning that the
+  method-only skill intentionally omits). Varisankya can now add `hora-app-release` to
+  its sync set without the collision.
 
 ## Working preferences
 

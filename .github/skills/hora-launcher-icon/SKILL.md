@@ -26,7 +26,9 @@ prior app's tuned script transfers as-is.
    proper complex-script shaping, so render via a shaping-aware path (e.g. GDI+/`System.Drawing`
    on Windows) and control inter-letter gap manually. Pick a face deliberately and get user
    sign-off on the face choice early — don't chase a stroke-width match by swapping fonts later;
-   match weight by trimming the chosen face instead.
+   match weight by trimming the chosen face instead. The family has so far standardized on
+   **Baloo 2 Bold** (rounded, bold; a monoline face like Manjari was tried and rejected on sight) —
+   start there and confirm, rather than re-deriving the face per app.
 3. **Match the reference's stroke weight by uniform trim**, measured against the reference's own
    stem width at a fixed x-height. Apply uniform erosion (shrinks bowls too, not just stems)
    rather than directional erosion, which leaves bowls heavy and never reads as thinner.
