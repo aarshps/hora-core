@@ -12,7 +12,7 @@ that app's repo; if two or more apps need it, it belongs here.
 | App | What it is | Repo |
 | --- | --- | --- |
 | **Varisankya** | Subscription & recurring-payment tracker | `varisankya` (android · ios · web) |
-| **Pathivu** | Personal records / journal | `pathivu-android`, `pathivu-ios`, `pathivu-web` |
+| **Pathivu** | Habit tracker | `pathivu` (android · ios · web) |
 | _future siblings_ | — | — |
 
 Each app is its own cross-platform monorepo and keeps an internal `shared/` folder
@@ -30,6 +30,7 @@ hora-core/
 ├── docs/
 │   ├── conventions.md      The shared stack and conventions every Hora app follows
 │   └── agent-resume.md     Durable repo state + handoff notes for AI agents
+├── templates/              Copy-and-customize starting points (e.g. shared/firebase)
 └── .github/skills/         Agent skills shared across the family
 ```
 

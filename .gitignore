@@ -36,3 +36,7 @@ dist/
 .DS_Store
 Thumbs.db
 *.swp
+
+# --- Agent coordination (local-only, same-machine, never synced) ---
+# See .github/skills/hora-agent-mailbox/SKILL.md for the protocol this supports.
+.agent-mailbox/

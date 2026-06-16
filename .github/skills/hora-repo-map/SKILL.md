@@ -11,7 +11,10 @@ the right area before editing.
 ## Areas
 
 - `brand/` — shared visual identity (Material 3 tokens, Malayalam launcher-icon
-  conventions, family logos). Start with `brand/README.md`.
+  conventions, family logos, the notification-icon generator). Start with
+  `brand/README.md`.
+- `templates/` — copy-and-customize starting points for a new app's `shared/`
+  contract folder (e.g. `shared-firebase/`). Not a runtime dependency.
 - `docs/conventions.md` — the shared stack and conventions every app follows. Edit here
   when a family-wide convention changes.
 - `docs/agent-resume.md` — durable repo state and handoff notes.
@@ -21,6 +24,7 @@ the right area before editing.
 ## Routing hints
 
 - Visual/brand work shared by 2+ apps → `brand/`.
+- A boilerplate file a new app would otherwise paste from a sibling → `templates/`.
 - A rule every app must follow → `docs/conventions.md`.
 - Anything specific to **one** app → that app's own repo, **not** here.
 - Repo workflow, GitHub identity, or handoff context → `AGENTS.md` / `.github/skills/`

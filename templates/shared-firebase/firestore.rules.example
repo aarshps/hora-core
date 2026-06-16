@@ -1,0 +1,31 @@
+rules_version = '2';
+
+// Firestore security rules for <PROJECT_ID> (<App name>).
+//
+// Every signed-in user has full read/write access to everything under their own
+// /users/{userId} subtree. Replace the comment below with this app's actual
+// subcollection layout (one line per collection is enough — see the family's other
+// apps for examples of how this has been documented in practice):
+//   /users/{userId}                       (root user doc, if any)
+//   /users/{userId}/<yourCollection>/{id}
+//
+// Data is strictly per-user: nothing is readable or writable across accounts.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+                        && request.auth.uid == userId;
+    }
+
+    // Optional: only add this if the app also needs a flat mirror collection read
+    // via a Firestore collection-group query (e.g. an "all records across
+    // subcollections" view). The {document=**} rule above does NOT cover
+    // collection-group reads, so they must be authorised explicitly:
+    //
+    // match /{path=**}/<mirrorCollection>/{docId} {
+    //   allow read: if request.auth != null
+    //             && resource.data.userId == request.auth.uid;
+    //   // Writes still go through the per-user path above, not this group rule.
+    // }
+  }
+}

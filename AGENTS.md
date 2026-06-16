@@ -44,3 +44,7 @@ logs — git history is the record. Durable state and handoff notes go in
 - Repo-local skills live under `.github/skills/<name>/SKILL.md`. Open only the skills
   relevant to the task. Keep each `SKILL.md` ≤ 100 lines, one narrow job each.
 - Read `docs/agent-resume.md` before resuming paused work.
+- Other Hora-family agent sessions (Pathivu, Varisankya, etc.) running on this same
+  machine coordinate through a local, gitignored mailbox at `.agent-mailbox/` — see
+  `.github/skills/hora-agent-mailbox/SKILL.md`. Check it early in a session; it won't
+  exist on a fresh clone and is never pushed.
