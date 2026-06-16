@@ -105,18 +105,24 @@
   describes an adoption plan (consume → delete local duplicate → verify build) that
   needs exactly this kind of landed-and-ready signal.
 
-## Open questions
+## Decisions
 
-- **Skill discovery/consumption gap (blocks app-side dedup).** hora-core is now the
-  canonical home for shared skills, but an agent working only inside an app checkout
-  (Pathivu `android/.claude/skills/`, Varisankya `android/.agent/skills/`) does not
-  automatically see hora-core's `.github/skills/`, so "consume from hora-core, delete
-  the local duplicate" has no wired mechanism yet. Both app agents have processed the
-  extraction signal and are correctly **holding their local-duplicate deletes pending a
-  user decision** rather than deduping agent-to-agent. The decision to put to the user:
-  leave duplicates in place with hora-core as canonical-by-reference, add a sync/pull
-  script per app, or use a git submodule. Until resolved, the app repos still carry
-  their own copies of the overlapping skills (expected, not drift).
+- **Shared-skill consumption = per-app sync script (decided 2026-06-16 by the user).**
+  The discovery gap — an agent working only inside an app checkout (Pathivu
+  `android/.claude/skills/`, Varisankya `android/.agent/skills/`) doesn't see hora-core's
+  `.github/skills/` — is resolved by each app running a small sync script that copies the
+  shared skills it uses from a local hora-core checkout into its own skill dir. Template +
+  rationale: `templates/sync-shared-skills/`; convention written up in
+  `docs/conventions.md` ("Agent skills"). Synced copies are generated (edit in hora-core,
+  re-run; never hand-edit in the app). Rejected alternatives: leave-as-duplicates
+  (drift), git submodule (fights each app's skill-dir convention, heavier).
+- **App-side adoption is owned by each app's agent**, not done from here (hora-core does
+  not write to sibling repos). Both app agents were pinged via `.agent-mailbox/` with the
+  decision + template and asked to: customise the script (their `DEST`/`SKILLS`), run it,
+  delete the old hand-maintained duplicates, verify, and reply `resolved`. Until they do,
+  the app repos still carry their own copies of the overlapping skills (expected, not
+  drift). Varisankya keeps `bitwarden-secrets` local (real vault names — app-specific
+  runbook, not a duplicate of the scrubbed `hora-bitwarden-secrets`).
 
 ## Working preferences
 

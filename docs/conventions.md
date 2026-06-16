@@ -82,6 +82,14 @@ otherwise varies per app (Pathivu uses `.claude/skills/`, Varisankya uses
 app-specific skills; only pull a skill into `.github/skills/` here once it's
 generalized for 2+ apps (see `agent-skill-standards`).
 
+**Consumption:** apps don't read these skills across repos — an agent working inside an
+app checkout only sees that app's own skill dir. So each app runs a small **sync
+script** (see [`templates/sync-shared-skills/`](../templates/sync-shared-skills/)) that
+copies the shared skills it uses from a local hora-core checkout into its native skill
+dir. The synced copies are **generated**: edit the canonical skill here in hora-core and
+re-run the script — never hand-edit the copy in an app. This is what lets an app dedup
+its old hand-maintained duplicates against hora-core without losing local discoverability.
+
 ## Design tokens (reference — confirm against the app's design-system doc)
 
 As of the most recent family app (Varisankya), Android uses Material 3 Expressive
@@ -177,3 +185,7 @@ submodule and a published artifact, and record the decision here.
 customize**: paste it into the new app's `shared/firebase/`, rename `.example`, edit
 the project-ID comment. It's a starting point for a new app's own files, not something
 an existing app re-syncs against, so there's no ongoing-consumption question to decide.
+
+Shared **agent skills** are the one module with *ongoing* consumption rather than a
+one-time copy: they're synced (not hand-copied) via `templates/sync-shared-skills/`, so
+re-running the script re-pulls the latest from hora-core. See "Agent skills" above.
