@@ -1,23 +1,33 @@
 ---
 name: hora-repo-map
-description: Use when you need a fast map of the Hora repo to decide whether work belongs in the Angular app, ASP.NET service, Flyway migrations, or GitHub/security docs.
+description: Use for a fast map of hora-core to decide where shared-across-the-family work belongs (brand, conventions, agent skills) versus an individual app's repo.
 ---
 
-# Hora Repo Map
+# Hora-core Repo Map
 
-Use this skill when you need to choose the correct area of the repo before editing.
+`hora-core` holds items shared **across** the Hora app family. Use this skill to pick
+the right area before editing.
 
-## Main Areas
+## Areas
 
-- `Hora.App/hora`: Angular frontend. Start with `package.json`, `src/main.ts`, and `src/app/`.
-- `Hora.Sv/Hora/Hora.Web`: ASP.NET Core web app. Start with `Program.cs`, `Startup.cs`, and `Controllers/`.
-- `Hora.Sv/Hora/Hora.Db.Ef`: EF entities, DbContext, and repositories used by the service.
-- `Hora.Db/Hora.Flyway`: database migrations and Flyway CLI packaging. Start with `conf/flyway.conf` and `sql/`.
-- `.github/workflows`: security and dependency automation.
+- `brand/` — shared visual identity (Material 3 tokens, Malayalam launcher-icon
+  conventions, family logos). Start with `brand/README.md`.
+- `docs/conventions.md` — the shared stack and conventions every app follows. Edit here
+  when a family-wide convention changes.
+- `docs/agent-resume.md` — durable repo state and handoff notes.
+- `.github/skills/` — agent skills shared across the family.
+- `AGENTS.md` — cross-cutting agent context and the security/identity mandates.
 
-## Routing Hints
+## Routing hints
 
-- UI behavior or browser dependency work usually belongs under `Hora.App/hora`.
-- API behavior, DI wiring, and HTTP endpoints usually belong under `Hora.Sv/Hora/Hora.Web`.
-- Schema or seed changes belong under `Hora.Db/Hora.Flyway/sql`.
-- Repo workflow, GitHub account, or handoff context belongs in `AGENTS.md`, `.github/skills/`, or `docs/agent-resume.md`.
+- Visual/brand work shared by 2+ apps → `brand/`.
+- A rule every app must follow → `docs/conventions.md`.
+- Anything specific to **one** app → that app's own repo, **not** here.
+- Repo workflow, GitHub identity, or handoff context → `AGENTS.md` / `.github/skills/`
+  / `docs/agent-resume.md`.
+
+## Guardrails
+
+- This repo is **public**: never add secrets, keys, or `google-services.json`.
+- Before adding shared **code**, confirm 2+ apps need it and record the consumption
+  mechanism in `docs/conventions.md`.

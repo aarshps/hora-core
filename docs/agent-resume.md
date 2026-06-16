@@ -1,38 +1,41 @@
-# Agent Resume
+# Agent Resume — hora-core
 
-## Start Here
+## Start here
 
-- Read `AGENTS.md`.
-- Open only the relevant skill files in `.github/skills/`.
-- If the task touches GitHub, use `./scripts/gh-aarshps ...` and verify the login resolves to `aarshps`.
+- Read `AGENTS.md`, then this file.
+- Open only the relevant skill under `.github/skills/`.
+- GitHub: use plain `gh` (authenticated as `aarshps` on this machine). Verify with
+  `gh api user --jq .login` if it matters.
 
-## Repo Map
+## Repo map
 
-- `Hora.App/hora`: Angular frontend.
-- `Hora.Sv/Hora/Hora.Web`: ASP.NET Core web app.
-- `Hora.Sv/Hora/Hora.Db.Ef`: EF entities and repositories.
-- `Hora.Db/Hora.Flyway`: Flyway config and SQL migrations.
-- `.github/workflows`: security and dependency automation.
+- `brand/` — shared visual identity for the whole family.
+- `docs/conventions.md` — the shared stack and conventions every Hora app follows.
+- `docs/agent-resume.md` — this file (durable state + handoff notes).
+- `.github/skills/` — agent skills shared across the family.
 
-## Durable Repo State As Of 2026-03-15
+## Durable repo state — as of 2026-06-16
 
-- GitHub CLI and GitHub-authenticated git operations in this repo are scoped to the `aarshps` workspace profile.
-- `scripts/gh-aarshps` points at `/Users/aps/Source/aarshps/.gh-aarshps`; plain `gh` must not be used from this repo.
-- `Hora.Db/Hora.Flyway/conf/flyway.conf` contains placeholders only. The previously committed DB secret was removed and rotated.
-- Frontend dependencies were manually remediated to mirror-available Angular `21.2.2` and matching lockfile updates.
-- Security overrides currently live in `Hora.App/hora/package.json`.
-- Stale Dependabot PRs tied to the prior security cleanup were closed after the manual fix landed.
-- Stale `aarshps/hora` notification threads were marked read.
+- **Repurposed.** This repo previously held a decommissioned .NET + Angular project
+  (`Hora.App`/`Hora.Db`/`Hora.Sv`). That project was removed and the repo was
+  re-purposed as the shared-code home for the Hora **Android/multiplatform** app family.
+- **Unarchived.** The GitHub repo was archived (read-only) and has been unarchived so
+  it can be written to again. Default branch: `main`. Wiki default branch: `master`.
+- **Auth is local to this machine.** Plain `gh` resolves to `aarshps` via keyring. The
+  old Mac wrapper `scripts/gh-aarshps` (pointing at `/Users/aps/.../.gh-aarshps`) was
+  removed — it never existed on this Windows machine.
+- **Public repo** — no secrets, ever.
 
-## Working Preferences Recorded On 2026-03-15
+## Working preferences
 
-- Do not run, build, or test this app on this machine unless the user explicitly asks in the current task.
-- When you dismiss alerts or close shared GitHub threads, leave a short rationale.
+- The user updates `main` and the wiki (`master`) directly; pushing when asked is
+  expected.
+- Do not touch sibling repos under `C:\Users\Aarsh\Source\` unless explicitly asked.
 
-## Resume Checklist
+## Resume checklist
 
-- Run `git status --short`.
-- Read the matching skill and the relevant module doc.
-- If dependency work is involved, compare `Hora.App/hora/package.json` and `Hora.App/hora/package-lock.json` together.
-- If DB work is involved, keep credentials local and out of git.
-- Update `docs/agent-resume.md` when durable repo state changes.
+- `git status --short`.
+- Read `AGENTS.md` and the matching skill.
+- Before adding shared code, confirm 2+ apps need it and record the consumption
+  mechanism in `docs/conventions.md`.
+- Update this file when durable repo state changes.

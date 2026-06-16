@@ -1,33 +1,46 @@
-# AGENTS.md
+# AI Agents Context — hora-core
 
-## GitHub Identity
+Authoritative context for AI agents (Claude Code, Gemini CLI, Codex, etc.) working in
+this repo. `hora-core` holds items shared **across** the Hora app family (Varisankya,
+Pathivu, future siblings) — not items that belong to a single app.
 
-- This repo must use the GitHub account `aarshps` for GitHub operations. Do not use the global `aps_uhg` profile in this repo.
-- Git commits in this repo should use `Aarsh <aarshps@users.noreply.github.com>` unless the user asks for a different author identity.
-- This repo is part of the `/Users/aps/Source/aarshps` workspace and should use the shared GitHub CLI profile at `/Users/aps/Source/aarshps/.gh-aarshps`.
-- For direct GitHub CLI commands, use `./scripts/gh-aarshps ...`. This wrapper points `gh` at the shared workspace profile.
-- Do not run plain `gh ...` in this repo. On this machine, plain `gh` still resolves to the global `aps_uhg` profile.
-- GitHub-authenticated `git` commands in this repo should rely on the repo-local `.git/config` credential settings, which point GitHub auth to the shared workspace profile. Do not change the global `gh auth` account just to work in this repo.
-- If shared workspace auth stops resolving `aarshps`, verify with `GH_CONFIG_DIR=/Users/aps/Source/aarshps/.gh-aarshps gh api user --jq .login`.
+Keep this file current when conventions change. Do **not** add per-session activity
+logs — git history is the record. Durable state and handoff notes go in
+`docs/agent-resume.md`.
 
-## Isolation
+---
 
-- Do not make Git or GitHub auth changes globally for this repo. Avoid editing `~/.gitconfig`, `~/.config/gh`, global credential helpers, or any machine-wide auth state.
-- Shared auth for repos under `/Users/aps/Source/aarshps` is allowed and expected. Do not extend these rules or credentials outside that workspace unless the user explicitly asks.
-- Do not modify sibling repos or their agent instructions unless the user explicitly asks for that repo to be changed.
-- Assume other agents may be active in other repos with different GitHub accounts. Keep all auth, config, and workflow changes scoped to this repo unless the user explicitly broadens scope.
+## Purpose & scope
 
-## Repo Skills
+- Shared brand/design, cross-app conventions, shared agent skills, reusable tooling.
+- If something is specific to one app, it belongs in that app's repo, not here.
+- Before adding code, confirm at least two family apps actually need it.
 
-- Repo-local skills live under `.github/skills/<skill-name>/SKILL.md`.
-- Before substantial repo-specific work, inspect `.github/skills` and open only the skills that match the task.
-- Read `docs/agent-resume.md` before resuming paused work or when a task depends on recent repo history.
-- When you change a repo-specific workflow, update the matching skill or the resume doc in the same change so the next agent does not need to rediscover it.
+## Core mandates
 
-## Skill Authoring
+1. **Security is the top priority.** Never commit secrets, keys, tokens,
+   service-account JSON, or `google-services.json`. Because this repo is **public**,
+   treat everything committed as world-readable forever. Before any push, scan for
+   private-key patterns (`BEGIN.*PRIVATE KEY`), Firebase keys (`AIza`), and OAuth
+   secrets (`GOCSPX-`).
+2. **Public repo.** `hora-core` is public. Do not move app-private material here.
+3. **Single source of truth.** Shared conventions live in `docs/conventions.md`. When
+   a convention changes, update that file in the same change — do not let apps drift.
 
-- Skills created for this repo must be granular and focused. Each skill should do one narrow job well.
-- Keep each `SKILL.md` to 100 lines or fewer, including frontmatter and blank lines. If a skill starts to exceed that, split it into smaller skills or move detail into `references/` or `scripts/`.
-- Do not bundle multiple workflows, domains, or variants into one broad skill unless they are inseparable in practice.
-- Keep the main skill file procedural and minimal. Put reusable implementation in scripts and detailed context in references.
-- Keep durable repo state, recent handoff notes, and temporary operator preferences in `docs/agent-resume.md`, not inside `SKILL.md`.
+## GitHub identity
+
+- This repo uses the GitHub account **`aarshps`**. On this Windows machine, plain `gh`
+  is already authenticated as `aarshps` (keyring) — use it directly.
+- The older Mac-only `scripts/gh-aarshps` wrapper and `/Users/aps/...` profile path do
+  **not** exist here; ignore any historical references to them.
+- Verify with `gh api user --jq .login` if account identity matters.
+- Do not change global `gh`/git auth state. Keep changes scoped to this repo.
+
+## Working agreements
+
+- The user manages this repo directly on `main`; pushing to `main` is expected when
+  asked. The wiki's default branch is `master`.
+- Do not modify sibling repos under `C:\Users\Aarsh\Source\` unless explicitly asked.
+- Repo-local skills live under `.github/skills/<name>/SKILL.md`. Open only the skills
+  relevant to the task. Keep each `SKILL.md` ≤ 100 lines, one narrow job each.
+- Read `docs/agent-resume.md` before resuming paused work.

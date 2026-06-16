@@ -1,31 +1,38 @@
-﻿# .NET Core
-[Bb]in/
-[Oo]bj/
-*.user
-*.suo
-*.suo
-*.userosscache
-*.sln.docstates
-.vs/
-
-# Angular
-**/node_modules/
-**/dist/
-**/tmp/
-**/out-tsc/
-**/.angular/
-**/.sass-cache/
-**/coverage/
-**/npm-debug.log*
-**/yarn-debug.log*
-**/yarn-error.log*
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Secrets
-appsettings.Secrets.json
-.env*
+# --- Secrets (NEVER commit) ---
+.env
+.env.*
+!.env.example
 *.pem
 *.key
+*.keystore
+*.jks
+google-services.json
+GoogleService-Info.plist
+*-key.json
+play_console_key*.json
+local.properties
+
+# --- Android / Gradle / Kotlin ---
+.gradle/
+build/
+captures/
+.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# --- IntelliJ / Android Studio ---
+.idea/
+*.iml
+
+# --- Node / web tooling (for shared web assets) ---
+node_modules/
+dist/
+.next/
+*.log
+
+# --- OS / editor cruft ---
+.DS_Store
+Thumbs.db
+*.swp
