@@ -105,6 +105,19 @@
   describes an adoption plan (consume → delete local duplicate → verify build) that
   needs exactly this kind of landed-and-ready signal.
 
+## Open questions
+
+- **Skill discovery/consumption gap (blocks app-side dedup).** hora-core is now the
+  canonical home for shared skills, but an agent working only inside an app checkout
+  (Pathivu `android/.claude/skills/`, Varisankya `android/.agent/skills/`) does not
+  automatically see hora-core's `.github/skills/`, so "consume from hora-core, delete
+  the local duplicate" has no wired mechanism yet. Both app agents have processed the
+  extraction signal and are correctly **holding their local-duplicate deletes pending a
+  user decision** rather than deduping agent-to-agent. The decision to put to the user:
+  leave duplicates in place with hora-core as canonical-by-reference, add a sync/pull
+  script per app, or use a git submodule. Until resolved, the app repos still carry
+  their own copies of the overlapping skills (expected, not drift).
+
 ## Working preferences
 
 - The user updates `main` and the wiki (`master`) directly; pushing when asked is
