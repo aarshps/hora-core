@@ -129,14 +129,17 @@
     (mandate 7), and now records this mailbox protocol there for future sessions.
   - Varisankya keeps `bitwarden-secrets` local (real vault names — app-specific runbook,
     not a duplicate of the scrubbed `hora-bitwarden-secrets`). Agreed.
-- **Deferred UI-standard skills — partially reopened.** Checked Pathivu's code against
-  Varisankya's deferred standards: `m3e-haptic-standards`, `m3e-animation-standards`
-  (Pathivu has its own `util/AnimationHelper.kt`), `skeleton-loading-standards`
-  (Pathivu has skeleton layouts), and `android-15-standards` (de-versioned — Pathivu is
-  on `targetSdk=36` + edge-to-edge) **do** meet the 2+ app bar; Varisankya will
-  generalize these four (method-only) into `.github/skills/`. `app-performance-standards`
-  stays app-local (no baseline-profile evidence in Pathivu). `m3-dynamic-colors` /
-  `app-readiness-policy` remain app-local.
+- **Deferred UI-standard skills — four promoted and landed.** Checked Pathivu's code
+  against Varisankya's deferred standards; four met the 2+ app bar (verified vs Pathivu:
+  haptics in 8 files + a preference toggle, its own `util/AnimationHelper.kt`, skeleton
+  layouts, `targetSdk=36` + edge-to-edge). Varisankya generalized them method-only and
+  committed them to `.github/skills/` (commit `84fd531`): `m3e-haptic-standards`,
+  `m3e-animation-standards`, `skeleton-loading-standards`, and `android-platform-standards`
+  (the former `android-15-standards`, de-versioned to "target newest platform" per review).
+  Reviewed as hora-core owner — clean, de-voiced, <=100 lines, consistent with the
+  conventions.md design tokens. They are now sync candidates for both apps.
+  `app-performance-standards` stays app-local (no baseline-profile evidence in Pathivu);
+  `m3-dynamic-colors` / `app-readiness-policy` remain app-local.
 - **Machine-global skills retired (user decision 2026-06-16).** `~/.claude/skills/`
   previously held `hora-app-release` + `hora-launcher-icon`; both removed now that
   hora-core is canonical and apps sync from it (they were a name-collision risk for an
