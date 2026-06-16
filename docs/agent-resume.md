@@ -25,6 +25,24 @@
   old Mac wrapper `scripts/gh-aarshps` (pointing at `/Users/aps/.../.gh-aarshps`) was
   removed — it never existed on this Windows machine.
 - **Public repo** — no secrets, ever.
+- **First shared assets landed (same day, later pass):** the notification-icon
+  standard + generator (`brand/notification-icon/`, extracted from Varisankya, which
+  was the first app to need it) and the `agent-skill-standards` skill. Pulled in by an
+  agent working from the Varisankya side after the user asked for cross-app
+  coordination — there's no live inter-session messaging available, so coordination
+  happened by reading this repo's own `AGENTS.md`/`conventions.md`/this file as the
+  shared source of truth, same as any other agent would. Also added a hedged "Design
+  tokens (reference)" table to `conventions.md` (shape/motion/type constants) sourced
+  from Varisankya's design-system doc.
+- **Deliberately left out of this pass:** Varisankya's other Android skills
+  (`m3-dynamic-colors`, `m3e-animation-standards`, `m3e-haptic-standards`,
+  `skeleton-loading-standards`, `app-performance-standards`, `android-15-standards`)
+  were reviewed but NOT copied here — they're written in Varisankya's voice with
+  concrete class/package names (`ThemeHelper.kt`, `com.hora.varisankya`), and one
+  (`m3-dynamic-colors`) describes a hybrid monochrome/dynamic-color split that the
+  app's own wiki says was reverted in v3.8-beta.9, i.e. it's stale. Don't copy these
+  in verbatim; if/when a second app needs the same underlying rule, generalize it
+  fresh rather than porting the Varisankya-specific text.
 
 ## Working preferences
 

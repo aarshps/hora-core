@@ -38,6 +38,37 @@ As of the most recent family app (Varisankya):
 Apps pin versions in `android/gradle/libs.versions.toml`. Treat the table above as a
 starting reference, not a hard pin — always read the consuming app's catalog.
 
+## Design tokens (reference — confirm against the app's design-system doc)
+
+As of the most recent family app (Varisankya), Android uses Material 3 Expressive
+with these constants. Treat as a starting reference, not a hard pin — each app's own
+design-system doc is authoritative:
+
+| Token | Value | Use |
+| --- | --- | --- |
+| Corner radius — large | 28dp | Hero cards, bottom-sheet content, single/first/last grouped-list items |
+| Corner radius — medium | 24dp | Filled buttons |
+| Corner radius — small | 12dp | Middle items in grouped lists |
+| Pill shape | 100dp | Force-rounded chips/status pills |
+| Animation — short | 100–200ms | Rapid snaps / interactive-press recovery |
+| Animation — medium | 300–400ms | Standard layout state changes |
+| Animation — long | 500ms | Activity/fragment shared-axis transitions, large list entrances |
+| Screen transition | `MaterialSharedAxis.Z` | Primary navigation between screens |
+| Type | Google Sans Flex (native), Nunito (closest open web equivalent) | App-wide type family |
+
+Web apps seed their Material 3 palette from the app's own brand icon color via
+Material Color Utilities (`SchemeTonalSpot`) rather than wallpaper-based Dynamic
+Color, since a browser has no wallpaper — each app picks its own seed color.
+
+### Notification status-bar icon
+
+Every app's notification-shade icon is a **solid round (filled white disc) with the
+app's Malayalam initial knocked out as a hollow**, as a single `evenOdd` vector path.
+Canonical standard, generator, and per-app instructions live in
+[`brand/notification-icon/`](../brand/notification-icon/README.md). This is a firm
+family convention, not a hedged reference — do not revert to a framed or
+stroked-glyph treatment.
+
 ## Cross-language code sharing
 
 No cross-language code generation. Kotlin/Swift/TypeScript do not share compiled code
@@ -51,8 +82,13 @@ Secrets are managed with the **Bitwarden CLI (`bw`)**, never committed. On Windo
 is at `C:\Users\Aarsh\AppData\Roaming\npm\bw.cmd`. `hora-core` is public and must never
 contain secrets of any kind.
 
-## Module consumption (to be decided per module)
+## Module consumption (decide per module as they're added)
 
-`hora-core` currently shares documentation and assets, consumed by reference. When the
-first shared **code** module is extracted, record its consumption mechanism (git
-submodule vs. published artifact) here.
+`hora-core` mostly shares documentation and assets, consumed by reference. The first
+extracted **code** module — `brand/notification-icon/gen_notification_icon.py` — is a
+dev-time generator, not a runtime dependency, so its consumption mechanism is **copy
+locally and customize**: each app pastes the script into its own `android/tools/` and
+swaps the glyph constant. This sidesteps the cross-language code-gen question above
+entirely, since nothing is compiled or imported across apps. If a future module needs
+real code sharing (a runtime library, not a generator), decide then between a git
+submodule and a published artifact, and record the decision here.

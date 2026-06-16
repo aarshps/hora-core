@@ -10,6 +10,10 @@ two or more apps so they look and feel like siblings.
 - **Launcher-icon conventions** — the Malayalam wordmark style every Hora app's icon
   follows (each app's name drawn in the shared hand-drawn style). See the
   `hora-launcher-icon` skill for the generation procedure.
+- **[Notification status-bar icon](notification-icon/README.md)** — the solid-disc /
+  hollow-glyph generator every app copies and customizes. Extracted from Varisankya
+  (the first app to need it); Pathivu and future siblings reuse the identical
+  construction with their own initial.
 - **Shared imagery / logos** — family-level marks, not app-specific screenshots.
 
 ## What does not go here
@@ -19,5 +23,5 @@ two or more apps so they look and feel like siblings.
 - Anything secret or licensed in a way that forbids redistribution (this repo is
   public).
 
-> Seeded as the home for shared brand assets. Populate as assets are extracted from
-> the apps; keep tokens in a single source so the family stays visually consistent.
+> Populate further as assets are extracted from the apps; keep tokens in a single
+> source so the family stays visually consistent.
