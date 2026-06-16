@@ -41,6 +41,11 @@ assuming a fixed family constant:
 - **Gate before production:** Play requires roughly 12 testers × 14 continuous days on a closed
   test before a new app/account can reach production — a one-time unlock, not a per-release gate.
   Updating the closed version does not reset the clock.
+- **Version-code precedence:** when a user is eligible for builds on multiple tracks, Play serves
+  the **highest version code**, not the highest-priority track. You can't have the same build
+  artifact on two tracks simultaneously — to put a build on Open Testing while another sits in
+  Production, bump the version code first. ("Production is King" holds only because it usually
+  carries the highest code.)
 - **Launch-day exception:** for an external/marketing launch, target Production with a direct
   link — a "Join Beta → wait → install" flow adds friction that hurts launch-day conversion.
 
