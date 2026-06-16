@@ -117,12 +117,31 @@
   re-run; never hand-edit in the app). Rejected alternatives: leave-as-duplicates
   (drift), git submodule (fights each app's skill-dir convention, heavier).
 - **App-side adoption is owned by each app's agent**, not done from here (hora-core does
-  not write to sibling repos). Both app agents were pinged via `.agent-mailbox/` with the
-  decision + template and asked to: customise the script (their `DEST`/`SKILLS`), run it,
-  delete the old hand-maintained duplicates, verify, and reply `resolved`. Until they do,
-  the app repos still carry their own copies of the overlapping skills (expected, not
-  drift). Varisankya keeps `bitwarden-secrets` local (real vault names — app-specific
-  runbook, not a duplicate of the scrubbed `hora-bitwarden-secrets`).
+  not write to sibling repos). Both app agents were pinged via `.agent-mailbox/` and have
+  now **completed adoption** (confirmed by `resolved` mailbox replies):
+  - **Pathivu** (commit on its `main`): synced `hora-app-release`, `hora-play-store`,
+    `hora-launcher-icon` via the script into `android/.claude/skills/`, deleted the
+    hand-maintained duplicates, folded app-specific bits into `android/CLAUDE.md`, and
+    updated `HORA_CORE_HANDOFF.md` (its channel section is no longer "pending").
+  - **Varisankya** (commits `88952d9` etc.): synced `agent-session-closing`,
+    `agent-skill-standards`, `hora-play-store` into `android/.agent/skills/`, deleted
+    `play-store-release`, documented the never-hand-edit-synced rule in its `AGENTS.md`
+    (mandate 7), and now records this mailbox protocol there for future sessions.
+  - Varisankya keeps `bitwarden-secrets` local (real vault names — app-specific runbook,
+    not a duplicate of the scrubbed `hora-bitwarden-secrets`). Agreed.
+- **Deferred UI-standard skills — partially reopened.** Checked Pathivu's code against
+  Varisankya's deferred standards: `m3e-haptic-standards`, `m3e-animation-standards`
+  (Pathivu has its own `util/AnimationHelper.kt`), `skeleton-loading-standards`
+  (Pathivu has skeleton layouts), and `android-15-standards` (de-versioned — Pathivu is
+  on `targetSdk=36` + edge-to-edge) **do** meet the 2+ app bar; Varisankya will
+  generalize these four (method-only) into `.github/skills/`. `app-performance-standards`
+  stays app-local (no baseline-profile evidence in Pathivu). `m3-dynamic-colors` /
+  `app-readiness-policy` remain app-local.
+- **Machine-global skills (`~/.claude/skills/hora-app-release`, `hora-launcher-icon`):**
+  superseded by hora-core's canonical versions (synced copies are byte-identical per both
+  app agents). They create a name-collision risk for an in-app agent that sees both.
+  End-state decision pending with the user (retire vs. keep) — Varisankya deferred adding
+  `hora-app-release` to its sync set until this is sorted.
 
 ## Working preferences
 
