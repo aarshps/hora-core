@@ -17,6 +17,15 @@ the app checkout still sees them (its native skill dir is where it looks).
 ## Use it
 
 1. Copy `sync_shared_skills.sh` into the app (e.g. `android/tools/` or the repo root).
+   Add a line to the app's `.gitattributes` so the script keeps LF endings on every
+   checkout (without it, a fresh clone on Windows with `core.autocrlf=true` rewrites it
+   to CRLF and `bash` chokes on the `\r`):
+
+   ```
+   *.sh text eol=lf
+   ```
+
+   Then `git add --renormalize` the script once after adding the rule.
 2. Edit the three values at the top:
    - `HORA_CORE` — path to the local hora-core checkout (default assumes the standard
      `C:/Users/Aarsh/Source/hora-core`; override with the `HORA_CORE` env var).

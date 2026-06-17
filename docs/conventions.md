@@ -89,6 +89,9 @@ copies the shared skills it uses from a local hora-core checkout into its native
 dir. The synced copies are **generated**: edit the canonical skill here in hora-core and
 re-run the script — never hand-edit the copy in an app. This is what lets an app dedup
 its old hand-maintained duplicates against hora-core without losing local discoverability.
+When copying the script in, the app must also add `*.sh text eol=lf` to its
+`.gitattributes` (hora-core ships this guard) — otherwise a fresh Windows clone with
+`core.autocrlf=true` rewrites the script to CRLF and `bash` fails on the `\r`.
 
 ## Design tokens (reference — confirm against the app's design-system doc)
 

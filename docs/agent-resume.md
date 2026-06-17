@@ -151,6 +151,18 @@
   `hora-launcher-icon` skill first (the rest was obsolete per-app tuning that the
   method-only skill intentionally omits). Varisankya can now add `hora-app-release` to
   its sync set without the collision.
+- **Sync-script line endings (fixed 2026-06-17).** The shared
+  `templates/sync-shared-skills/sync_shared_skills.sh` checked out as CRLF on a fresh
+  Windows clone (`core.autocrlf=true`), breaking `bash`. Fixed at source: hora-core now
+  ships a `.gitattributes` with `*.sh text eol=lf`, and the template README +
+  conventions.md tell each adopting app to add the same guard. Pathivu flagged it;
+  both apps mirror the guard in their own `.gitattributes`.
+- **Watch item — Varisankya launcher-icon constants.** Varisankya's icon-tuning
+  constants (Vstem 121 @ 600px, R_FRAC 0.2454, aspect 1.80) currently live **only** in
+  Pathivu's app-local `_tools/` gen scripts (kept app-local; not extracted to hora-core).
+  Varisankya deliberately did not copy them secondhand. If Pathivu's `_tools/` is ever
+  cleaned up/removed, those constants must be stashed somewhere durable first (ping the
+  Varisankya agent) or they vanish silently. Not urgent — recorded so it isn't lost.
 
 ## Working preferences
 

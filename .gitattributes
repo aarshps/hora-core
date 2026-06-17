@@ -1,0 +1,6 @@
+# Shell scripts must always check out with LF endings, even on Windows with
+# core.autocrlf=true. CRLF on the shebang or `set -euo pipefail` makes bash choke
+# (`\r: command not found` / "bad interpreter"). Any app that copies a shared shell
+# script (e.g. sync_shared_skills.sh) should carry the same guard — see
+# templates/sync-shared-skills/README.md.
+*.sh text eol=lf
