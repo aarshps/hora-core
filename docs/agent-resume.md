@@ -170,10 +170,19 @@
   (`brand/notification-icon/gen_notification_icon.py`) reproduces Varisankya's shipped
   `ic_notification.xml` exactly. Already documented in `conventions.md` +
   `brand/notification-icon/`; added a "migrating from the older framed treatment" note.
-  **Pathivu is currently on the deprecated treatment** (rounded-square outline frame +
-  *stroked* hollow letter, and its `ic_notification.xml` comment wrongly calls that "the
-  standard") — pinged its agent via the mailbox to regenerate with the solid-disc method
-  (filled silhouette of "പ" knocked out, not a stroked outline) and get user sign-off.
+  Pathivu was the only app still on the deprecated framed/stroked treatment; **it has
+  now migrated** (commit `106854d`, beta.25): `പ` extracted as a filled silhouette from
+  Nirmala UI, knocked out of the disc at scale 0.85, user signed off on a side-by-side.
+  Verified Pathivu's `ic_notification.xml` is now structurally identical to the standard
+  (same disc path as Varisankya + filled `evenOdd` knockout, no frame/stroke). The whole
+  family (വ + പ) is on the ratified standard; no app outstanding.
+- **Launcher-icon method improved (2026-06-17).** Pathivu found the horizontal-only
+  weight-restore (`dilate_h`) leaves jagged rectangular "tabs/spikes" on vertical stems
+  that survive downsampling as pixel spikes. Fix folded into the `hora-launcher-icon`
+  skill (new step 6 + a gotcha): contour-smooth the hi-res master (Gaussian blur +
+  re-threshold at 50%) before the per-density downsample — dissolves tabs while preserving
+  straight edges and stroke weight. **Relayed to Varisankya** to check വരി at high zoom
+  (composed the same way: Baloo + `dilate_h`) and regenerate if it has the same artifact.
 
 ## Working preferences
 

@@ -40,7 +40,14 @@ prior app's tuned script transfers as-is.
    compression collapses it into a collision). Keep any grafted shared subglyph (step 1) out of
    any width compression — compressing the whole word also shrinks the shared part, which should
    stay pixel-identical to the reference.
-6. **Generate the full mipmap set** (`ic_launcher`, `ic_launcher_foreground`, `ic_launcher_round`,
+6. **Contour-smooth the composed master before downsampling.** The horizontal-only
+   weight-restore (step 4) leaves flat rectangular ledges — "tabs/spikes" — on the vertical stems
+   that don't follow the curve and survive the per-density downsample as pixel-level spikes.
+   Gaussian-blur the hi-res master, then re-threshold at 50% alpha: this dissolves the tabs (and
+   any narrow notches) while leaving straight stem edges exactly in place, so stroke weight is
+   preserved (verify a stem stays its target px width after). Tune the blur radius on a 5× zoom
+   before/after (≈10 master-res px worked for one app).
+7. **Generate the full mipmap set** (`ic_launcher`, `ic_launcher_foreground`, `ic_launcher_round`,
    plus a monochrome `drawable-nodpi` for the adaptive icon) sized by the reference's own
    bounding-circle fraction, so the new icon visually matches the reference's fill/padding inside
    the adaptive mask.
@@ -49,6 +56,8 @@ prior app's tuned script transfers as-is.
 - Any dilation/erosion step must grow into a padded canvas first, or it clips the edge letters.
 - Add the inter-letter gap on separate glyphs, after compression — not before.
 - Keep grafted shared subglyphs out of width-compression so they don't shrink.
+- Horizontal-only weight-restore leaves jagged stem tabs; contour-smooth the master (blur +
+  re-threshold at 50%) before downsampling (step 6), or they survive as pixel spikes at small sizes.
 - The **Play Store listing icon is a separate asset**, sized/measured differently — see
   `hora-play-store`.
 
