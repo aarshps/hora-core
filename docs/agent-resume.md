@@ -4,9 +4,10 @@
 
 - Read `AGENTS.md`, then this file.
 - Open only the relevant skill under `.github/skills/`.
-- Check `.agent-mailbox/` (gitignored, same-machine only) for notes from other
-  concurrently-running Hora-family agent sessions — see
-  `.github/skills/hora-agent-mailbox/SKILL.md`. It won't exist on a fresh clone.
+- Any Hora app agent may commit to `main` and update the wiki (`master`) directly — see
+  `AGENTS.md` § Working agreements. There is no agent-to-agent coordination channel; this
+  file is the shared, committed record. Append a dated entry when you make a lasting
+  decision.
 - GitHub: use plain `gh` (authenticated as `aarshps` on this machine). Verify with
   `gh api user --jq .login` if it matters.
 
@@ -183,11 +184,23 @@
   re-threshold at 50%) before the per-density downsample — dissolves tabs while preserving
   straight edges and stroke weight. **Relayed to Varisankya** to check വരി at high zoom
   (composed the same way: Baloo + `dilate_h`) and regenerate if it has the same artifact.
+- **Migration complete; coordination protocol retired (user decision 2026-06-18).** The
+  cross-repo migration is done, so the temporary `.agent-mailbox/` channel and its
+  `hora-agent-mailbox` skill were removed, and `.gitignore`/`AGENTS.md` references
+  dropped. New model: **each Hora app agent edits hora-core directly** — commits to `main`
+  (no PRs) and updates the wiki (`master`) itself, under the standing mandates (no secrets,
+  2+-app bar, conventions.md as single source of truth). The earlier entries above mention
+  mailbox-mediated coordination ("pinged via the mailbox", "resolved replies") — that is
+  accurate *history*; the channel no longer exists. This file is now the only shared
+  coordination record. NOTE: the app repos' own `AGENTS.md` (e.g. Varisankya mandate 7,
+  Pathivu's handoff doc) may still tell their agents to check `.agent-mailbox/`; each app
+  agent should drop that on its own side next time it runs — hora-core does not edit
+  sibling repos.
 
 ## Working preferences
 
-- The user updates `main` and the wiki (`master`) directly; pushing when asked is
-  expected.
+- Each Hora app agent updates hora-core `main` and the wiki (`master`) directly; that is
+  the expected workflow now (migration complete — see the protocol-retired entry above).
 - Do not touch sibling repos under `C:\Users\Aarsh\Source\` unless explicitly asked.
 
 ## Resume checklist

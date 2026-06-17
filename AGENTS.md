@@ -38,13 +38,16 @@ logs — git history is the record. Durable state and handoff notes go in
 
 ## Working agreements
 
-- The user manages this repo directly on `main`; pushing to `main` is expected when
-  asked. The wiki's default branch is `master`.
+- **Any Hora-family app agent may edit this repo directly.** The migration that needed a
+  coordination layer is complete — Pathivu, Varisankya, and future sibling agents commit
+  straight to `main` (no PRs) and update the wiki (default branch `master`) themselves.
+  The core mandates above bind every such change: no secrets, the 2+-app inclusion bar,
+  and `docs/conventions.md` stays the single source of truth.
+- There is **no agent-to-agent coordination protocol** anymore. The former local
+  `.agent-mailbox/` channel was retired once migration finished; coordinate by editing
+  this repo's committed docs directly. `docs/agent-resume.md` is the durable record of
+  cross-app decisions — read it before resuming paused work and append to it when you
+  make a decision that outlives your session.
 - Do not modify sibling repos under `C:\Users\Aarsh\Source\` unless explicitly asked.
 - Repo-local skills live under `.github/skills/<name>/SKILL.md`. Open only the skills
   relevant to the task. Keep each `SKILL.md` ≤ 100 lines, one narrow job each.
-- Read `docs/agent-resume.md` before resuming paused work.
-- Other Hora-family agent sessions (Pathivu, Varisankya, etc.) running on this same
-  machine coordinate through a local, gitignored mailbox at `.agent-mailbox/` — see
-  `.github/skills/hora-agent-mailbox/SKILL.md`. Check it early in a session; it won't
-  exist on a fresh clone and is never pushed.
