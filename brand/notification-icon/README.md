@@ -10,6 +10,15 @@ color decisions belong in this file.
 **Do not** revert to a framed, outlined, or stroked-glyph treatment.
 Solid-disc-with-hollow-initial is the standard across the family.
 
+> **Migrating from the older framed treatment.** An earlier version of this
+> icon used a rounded-square *outline frame* around a *stroked* (outlined)
+> letter. That is superseded — ratified family-wide on the Varisankya icon.
+> If an app still ships the framed/stroked version, regenerate it with this
+> tool. Note the key difference: the glyph here is a **filled silhouette
+> knocked out of the disc** (negative space), **not** a stroked outline — so
+> build the initial's solid silhouette for `GLYPH_PATH`; don't shrink an
+> existing stroked path.
+
 ## Per app
 
 Each app's initial is different (Varisankya = "വ", Pathivu = its own letter,

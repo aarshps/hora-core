@@ -163,6 +163,17 @@
   Varisankya deliberately did not copy them secondhand. If Pathivu's `_tools/` is ever
   cleaned up/removed, those constants must be stashed somewhere durable first (ping the
   Varisankya agent) or they vanish silently. Not urgent — recorded so it isn't lost.
+- **Notification-icon standard ratified (user decision 2026-06-17).** The user confirmed
+  Varisankya's notification-shade icon — a **solid white disc with the app's Malayalam
+  initial knocked out as a hollow** (single `evenOdd` path, white-on-transparent, 24×24,
+  glyph scale ~0.85) — as the firm family standard. Verified hora-core's generator
+  (`brand/notification-icon/gen_notification_icon.py`) reproduces Varisankya's shipped
+  `ic_notification.xml` exactly. Already documented in `conventions.md` +
+  `brand/notification-icon/`; added a "migrating from the older framed treatment" note.
+  **Pathivu is currently on the deprecated treatment** (rounded-square outline frame +
+  *stroked* hollow letter, and its `ic_notification.xml` comment wrongly calls that "the
+  standard") — pinged its agent via the mailbox to regenerate with the solid-disc method
+  (filled silhouette of "പ" knocked out, not a stroked outline) and get user sign-off.
 
 ## Working preferences
 
