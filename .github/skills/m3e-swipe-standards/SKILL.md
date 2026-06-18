@@ -5,13 +5,18 @@ description: Smooth, sticky, haptic swipe-to-act on list rows for Hora-family An
 
 # M3E swipe-action standards
 
-The family's list swipe-to-act (Pathivu swipe-to-mark-done, Varisankya swipe-to-mark-paid) is one
-shared feel: a sticky, springy, haptic right-swipe that reveals an accent panel + check icon, then
-settles back into place. The row is **never removed** — the swipe just toggles state.
+For apps that DO use a list swipe-to-act, this is the family's one shared feel: a sticky, springy,
+haptic right-swipe that reveals an accent panel + check icon, then settles back into place. The row
+is **never removed** — the swipe just toggles state.
 
-Reference impls (copy `SwipeActionCallback` per app; it references the app's own `R`/colors):
-Varisankya `util/SwipeHelpers.kt` + `SubscriptionActionHelper`; Pathivu the same `SwipeHelpers.kt`
-+ `HabitActionHelper`. Keep the behaviour below identical.
+**Reference impl:** Varisankya `util/SwipeHelpers.kt` (`SwipeActionCallback`) + `SubscriptionActionHelper`
+(swipe-to-mark-paid). Copy `SwipeActionCallback` per app — it references the app's own `R`/colors.
+Keep the behaviour below identical.
+
+> **Not every app uses this.** A row-swipe action is optional. **Pathivu deliberately has no row
+> swipe** — it marks habits done via an on-row check button and reorders via long-press drag (the
+> swipe-to-mark-done gesture was tried and removed for being error-prone). Adopt this skill only when
+> a swipe-to-act genuinely earns its place; a tappable control is often the calmer choice.
 
 ## The gesture (SwipeActionCallback : ItemTouchHelper.SimpleCallback)
 - **Right-swipe only** for the action; paint the reveal (accent background + check) in `onChildDraw`.
@@ -33,8 +38,8 @@ The row isn't removed, so it must be restored AND the data write must not fight 
    write in `onSwipeRight`. Its `updateData`/DiffUtil rebind otherwise lands mid-recover, cancels it,
    and leaves the row **stuck off-screen at the edge**.
    - Deferring behind a confirmation sheet (Varisankya) satisfies this — the write fires long after.
-   - With no confirmation (Pathivu), defer **event-based, not on a fixed timer** (a timer races on
-     slow devices): `recyclerView.postOnAnimation { recyclerView.itemAnimator?.isRunning { <write> } }`.
+   - With no confirmation, defer **event-based, not on a fixed timer** (a timer races on slow
+     devices): `recyclerView.postOnAnimation { recyclerView.itemAnimator?.isRunning { <write> } }`.
 
 ## Checklist
 - [ ] `SwipeActionCallback` copied per app; sticky damping + escalating haptics + natural recover intact.
