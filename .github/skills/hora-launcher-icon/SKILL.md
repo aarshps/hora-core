@@ -6,10 +6,12 @@ description: Generate a "Hora"-family Android launcher icon — the app's short 
 # Hora launcher icon (wordmark, matched to the family reference)
 
 Hora apps share one icon language: the app's short name in slate **#445353** on **#FCFCFC**,
-drawn to match the established family reference icon (Varisankya's **വരി**, a hand-authored
-vector in its `ic_launcher_monochrome.xml` — NOT a font). Never expect an installed font to match
-the reference outright; compose the glyph programmatically against the reference's actual
-measurements.
+drawn to match the established family reference — **Varisankya's "വരി"**. The canonical reference
+vector and the exact **target metrics** (stem weight ≈13% of cap-height, bounding-circle
+R_FRAC ≈0.25, centring, face) live in
+**[`brand/launcher-icon/`](../../../brand/launcher-icon/README.md)**
+(`varisankya-vari-reference.xml` — hand-authored, NOT a font). Never expect an installed font to
+match the reference outright; compose the glyph programmatically against those measured metrics.
 
 There is no shared, importable script library for this — each app's icon needs its own iterative
 tuning pass (font, weight-trim, compression) against the reference's measured metrics, followed
@@ -19,8 +21,9 @@ prior app's tuned script transfers as-is.
 
 ## Method (what actually works — learned over several iterations on prior apps)
 1. **Graft any shared subglyph exactly**, when the app's name shares a letterform with the
-   reference (e.g. a vowel sign). Extract that subpath verbatim from the reference's vector XML
-   (parse the path commands; identify the shared subpath) rather than redrawing it, so it stays
+   reference (e.g. a vowel sign). Extract that subpath verbatim from the reference vector XML
+   (`brand/launcher-icon/varisankya-vari-reference.xml`; parse the path commands; identify the
+   shared subpath) rather than redrawing it, so it stays
    pixel-identical.
 2. **Render each letter SEPARATELY** rather than as a shaped string — engines like Pillow lack
    proper complex-script shaping, so render via a shaping-aware path (e.g. GDI+/`System.Drawing`

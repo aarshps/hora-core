@@ -7,9 +7,11 @@ two or more apps so they look and feel like siblings.
 
 - **Color & type tokens** — the Material 3 Expressive palette and type scale shared
   across apps.
-- **Launcher-icon conventions** — the Malayalam wordmark style every Hora app's icon
-  follows (each app's name drawn in the shared hand-drawn style). See the
-  `hora-launcher-icon` skill for the generation procedure.
+- **[Launcher icon](launcher-icon/README.md)** — the Malayalam wordmark style every Hora
+  app's icon follows (each app's short name drawn in the shared hand-authored style). The
+  folder holds the **canonical reference** (Varisankya's "വരി" vector + preview) and the
+  exact **target metrics** (colour, face, stem weight, bounding-circle fill) a new app's
+  icon must match; the `hora-launcher-icon` skill is the step-by-step generation procedure.
 - **[Notification status-bar icon](notification-icon/README.md)** — the solid-disc /
   hollow-glyph generator every app copies and customizes. Extracted from Varisankya
   (the first app to need it); Pathivu and future siblings reuse the identical
