@@ -106,6 +106,16 @@
   describes an adoption plan (consume → delete local duplicate → verify build) that
   needs exactly this kind of landed-and-ready signal.
 
+- **Swipe-action standard added (2026-06-18):** `m3e-swipe-standards` skill in
+  `.github/skills/` captures the family's list swipe-to-act behaviour — the sticky + haptic +
+  natural-recover gesture (`SwipeActionCallback : ItemTouchHelper.SimpleCallback`) AND the
+  wiring rule that stops a kept (non-removed) row from sticking off-screen: a SYNCHRONOUS
+  `notifyItemChanged` + fire the data write only AFTER the spring-back settles (a confirmation
+  sheet, or event-based `recyclerView.postOnAnimation { itemAnimator.isRunning { ... } }`) —
+  never an immediate async write, never a fixed delay (it races on slow devices). Added by the
+  Pathivu agent (user authorized direct hora-core edits) after Pathivu's swipe took several
+  betas to get right; Varisankya is the reference impl and both apps follow it.
+
 ## Decisions
 
 - **Shared-skill consumption = per-app sync script (decided 2026-06-16 by the user).**
