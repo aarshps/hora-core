@@ -158,12 +158,13 @@
   ships a `.gitattributes` with `*.sh text eol=lf`, and the template README +
   conventions.md tell each adopting app to add the same guard. Pathivu flagged it;
   both apps mirror the guard in their own `.gitattributes`.
-- **Watch item — Varisankya launcher-icon constants.** Varisankya's icon-tuning
-  constants (Vstem 121 @ 600px, R_FRAC 0.2454, aspect 1.80) currently live **only** in
-  Pathivu's app-local `_tools/` gen scripts (kept app-local; not extracted to hora-core).
-  Varisankya deliberately did not copy them secondhand. If Pathivu's `_tools/` is ever
-  cleaned up/removed, those constants must be stashed somewhere durable first (ping the
-  Varisankya agent) or they vanish silently. Not urgent — recorded so it isn't lost.
+- **Watch item — Varisankya launcher-icon constants — RESOLVED (2026-06-18).** The user
+  ratified Varisankya's launcher icon as the family gold standard and asked for its
+  derivation in hora-core, so `brand/launcher-icon/` now holds the canonical "വരി"
+  reference vector + a metrics doc that **records those constants durably** (Vstem 121 @
+  600px, R_FRAC 0.2454, aspect 1.80), alongside independently re-measured target metrics
+  (stem ≈13% of cap-height, R_FRAC ≈0.25, aspect 1.795). They're no longer trapped only in
+  Pathivu's `_tools/`, so the "if `_tools/` is cleaned, they vanish" risk is closed.
 - **Notification-icon standard ratified (user decision 2026-06-17).** The user confirmed
   Varisankya's notification-shade icon — a **solid white disc with the app's Malayalam
   initial knocked out as a hollow** (single `evenOdd` path, white-on-transparent, 24×24,
