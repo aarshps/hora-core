@@ -2,7 +2,7 @@
  * Shared Hora-family component — canonical source lives in hora-core/shared/android.
  * It is GENERATED into each app by that app's tools/sync_shared_android.sh. Do NOT
  * hand-edit the copy inside an app; edit it here in hora-core and re-run the sync.
- * The "__HORA_PKG__" token is rewritten to the app's base package on sync.
+ * (A package placeholder in this file is rewritten to the app's base package on sync.)
  *
  * Depends on the app's `Constants` for M3 motion tokens (ANIM_DURATION_*, ANIM_STAGGER_BASE_DELAY).
  * Every Hora app defines these — see the m3e-animation-standards skill.
