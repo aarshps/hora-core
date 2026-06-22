@@ -149,8 +149,23 @@
     **deleted** and its rationale folded into `brand/launcher-icon/README.md`.
     `conventions.md`, `brand/README.md`, and the `hora-repo-map` skill were updated to match.
   - **Open for the app agents** (adoption owned per app, not done from here): sync
-    `settings-page-standards` + `shared/android/` source, and re-run the icon engine against
-    each app's `APPS` config to adopt the unified icons.
+    `settings-page-standards` + `shared/android/` source per app. *(Icon-engine adoption is
+    now done for both apps — Pathivu beta.35, Varisankya beta.8; see the 2026-06-23 entry.)*
+
+- **Varisankya adopted the unified icon engine — all platforms (2026-06-23).** Ran
+  `gen_launcher_icon.py varisankya` and shipped it: the വരി wordmark (Baloo Chettan 2 700) +
+  the വ notification disc-knockout now drive Android (launcher all densities + monochrome +
+  legacy/round + notification), iOS (`AppIcon-1024`), web (favicon + PWA icons) and the Play
+  512. This is the **second** app on the engine (after Pathivu's പതി/പ), so the family
+  standard is now validated for both wordmarks. App-side wrinkle worth flagging for the next
+  sibling: Varisankya was on `.webp` launcher foregrounds + a *vector* monochrome (Pathivu
+  was already raster PNG); both are superseded by the engine's PNG output and had to be
+  deleted to avoid duplicate-resource collisions (`.webp`+`.png`, vector+raster same name).
+  Shipped as Varisankya Android **beta.8 (vc65)** → Play Open Testing + Vercel web prod;
+  Play listing 512 set via the `edits.images` API; iOS icon landed (CI green) but TestFlight
+  still gated on Apple enrollment. Resolves the icon half of the "Open for the app agents"
+  item above for Varisankya; the `Widget.App.*` / `ShapeAppearance.App.*` `themes.xml`
+  extraction staged in that entry is still open.
 
 ## Decisions
 
