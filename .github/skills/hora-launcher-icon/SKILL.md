@@ -1,23 +1,29 @@
 ---
 name: hora-launcher-icon
-description: Generate a "Hora"-family Android launcher icon — the app's short name drawn to match the family's established hand-drawn icon style pixel-for-pixel. Use when creating or refining the launcher/adaptive icon for any Hora app.
+description: Generate ALL Hora-family app icons (Android launcher + notification, iOS, web, Play) from the shared Baloo Chettan 2 wordmark engine in hora-core. Use when creating or refining any Hora app's icons.
 ---
 
-# Hora launcher icon (wordmark, matched to the family reference)
+# Hora app icons — one engine, Baloo Chettan 2 wordmark
 
-Hora apps share one icon language: the app's short name in slate **#445353** on **#FCFCFC**,
-drawn to match the established family reference — **Varisankya's "വരി"**. The canonical reference
-vector and the exact **target metrics** (stem weight ≈13% of cap-height, bounding-circle
-R_FRAC ≈0.25, centring, face) live in
-**[`brand/launcher-icon/`](../../../brand/launcher-icon/README.md)**
-(`varisankya-vari-reference.xml` — hand-authored, NOT a font). Never expect an installed font to
-match the reference outright; compose the glyph programmatically against those measured metrics.
+**As of 2026-06 there IS a shared engine** — use it, don't hand-tune per app. The family icon is the
+app's short Malayalam name (Pathivu **പതി**, Varisankya **വരി**) set in **Baloo Chettan 2** (700,
++45% vertical stretch), slate **#445353** on **#FCFCFC**, centered, bounding-circle `R_FRAC=0.2435`.
+Canonical generator + font + full spec:
+**[`brand/launcher-icon/`](../../../brand/launcher-icon/README.md)** → `gen_launcher_icon.py`.
 
-There is no shared, importable script library for this — each app's icon needs its own iterative
-tuning pass (font, weight-trim, compression) against the reference's measured metrics, followed
-by **explicit user sign-off before shipping** (this icon is highly scrutinised). Treat the method
-below as the reusable asset; rebuild the generator scripts per-app from it rather than assuming a
-prior app's tuned script transfers as-is.
+```
+pip install uharfbuzz freetype-py fonttools brotli numpy pillow
+python gen_launcher_icon.py <app>      # writes launcher (all densities) + monochrome + legacy/round
+                                       # + notification (ic_notification) + iOS + web + Play 512
+```
+
+It uses harfbuzz (shaping) + **FreeType** (the font's own nonzero rasteriser — correct fill, no holes
+in self-intersecting glyphs like ത). Add a new sibling by adding an `APPS` entry (Malayalam name +
+initial + repo path + iOS dir). **Always get explicit user sign-off before shipping — this icon is
+highly scrutinised.**
+
+The legacy material below (matching the old hand-drawn Varisankya reference with per-app font tuning,
+`varisankya-vari-reference.xml`) is **superseded** by the engine; kept only as history.
 
 ## Method (what actually works — learned over several iterations on prior apps)
 1. **Graft any shared subglyph exactly**, when the app's name shares a letterform with the
