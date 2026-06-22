@@ -93,6 +93,24 @@ When copying the script in, the app must also add `*.sh text eol=lf` to its
 `.gitattributes` (hora-core ships this guard) — otherwise a fresh Windows clone with
 `core.autocrlf=true` rewrites the script to CRLF and `bash` fails on the `\r`.
 
+## Shared Android source
+
+[`shared/android/`](../shared/android/README.md) is the canonical home for Android
+building blocks two or more apps use **verbatim** — `res/values/dimens.xml`,
+`res/values/type.xml` (`TextAppearance.App.*`), the chip color selectors, and
+`util/ChipHelper.kt` / `ThemeHelper.kt` / `AnimationHelper.kt`. Unlike a doc skill (which
+explains *intent*), this folder is the *code itself*. The paired `.github/skills/`
+entries (`m3e-animation-standards`, `settings-page-standards`, …) describe the why.
+
+**Consumption (same generated-copies model as skills):** an app copies
+[`templates/sync_shared_android.sh`](../templates/sync_shared_android.sh) into
+`android/tools/`, sets `HORA_CORE`/`APP_PKG`, and runs it. The script copies resources
+verbatim, rewrites the Kotlin package placeholder `__HORA_PKG__` → the app's base
+package, and writes a `.hora-core-synced-android` provenance manifest. Edit a shared file
+here in hora-core and re-run the sync in each app — never hand-edit the generated copy.
+The app must already ship `res/font/google_sans_flex` and a `Constants` with the
+`ANIM_*` durations the helpers reference.
+
 ## Design tokens (reference — confirm against the app's design-system doc)
 
 As of the most recent family app (Varisankya), Android uses Material 3 Expressive
@@ -115,14 +133,19 @@ Web apps seed their Material 3 palette from the app's own brand icon color via
 Material Color Utilities (`SchemeTonalSpot`) rather than wallpaper-based Dynamic
 Color, since a browser has no wallpaper — each app picks its own seed color.
 
-### Notification status-bar icon
+### App icons (launcher, notification, iOS, web, Play)
 
-Every app's notification-shade icon is a **solid round (filled white disc) with the
-app's Malayalam initial knocked out as a hollow**, as a single `evenOdd` vector path.
-Canonical standard, generator, and per-app instructions live in
-[`brand/notification-icon/`](../brand/notification-icon/README.md). This is a firm
-family convention, not a hedged reference — do not revert to a framed or
-stroked-glyph treatment.
+Every family icon — launcher foreground/legacy/round/monochrome, the notification
+status-bar icon, the iOS AppIcon, web favicon/PWA icons, and the Play 512 — is
+generated from **one engine and one spec**: the app's Malayalam wordmark set in
+**Baloo Chettan 2** (700), slate `#445353` on near-white `#FCFCFC`, shaped with
+harfbuzz and rasterised by FreeType (so self-intersecting glyphs like ത fill with no
+holes). The notification icon is specifically a **solid white disc with the app's
+Malayalam initial knocked out as a hollow** (single `evenOdd` path) drawn from the same
+Baloo glyph. Canonical standard, generator, and per-app config live in
+[`brand/launcher-icon/`](../brand/launcher-icon/README.md). These are firm family
+conventions, not hedged references — do not revert to hand-authored raster tuning, nor
+to a framed or stroked-glyph notification treatment.
 
 ## Cross-language code sharing
 
@@ -175,20 +198,26 @@ convention behind it, generalized so it can live in a public repo):
 
 ## Module consumption (decide per module as they're added)
 
-`hora-core` mostly shares documentation and assets, consumed by reference. The first
-extracted **code** module — `brand/notification-icon/gen_notification_icon.py` — is a
-dev-time generator, not a runtime dependency, so its consumption mechanism is **copy
-locally and customize**: each app pastes the script into its own `android/tools/` and
-swaps the glyph constant. This sidesteps the cross-language code-gen question above
-entirely, since nothing is compiled or imported across apps. If a future module needs
-real code sharing (a runtime library, not a generator), decide then between a git
-submodule and a published artifact, and record the decision here.
+`hora-core` mostly shares documentation and assets, consumed by reference. The
+**icon engine** — `brand/launcher-icon/gen_launcher_icon.py` — is a dev-time generator,
+not a runtime dependency, so the cross-language code-gen question above does not apply.
+Its consumption model is **run centrally from a hora-core checkout**: the per-app `APPS`
+config (Malayalam wordmark, initial, repo path, iOS module dir) lives in the script, and
+`python gen_launcher_icon.py <app>` writes the full generated asset set directly into
+that app's tree. The generated icons are outputs — re-run the engine to update them;
+never hand-tune them in the app (same "generated copies" discipline as skills and shared
+Android source). If a future module needs real code sharing (a runtime library, not a
+generator), decide then between a git submodule and a published artifact, and record the
+decision here.
 
 `templates/shared-firebase/` is consumed the same way — **copy locally and
 customize**: paste it into the new app's `shared/firebase/`, rename `.example`, edit
 the project-ID comment. It's a starting point for a new app's own files, not something
 an existing app re-syncs against, so there's no ongoing-consumption question to decide.
 
-Shared **agent skills** are the one module with *ongoing* consumption rather than a
-one-time copy: they're synced (not hand-copied) via `templates/sync-shared-skills/`, so
-re-running the script re-pulls the latest from hora-core. See "Agent skills" above.
+Shared **agent skills** and **shared Android source** are the modules with *ongoing*
+consumption rather than a one-time copy: each is synced (not hand-copied) from a local
+hora-core checkout via a small per-app script — `templates/sync-shared-skills/` for
+skills, `templates/sync_shared_android.sh` for `shared/android/` — so re-running the
+script re-pulls the latest from hora-core. See "Agent skills" and "Shared Android
+source" above.

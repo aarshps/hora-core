@@ -116,6 +116,42 @@
   Pathivu agent (user authorized direct hora-core edits) after Pathivu's swipe took several
   betas to get right; Varisankya is the reference impl and both apps follow it.
 
+- **Unified icon engine + shared Android source landed (2026-06-22).** Three commits moved
+  hora-core from "docs + assets" toward a real shared-source library. Where an earlier
+  entry conflicts, treat the following as current:
+  - **`settings-page-standards` skill** (`2022757`) — family Settings design language, added
+    to `.github/skills/` as a sync candidate for both apps.
+  - **`shared/android/` shared source** (`d3dc252`) — the first byte-identical Android
+    *code + resources* shared verbatim (`dimens.xml`, `type.xml`, chip-color selectors +
+    `ChipHelper`/`ThemeHelper`/`AnimationHelper.kt`; Kotlin carries a `__HORA_PKG__`
+    package placeholder rewritten on sync). Consumed via `templates/sync_shared_android.sh`
+    — same generated-copies discipline as skills (edit here, re-run, never hand-edit the
+    copy). Documented in the `shared-android-source` skill + `conventions.md` ("Shared
+    Android source"). Its README stages a follow-up: extract the byte-identical
+    `Widget.App.*` / `ShapeAppearance.App.*` styles out of each app's `themes.xml` into a
+    shared `styles_shared.xml` next (separate pass because `themes.xml` also holds
+    app-specific config).
+  - **Unified Baloo Chettan 2 icon engine** (`7f23dc1`) — `brand/launcher-icon/gen_launcher_icon.py`
+    generates EVERY icon for an app (launcher all densities + monochrome + legacy/round,
+    notification disc-knockout, iOS AppIcon, web favicon/PWA, Play 512) from one spec: the
+    app's Malayalam wordmark in Baloo Chettan 2 700, harfbuzz-shaped + FreeType-rasterised
+    (nonzero fill → no holes in ത). Run from a hora-core checkout (`python
+    gen_launcher_icon.py <app>`, per-app `APPS` config) writing into each app's tree. Font
+    bundled (OFL).
+  - **Supersessions (the history below stays accurate; these are now the live rules).** The
+    engine **replaces** (a) the hand-authored / per-app raster launcher pipeline from the
+    2026-06-17/18 "launcher-icon method improved" and "launcher-icon constants RESOLVED"
+    entries — the `dilate_h` weight-restore + contour-smoothing steps no longer exist; the
+    icon is font-rendered (the size constant carried over, `R_FRAC=0.2435`). And (b) the
+    standalone notification-icon generator from "notification-icon standard ratified" — the
+    disc-with-knocked-out-initial *standard itself is unchanged and still firm*, but it is
+    now emitted by the one engine (`notification_icon()`), so `brand/notification-icon/` was
+    **deleted** and its rationale folded into `brand/launcher-icon/README.md`.
+    `conventions.md`, `brand/README.md`, and the `hora-repo-map` skill were updated to match.
+  - **Open for the app agents** (adoption owned per app, not done from here): sync
+    `settings-page-standards` + `shared/android/` source, and re-run the icon engine against
+    each app's `APPS` config to adopt the unified icons.
+
 ## Decisions
 
 - **Shared-skill consumption = per-app sync script (decided 2026-06-16 by the user).**

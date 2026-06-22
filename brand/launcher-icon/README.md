@@ -31,10 +31,25 @@ python gen_launcher_icon.py pathivu      # or:  python gen_launcher_icon.py vari
 Per-app config (text, initial letter, repo path, iOS module dir) is the `APPS` dict in the script.
 **Varisankya's agent** adds/uses its config and runs `… varisankya` to adopt the standard — same algorithm, same look.
 
+## Notification icon — same standard, same engine
+The notification-shade icon is **a solid white disc with the app's Malayalam initial
+knocked out as a hollow**, drawn as a single `evenOdd` vector path (disc *minus* glyph)
+in `drawable/ic_notification.xml`. The art is white-on-transparent — Android tints the
+small icon itself (white in the status bar, themed in the shade), so no colour decision
+belongs in the file. The engine emits it via `notification_icon(<initial>, …)` from the
+**same Baloo Chettan 2** glyph as the launcher, so wordmark and status-bar mark share one
+type voice.
+
+This is a firm family standard: **do not** revert to a framed, outlined, or
+stroked-glyph treatment. The glyph is a *filled silhouette knocked out of the disc*
+(negative space), not a stroked outline. (An earlier family icon used a rounded-square
+outline frame around a stroked letter — that is superseded.)
+
 ## Reusing for a new sibling app
 Add an entry to `APPS` (its Malayalam short name + initial + repo + iOS dir) and run it. Nothing else to tune — the standard (font, weight, stretch, size, colours, rasteriser) is fixed here.
 
 ## Legacy
 `varisankya-vari-reference.xml/.png` are the **old** hand-authored "വരി" vector (the prior gold
 standard) kept for history. The previous per-app raster pipeline (`_tools/match_icon.py` +
-`gen_icons.py`) and the separate `brand/notification-icon/` flow are **superseded** by this engine.
+`gen_icons.py`) and the earlier standalone notification-icon generator are **superseded** by
+this single engine.

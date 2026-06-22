@@ -10,11 +10,17 @@ the right area before editing.
 
 ## Areas
 
-- `brand/` — shared visual identity (Material 3 tokens, Malayalam launcher-icon
-  conventions, family logos, the notification-icon generator). Start with
+- `brand/` — shared visual identity (Material 3 tokens, family logos, and the unified
+  Baloo Chettan 2 icon engine `launcher-icon/gen_launcher_icon.py` that generates every
+  app icon — launcher, notification, iOS, web, Play — from one spec). Start with
   `brand/README.md`.
+- `shared/android/` — canonical Android **source** shared verbatim across apps (dimens /
+  type / chip-color resources + `ChipHelper`/`ThemeHelper`/`AnimationHelper.kt`). Synced
+  into each app via `templates/sync_shared_android.sh`; the `shared-android-source` skill
+  has the detail.
 - `templates/` — copy-and-customize starting points for a new app's `shared/`
-  contract folder (e.g. `shared-firebase/`). Not a runtime dependency.
+  contract folder (e.g. `shared-firebase/`) plus the per-app sync scripts. Not a runtime
+  dependency.
 - `docs/conventions.md` — the shared stack and conventions every app follows. Edit here
   when a family-wide convention changes.
 - `docs/agent-resume.md` — durable repo state and handoff notes.
@@ -25,6 +31,8 @@ the right area before editing.
 
 - Visual/brand work shared by 2+ apps → `brand/`.
 - A boilerplate file a new app would otherwise paste from a sibling → `templates/`.
+- An Android resource/Kotlin file used byte-identically by 2+ apps → `shared/android/`
+  (synced via its script, not hand-pasted).
 - A rule every app must follow → `docs/conventions.md`.
 - Anything specific to **one** app → that app's own repo, **not** here.
 - Repo workflow, GitHub identity, or handoff context → `AGENTS.md` / `.github/skills/`
