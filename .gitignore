@@ -26,6 +26,10 @@ captures/
 .idea/
 *.iml
 
+# --- Python (icon engine tooling) ---
+__pycache__/
+*.pyc
+
 # --- Node / web tooling (for shared web assets) ---
 node_modules/
 dist/
