@@ -33,6 +33,26 @@ assuming a fixed family constant:
 - Render the new icon at the same metrics on the same canvas size/background. Launcher mipmaps
   stay untouched — this is a separate asset.
 
+## Setting the store icon — use the edits.images API (don't fight the browser)
+The 512 store icon can be set **non-interactively** with the AndroidPublisher **edits** API, with the
+same publisher service account that uploads bundles — even when the full listing bootstrap /
+`publishListing` is blocked (see below). `icon` is a single-image type, so upload replaces:
+```python
+svc = build("androidpublisher","v3",credentials=sa_creds)          # scope .../androidpublisher
+eid = svc.edits().insert(packageName=PKG, body={}).execute()["id"]
+svc.edits().images().upload(packageName=PKG, editId=eid, language="<listing locale, e.g. en-GB>",
+    imageType="icon", media_body=MediaFileUpload(icon_512_png, mimetype="image/png")).execute()
+svc.edits().validate(packageName=PKG, editId=eid).execute()         # catch issues before publishing
+svc.edits().commit(packageName=PKG, editId=eid).execute()           # commit = live
+```
+Verify by re-listing on a fresh edit (`edits().images().list(... imageType="icon")`) and diffing the
+served `url` bytes against the source. Use the app's actual listing locale (`edits().listings().list`).
+
+**Why not the console UI:** agent automation of **Add assets -> Upload** is unreliable — the in-page
+picker fires a **native OS file dialog** (not drivable from the browser tools), and the browser
+file-upload tool only accepts files the harness registered, so it **rejects repo paths**. A human
+clicking Upload works fine; for automation, prefer the API above.
+
 ## Tracks & promotion
 - `internal` publishes immediately via API.
 - internal → closed (alpha): `promoteReleaseArtifact --from-track internal --promote-track alpha
@@ -51,8 +71,9 @@ assuming a fixed family constant:
 
 ## Listing API is often blocked on fresh apps — enter listing manually
 `publishReleaseListing` / bootstrap calls can 404 ("listing not found" / "migrate to new
-publishing API") because the service account lacks store-listing permission. Enter the store
-listing by hand in console: copy, store icon, feature graphic (1024×500), phone screenshots
+publishing API") because the service account lacks full store-listing permission (the `edits().images()` icon /
+graphics upload above still works — see "Setting the store icon"). Enter the rest of the store
+listing by hand in console: copy, feature graphic (1024×500), phone screenshots
 (≤ 2:1, e.g. 1080×2160), and the content rating / data safety / target audience / ads
 declarations.
 
