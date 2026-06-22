@@ -25,6 +25,7 @@ SLATE     = (0x44, 0x53, 0x53)
 BG        = (0xFC, 0xFC, 0xFC)
 YSTRETCH  = 1.45     # vertical stretch ("taller")
 R_FRAC    = 0.2435   # wordmark bounding-circle radius / canvas (= existing icon's size)
+PLAY_RFRAC= 0.41     # Play Store 512: wordmark sized to FILL (bigger than the padded launcher foreground)
 EM        = 2000     # FreeType em pixels (hi-res master for crisp downsamples)
 
 def wordmark_mask(text, font=FONT, ystretch=YSTRETCH):
@@ -88,8 +89,9 @@ def generate(text, res_dir):
               os.path.join(res_dir, f"mipmap-{dpi}", "ic_launcher_round.png"))
 
 def play_icon(text, out_path):
-    """Play Store 512 listing icon (full-bleed square). Write OUTSIDE res/ (not a build resource)."""
-    _save(render(text, 512, SLATE, bg=BG).convert("RGB"), out_path)
+    """Play Store 512 listing icon (full-bleed square, wordmark sized to FILL — bigger than the
+    padded launcher foreground). Write OUTSIDE res/ (not a build resource)."""
+    _save(render(text, 512, SLATE, r_frac=PLAY_RFRAC, bg=BG).convert("RGB"), out_path)
 
 def flat_icon(text, out_path, px=1024, r_frac=0.30):
     """Flat square icon (iOS AppIcon, web favicon/PWA) — slate wordmark on near-white, no mask."""
@@ -120,9 +122,10 @@ def _glyph_cubic_segments(letter, font=FONT):
         else: i += 1
     return segs
 
-def notification_icon(letter, out_path, target_h=9.0, radius=11.0):
+def notification_icon(letter, out_path, target_h=9.0, radius=11.0, ystretch=YSTRETCH):
     """Write ic_notification.xml: a 24x24 white disc with `letter` (Baloo Chettan 2) knocked
-    out (one evenOdd path). White-on-transparent; Android tints it. Matches the family standard."""
+    out (one evenOdd path), vertically stretched (ystretch) to match the launcher wordmark's
+    letterform. White-on-transparent; Android tints it. Matches the family standard."""
     segs = _glyph_cubic_segments(letter)
     xs = []; ys = []
     for s in segs:
@@ -130,7 +133,8 @@ def notification_icon(letter, out_path, target_h=9.0, radius=11.0):
         elif s[0] == 'C': xs += [s[1], s[3], s[5]]; ys += [s[2], s[4], s[6]]
     mnx, mxx, mny, mxy = min(xs), max(xs), min(ys), max(ys)
     CX = CY = 12.0; sc = target_h / (mxy - mny); gcx = (mnx+mxx)/2; gcy = (mny+mxy)/2
-    def tx(x, y): return (CX + (x-gcx)*sc, CY - (y-gcy)*sc)   # center + y-flip
+    # height stays target_h; x is narrowed by ystretch → same taller/narrower letterform as the wordmark
+    def tx(x, y): return (CX + (x-gcx)*(sc/ystretch), CY - (y-gcy)*sc)   # center + y-flip + vertical stretch
     fm = lambda v: f"{v:.3f}"; out = []
     for s in segs:
         if s[0] == 'M': X, Y = tx(s[1], s[2]); out.append(f"M {fm(X)},{fm(Y)}")

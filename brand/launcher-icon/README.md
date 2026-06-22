@@ -12,7 +12,8 @@ all platforms. One engine, one look.
 - **Wordmark:** the app's short Malayalam name, shaped with harfbuzz (correct ligatures/positioning).
 - **Proportions:** **+45% vertical stretch** (`YSTRETCH=1.45`), **no horizontal squeeze**.
 - **Size/position:** centered; bounding-circle radius = **`R_FRAC=0.2435`** of the canvas (the size
-  the icon has always used). Flat icons (iOS/web/Play) use a fuller `R_FRAC≈0.30` (0.24 for maskable).
+  the icon has always used). iOS/web flat icons use a fuller `R_FRAC≈0.30` (0.24 for maskable); the
+  **Play Store 512 fills more — `R_FRAC=0.41`** (`PLAY_RFRAC`) so the wordmark reads big on the listing.
 - **Colours:** slate `#445353`, background `#FCFCFC`.
 - **Rendering:** **FreeType** (the font's own nonzero rasteriser) — so self-intersecting Malayalam
   strokes (e.g. ത) fill correctly with **no holes**, and edges are crisp.
@@ -37,8 +38,8 @@ knocked out as a hollow**, drawn as a single `evenOdd` vector path (disc *minus*
 in `drawable/ic_notification.xml`. The art is white-on-transparent — Android tints the
 small icon itself (white in the status bar, themed in the shade), so no colour decision
 belongs in the file. The engine emits it via `notification_icon(<initial>, …)` from the
-**same Baloo Chettan 2** glyph as the launcher, so wordmark and status-bar mark share one
-type voice.
+**same Baloo Chettan 2** glyph as the launcher, **vertically stretched the same 1.45×**
+(`YSTRETCH`) so the status-bar initial and the wordmark share one letterform.
 
 This is a firm family standard: **do not** revert to a framed, outlined, or
 stroked-glyph treatment. The glyph is a *filled silhouette knocked out of the disc*
