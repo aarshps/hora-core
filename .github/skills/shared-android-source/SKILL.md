@@ -12,6 +12,9 @@ artifact.
 
 ## What lives there (see `shared/android/README.md` for the table)
 - Design tokens: `res/values/dimens.xml`, `res/values/type.xml` (`TextAppearance.App.*`).
+- Widget & shape styles: `res/values/styles_shared.xml` (the byte-identical
+  `Widget.App.*` / `ShapeAppearance.App.*` / `App.*` layer; app-specific theme config +
+  divergent styles stay in each app's own `themes.xml`).
 - Chip color selectors: `res/color/chip_{background,text,stroke}_color.xml`.
 - Kotlin utils: `util/ChipHelper.kt`, `util/ThemeHelper.kt`, `util/AnimationHelper.kt`.
 
@@ -39,5 +42,7 @@ These are the *code* behind the design skills (`m3e-animation-standards`,
 Put the canonical under `shared/android/{res,kotlin}/`, add it to both the README table and
 the `RES_FILES`/`KT_FILES` arrays in `templates/sync_shared_android.sh` (and each app's copy),
 then re-sync. Only promote things that are genuinely identical across apps (diff first,
-normalizing the package). The next planned additions are the shared `Widget.App.*` /
-`ShapeAppearance.App.*` styles currently embedded in each app's `themes.xml`.
+normalizing the package). Example: the `Widget.App.*` / `ShapeAppearance.App.*` styles in
+`styles_shared.xml` were extracted only after confirming 26 of them were byte-identical
+across both apps — the 4 that diverged (text-field box style, destructive button) stayed
+app-local. Same bar applies to anything new.

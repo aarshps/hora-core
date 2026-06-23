@@ -14,6 +14,7 @@ hand-edit the generated copy inside an app (it is overwritten on the next sync).
 |------|-------------|-------|
 | `res/values/dimens.xml` | `app/src/main/res/values/dimens.xml` | card radii, group/section spacing, card padding |
 | `res/values/type.xml` | `…/res/values/type.xml` | `TextAppearance.App.*` (forces `@font/google_sans_flex`) |
+| `res/values/styles_shared.xml` | `…/res/values/styles_shared.xml` | the byte-identical M3E `Widget.App.*` / `ShapeAppearance.App.*` / `App.*` widget & shape styles. App-specific theme config + divergent styles stay in the app's own `themes.xml` |
 | `res/color/chip_background_color.xml` | `…/res/color/…` | chip selector — selected = tertiary, unselected = surfaceContainerHigh |
 | `res/color/chip_text_color.xml` | `…/res/color/…` | chip selector |
 | `res/color/chip_stroke_color.xml` | `…/res/color/…` | chip selector — tertiary border when unselected |
@@ -45,11 +46,20 @@ copied verbatim. `ChipHelper` references `ThemeHelper` from the same package (no
 
 Pathivu's `android/tools/sync_shared_android.sh` is the reference implementation.
 
-## Roadmap (next things to pull in here)
+## `styles_shared.xml` — what's in vs. out
 
-These are byte-identical across the apps today but still embedded in each app's
-`themes.xml`; extract them into a shared `res/values/styles_shared.xml` next:
-`Widget.App.Chip`, `Widget.App.Switch`, `Widget.App.Button{,.Outlined,.Tonal}`,
-`Widget.App.Slider`, and `ShapeAppearance.App.{Chip.*,Button,FirstItem,MiddleItem,LastItem,SingleItem}`.
-Doing so needs care (themes.xml also holds app-specific theme config), so it's staged
-as a follow-up rather than risking both apps' theme files in one pass.
+Landed 2026-06-23 (Varisankya was the first to extract; Pathivu still has the
+duplicated copies and adopts on its next pass). The file holds the **26 widget &
+shape styles that are byte-identical across the apps** — `Widget.App.{AppBarLayout,
+Toolbar,SearchView,BottomSheet.Modal,Chip,Switch,Slider,Slider.Tooltip,Button,
+Button.Outlined,Button.Tonal,Button.Tertiary}`, `ShapeAppearance.App.{Button,
+BottomSheet,Chip.Selected,Chip.Unselected,FirstItem,MiddleItem,LastItem,SingleItem}`,
+and `App.{ShapeAppearanceOverlay.Rounded,ShapeAppearanceOverlay.Pill,ButtonToggleGroup,
+ButtonToggleGroup.Rounded,Button.Destructive.Icon,Button.Success}`.
+
+**Deliberately left in each app's `themes.xml`** (not byte-identical — real per-app
+design choices, do not force-share): `Theme.*` (app theme + splash), and the styles
+where the apps diverge — `App.ShapeAppearanceOverlay.TextField` (4dp vs 14dp),
+`App.TextInputLayout.Rounded{,.ExposedDropdownMenu}` (outlined vs filled box), and
+`App.Button.Destructive` (outlined-error vs tonal). Before adding a style here, confirm
+it is identical in 2+ apps (`norm`-compare the `<style>` bodies).

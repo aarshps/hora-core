@@ -32,6 +32,7 @@ pkg_path="$(echo "$APP_PKG" | tr '.' '/')"
 RES_FILES=(
   values/dimens.xml
   values/type.xml
+  values/styles_shared.xml
   color/chip_background_color.xml
   color/chip_text_color.xml
   color/chip_stroke_color.xml

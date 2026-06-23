@@ -167,6 +167,21 @@
   item above for Varisankya; the `Widget.App.*` / `ShapeAppearance.App.*` `themes.xml`
   extraction staged in that entry is still open.
 
+- **`styles_shared.xml` extracted — shared widget/shape styles landed (2026-06-23).** Did the
+  `themes.xml` extraction the icon entry left open: `shared/android/res/values/styles_shared.xml`
+  now holds the **26** `Widget.App.*` / `ShapeAppearance.App.*` / `App.*` styles that were
+  **byte-identical across both apps** (verified by normalising each `<style>` body and
+  diffing Varisankya vs Pathivu). Added to the README table, `conventions.md`,
+  `shared-android-source` skill, and the `RES_FILES` array in both
+  `templates/sync_shared_android.sh` and each app's copy. **4 styles deliberately stayed
+  app-local** because they genuinely diverge — `App.ShapeAppearanceOverlay.TextField` (4dp
+  vs 14dp corners), `App.TextInputLayout.Rounded{,.ExposedDropdownMenu}` (Varisankya
+  outlined-box vs Pathivu filled-box), `App.Button.Destructive` (outlined-error vs tonal) —
+  plus all `Theme.*`. Varisankya adopted now (synced + `themes.xml` trimmed to theme +
+  divergent styles; debug build green; shipped in **beta.9 / vc66** alongside removing its
+  unused long-press app shortcuts). **Pathivu still has the duplicated copies** — it adopts
+  on its next pass (sync + trim, same as Varisankya). This closes the staged follow-up.
+
 ## Decisions
 
 - **Shared-skill consumption = per-app sync script (decided 2026-06-16 by the user).**

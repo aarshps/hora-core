@@ -97,8 +97,11 @@ When copying the script in, the app must also add `*.sh text eol=lf` to its
 
 [`shared/android/`](../shared/android/README.md) is the canonical home for Android
 building blocks two or more apps use **verbatim** — `res/values/dimens.xml`,
-`res/values/type.xml` (`TextAppearance.App.*`), the chip color selectors, and
-`util/ChipHelper.kt` / `ThemeHelper.kt` / `AnimationHelper.kt`. Unlike a doc skill (which
+`res/values/type.xml` (`TextAppearance.App.*`), `res/values/styles_shared.xml` (the
+byte-identical `Widget.App.*` / `ShapeAppearance.App.*` widget & shape styles), the chip
+color selectors, and `util/ChipHelper.kt` / `ThemeHelper.kt` / `AnimationHelper.kt`. Each
+app keeps its own `themes.xml` for app-specific theme config + any styles that genuinely
+diverge between apps. Unlike a doc skill (which
 explains *intent*), this folder is the *code itself*. The paired `.github/skills/`
 entries (`m3e-animation-standards`, `settings-page-standards`, …) describe the why.
 

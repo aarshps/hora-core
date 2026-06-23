@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Shared Hora-family widget & shape styles — the byte-identical M3E
+  Widget.App.* / ShapeAppearance.App.* / App.* layer used verbatim by 2+ apps.
+  Canonical source: hora-core/shared/android. GENERATED into each app by
+  tools/sync_shared_android.sh — do not hand-edit the app copy; edit here in
+  hora-core and re-run the sync. App-specific styles (Theme.*, and any divergent
+  button / text-field treatments) stay in each app's own themes.xml.
+-->
+<resources>
+    <style name="Widget.App.AppBarLayout" parent="Widget.Material3.AppBarLayout">
+        <item name="android:background">?attr/colorSurface</item>
+    </style>
+
+    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">?attr/colorSurface</item>
+    </style>
+
+    <style name="Widget.App.SearchView" parent="Widget.Material3.SearchView">
+        <item name="dividerColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Widget.App.BottomSheet.Modal" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.BottomSheet</item>
+        <item name="backgroundTint">?attr/colorSurface</item>
+    </style>
+
+    <!-- Custom Shape Appearance for fully rounded corners (Profile, Buttons) -->
+    <style name="App.ShapeAppearanceOverlay.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Button" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+
+    <!-- M3E Bottom Sheet Shape (28dp Top Corners) -->
+    <style name="ShapeAppearance.App.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">32dp</item>
+        <item name="cornerSizeTopRight">32dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <style name="App.ShapeAppearanceOverlay.Pill" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Base style for the button toggle group -->
+    <style name="App.ButtonToggleGroup" parent="Widget.MaterialComponents.MaterialButtonToggleGroup">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <!-- Style for the rounded button toggle group -->
+    <style name="App.ButtonToggleGroup.Rounded" parent="App.ButtonToggleGroup">
+        <item name="shapeAppearanceOverlay">@style/App.ShapeAppearanceOverlay.Rounded</item>
+    </style>
+
+    <!-- Destructive Icon Button (Outlined circle with error tint) -->
+    <style name="App.Button.Destructive.Icon" parent="Widget.Material3.Button.OutlinedButton.Icon">
+        <item name="iconTint">?attr/colorError</item>
+        <item name="strokeColor">?attr/colorOutline</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Material3.Corner.Full</item>
+    </style>
+
+    <!-- Style for Mark Paid Buttons (Standard Tonal - uses Secondary colors) -->
+    <style name="App.Button.Success" parent="Widget.App.Button.Tonal">
+        <!-- Uses default secondary/tertiary colors -->
+    </style>
+
+    <!-- Global M3E Button Widgets -->
+    <style name="Widget.App.Button" parent="Widget.Material3.Button">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.Button</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.App.Button</item>
+    </style>
+
+    <style name="Widget.App.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.Button</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.App.Button</item>
+    </style>
+
+    <style name="Widget.App.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.Button</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.App.Button</item>
+    </style>
+
+    <!-- MaterialSwitch Style with Tertiary Color (matches chips) -->
+    <style name="Widget.App.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <!-- Reverting to standard M3 colors -->
+    </style>
+
+    <!-- Filled Button with Tertiary Color -->
+    <style name="Widget.App.Button.Tertiary" parent="Widget.Material3.Button">
+        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <!-- Slider Style with Dynamic Colors (Tier 2 - Tertiary) -->
+    <style name="Widget.App.Slider" parent="Widget.Material3.Slider">
+        <item name="labelStyle">@style/Widget.App.Slider.Tooltip</item>
+    </style>
+
+    <style name="Widget.App.Slider.Tooltip" parent="Widget.Material3.Tooltip">
+        <item name="backgroundTint">?attr/colorOnSurface</item>
+        <item name="android:textColor">?attr/colorSurface</item>
+    </style>
+
+    <!-- Unified Chip Style - SWAPPED: Selected = Dark bg, Light text -->
+    <style name="Widget.App.Chip" parent="Widget.Material3.Chip.Filter">
+        <!-- Background: Unselected = Light, Selected = Dark -->
+        <item name="chipBackgroundColor">@color/chip_background_color</item>
+        <!-- Text: Unselected = Dark, Selected = Light -->
+        <item name="android:textColor">@color/chip_text_color</item>
+        <!-- Check Icon: Same as text color -->
+        <item name="checkedIconTint">@color/chip_text_color</item>
+        <item name="chipIconTint">@color/chip_text_color</item>
+        <!-- Subtle Border for unselected chips -->
+        <item name="chipStrokeColor">@color/chip_stroke_color</item>
+        <item name="chipStrokeWidth">0.8dp</item>
+        <!-- Default Shape (Unselected) -->
+        <item name="shapeAppearance">@style/ShapeAppearance.App.Chip.Unselected</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Chip.Selected" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Chip.Unselected" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">100dp</item>
+    </style>
+
+    <!-- Grouped List Item Shapes -->
+    <style name="ShapeAppearance.App.FirstItem" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">@dimen/card_corner_radius_large</item>
+        <item name="cornerSizeTopRight">@dimen/card_corner_radius_large</item>
+        <item name="cornerSizeBottomLeft">@dimen/card_corner_radius_small</item>
+        <item name="cornerSizeBottomRight">@dimen/card_corner_radius_small</item>
+    </style>
+
+    <style name="ShapeAppearance.App.MiddleItem" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/card_corner_radius_small</item>
+    </style>
+
+    <style name="ShapeAppearance.App.LastItem" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">@dimen/card_corner_radius_small</item>
+        <item name="cornerSizeTopRight">@dimen/card_corner_radius_small</item>
+        <item name="cornerSizeBottomLeft">@dimen/card_corner_radius_large</item>
+        <item name="cornerSizeBottomRight">@dimen/card_corner_radius_large</item>
+    </style>
+
+    <style name="ShapeAppearance.App.SingleItem" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/card_corner_radius_large</item>
+    </style>
+</resources>
