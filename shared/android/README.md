@@ -15,6 +15,9 @@ hand-edit the generated copy inside an app (it is overwritten on the next sync).
 | `res/values/dimens.xml` | `app/src/main/res/values/dimens.xml` | card radii, group/section spacing, card padding |
 | `res/values/type.xml` | `…/res/values/type.xml` | `TextAppearance.App.*` (forces `@font/google_sans_flex`) |
 | `res/values/styles_shared.xml` | `…/res/values/styles_shared.xml` | the byte-identical M3E `Widget.App.*` / `ShapeAppearance.App.*` / `App.*` widget & shape styles. App-specific theme config + divergent styles stay in the app's own `themes.xml` |
+| `res/values/colors.xml` | `…/res/values/colors.xml` | the family **monochrome palette** (`mono_*`, light + dark tonal layers) + M3 drawable colour mappings |
+| `res/values/ids.xml` | `…/res/values/ids.xml` | shared resource IDs (the `haptic_scroll_listener_tag` the scroll-haptics helper uses) |
+| `res/values/attrs.xml` | `…/res/values/attrs.xml` | theme attrs (placeholder — empty today; kept shared so a future family attr lands in one place) |
 | `res/color/chip_background_color.xml` | `…/res/color/…` | chip selector — selected = tertiary, unselected = surfaceContainerHigh |
 | `res/color/chip_text_color.xml` | `…/res/color/…` | chip selector |
 | `res/color/chip_stroke_color.xml` | `…/res/color/…` | chip selector — tertiary border when unselected |

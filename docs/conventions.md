@@ -49,6 +49,28 @@ golden vectors as the others. This SPEC.md + golden-vectors.json pair is the sha
 **pattern** every app should use; the actual spec and vectors are app-specific business
 logic and are not templated here — see `templates/README.md`.
 
+## App versioning
+
+One scheme across the family (reference: Varisankya), so every app's About screen, git tags, and
+Play release-notes read the same way:
+
+- **`versionName`** carries the channel:
+  - **beta:** `MAJOR.MINOR-beta.N` — e.g. `3.9-beta.9`, `1.0-beta.37`. `N` increments per beta build
+    of that `MAJOR.MINOR`.
+  - **stable:** `MAJOR.MINOR` (drop the suffix) — e.g. `3.8`.
+- **`versionCode`** is a **monotonic integer, +1 for every build that reaches any Play track**
+  (internal counts). Never reused or decreased, and **decoupled** from `versionName` — one
+  `MAJOR.MINOR` line spans many betas, each its own code.
+- **Git tag** = `v<versionName>` — `vMAJOR.MINOR-beta.N` for a beta, `vMAJOR.MINOR` for a stable cut.
+  One tag per shipped build.
+- **Bumping:** a new feature line bumps `MINOR` (or `MAJOR`) and resets to `-beta.1`; otherwise just
+  `-beta.(N+1)`. `versionCode` is +1 either way.
+- Each shipped build gets a Play **release-notes** file
+  (`src/main/play/release-notes/<locale>/<track>.txt`, ≤ 500 chars, plain ASCII).
+
+`hora-app-release` defers the numbers to this scheme; each app's `CLAUDE.md` "current version" line
+records the last shipped `versionName` / `versionCode` and the next free code.
+
 ## Android stack (reference — confirm against the app's `libs.versions.toml`)
 
 As of the most recent family app (Varisankya):
@@ -98,8 +120,10 @@ When copying the script in, the app must also add `*.sh text eol=lf` to its
 [`shared/android/`](../shared/android/README.md) is the canonical home for Android
 building blocks two or more apps use **verbatim** — `res/values/dimens.xml`,
 `res/values/type.xml` (`TextAppearance.App.*`), `res/values/styles_shared.xml` (the
-byte-identical `Widget.App.*` / `ShapeAppearance.App.*` widget & shape styles), the chip
-color selectors, and `util/ChipHelper.kt` / `ThemeHelper.kt` / `AnimationHelper.kt`. Each
+byte-identical `Widget.App.*` / `ShapeAppearance.App.*` widget & shape styles),
+`res/values/colors.xml` (the `mono_*` monochrome palette), `res/values/ids.xml`,
+`res/values/attrs.xml`, the chip color selectors, and `util/ChipHelper.kt` /
+`ThemeHelper.kt` / `AnimationHelper.kt`. Each
 app keeps its own `themes.xml` for app-specific theme config + any styles that genuinely
 diverge between apps. Unlike a doc skill (which
 explains *intent*), this folder is the *code itself*. The paired `.github/skills/`

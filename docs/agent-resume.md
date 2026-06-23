@@ -182,6 +182,17 @@
   unused long-press app shortcuts). **Pathivu still has the duplicated copies** — it adopts
   on its next pass (sync + trim, same as Varisankya). This closes the staged follow-up.
 
+- **Full shared-resource sweep + family versioning standard (2026-06-23).** (a) Promoted the
+  remaining byte-identical `res/values/` files into `shared/android/` — `colors.xml` (the `mono_*`
+  monochrome palette + M3 drawable mappings), `ids.xml` (the haptic scroll-listener tag), and
+  `attrs.xml` (empty placeholder) — wired into the README table, `conventions.md`, the
+  `shared-android-source` skill, and `templates/sync_shared_android.sh` `RES_FILES`. (b) **App
+  versioning is now a family standard** (`conventions.md` → "App versioning", referenced from
+  `hora-app-release`): `versionName` = `MAJOR.MINOR-beta.N` in beta / `MAJOR.MINOR` stable,
+  `versionCode` monotonic +1, tag `v<versionName>`. Reference = Varisankya (already `3.9-beta.9`).
+  Pathivu adopts both in **beta.37 / vc37** — its first build under the new `versionName` scheme
+  (was a static `1.0`), plus the sync + `themes.xml` trim of its 26 duplicated styles.
+
 ## Decisions
 
 - **Shared-skill consumption = per-app sync script (decided 2026-06-16 by the user).**

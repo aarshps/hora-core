@@ -11,7 +11,9 @@ Hora app uses verbatim. Apps consume it by copying it in with a tiny per-app syn
 artifact.
 
 ## What lives there (see `shared/android/README.md` for the table)
-- Design tokens: `res/values/dimens.xml`, `res/values/type.xml` (`TextAppearance.App.*`).
+- Design tokens: `res/values/dimens.xml`, `res/values/type.xml` (`TextAppearance.App.*`),
+  `res/values/colors.xml` (the `mono_*` monochrome palette), `res/values/ids.xml`,
+  `res/values/attrs.xml` (empty placeholder today).
 - Widget & shape styles: `res/values/styles_shared.xml` (the byte-identical
   `Widget.App.*` / `ShapeAppearance.App.*` / `App.*` layer; app-specific theme config +
   divergent styles stay in each app's own `themes.xml`).

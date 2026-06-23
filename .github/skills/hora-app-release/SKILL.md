@@ -28,9 +28,10 @@ reference values.
 2. **Check the live versionCode before bumping.** The value in `build.gradle.kts` may already be
    published from a prior session. Check the Play Console UI, or attempt the publish — Play
    rejects "version code too low or already used" and implies the next free value.
-3. **Bump `versionCode`** (keep `versionName` stable through beta, per the app's own scheme).
-   Update the app's changelog/`CLAUDE.md` "current version" line and the Play release-notes file
-   (≤ 500 chars, plain ASCII — em-dashes and curly quotes break the Play upload).
+3. **Bump the version per the family standard** (see `docs/conventions.md` → "App versioning"):
+   `versionCode` +1 (monotonic integer), and `versionName` = `MAJOR.MINOR-beta.N` for a beta build /
+   `MAJOR.MINOR` for a stable build. Update the app's `CLAUDE.md` "current version" line and the Play
+   release-notes file (≤ 500 chars, plain ASCII — em-dashes and curly quotes break the Play upload).
 4. **Build the signed release + APK:** `bundleRelease` (Play) and `assembleRelease` (GitHub
    sideload). Signing reads `RELEASE_STORE_FILE/PASSWORD/KEY_ALIAS/KEY_PASSWORD` from gitignored
    `local.properties`.
@@ -44,8 +45,9 @@ reference values.
    git add <files>                  # never `git add -A`
    git diff --cached --name-only    # re-verify after staging
    ```
-7. **Commit + tag + push** to `main` (end the commit body with the `Co-Authored-By` line). Tag
-   format and `versionName` scheme are per-app — check the wiki before assuming `v1.0-beta.N`.
+7. **Commit + tag + push** to `main` (end the commit body with the `Co-Authored-By` line). Tag =
+   `v<versionName>` per the family standard — `vMAJOR.MINOR-beta.N` for a beta, `vMAJOR.MINOR` for a
+   stable build (see `docs/conventions.md` → "App versioning").
 8. **Cut the GitHub release** with the signed APK attached:
    `gh release create <tag> "<apk>#<Label>" --repo aarshps/<repo> --title "..." --notes "..." --prerelease`
 9. **Upload to Play; pick the track by the app's gate status.** Play's 12-testers × 14-days rule

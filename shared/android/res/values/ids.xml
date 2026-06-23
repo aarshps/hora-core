@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Shared Hora-family resource IDs (e.g. the haptic scroll-listener tag). Canonical source: hora-core/shared/android.
+  GENERATED into each app by tools/sync_shared_android.sh — do not hand-edit the
+  app copy; edit here in hora-core and re-run the sync.
+-->
+<resources>
+    <item name="haptic_scroll_listener_tag" type="id" />
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Shared Hora-family theme attrs (placeholder — no custom attrs today). Canonical source: hora-core/shared/android.
+  GENERATED into each app by tools/sync_shared_android.sh — do not hand-edit the
+  app copy; edit here in hora-core and re-run the sync.
+-->
+<resources>
+    <!-- Semantic M3 Contrast Tokens Removed -->
+</resources>
