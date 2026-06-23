@@ -200,6 +200,12 @@
   handling in `MainActivity` + the orphaned shortcut icons/strings. Codified in the
   **`android-platform-standards`** skill (UX expectations + checklist) so every app agent sees it.
 
+- **Rule: hora-core `main` and wiki (`master`) move together (2026-06-23).** Any app agent (Pathivu,
+  Varisankya, future siblings) that pushes a change to hora-core `main` which alters what the wiki
+  describes **must** update the wiki (`master`) in the **same** pass — never leave the wiki lagging
+  `main`. Codified in `AGENTS.md` (Working agreements) and the `agent-session-closing` skill checklist.
+  Pure internal refactors that change nothing the wiki states are exempt — verify before skipping.
+
 ## Decisions
 
 - **Shared-skill consumption = per-app sync script (decided 2026-06-16 by the user).**

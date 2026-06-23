@@ -43,6 +43,14 @@ logs — git history is the record. Durable state and handoff notes go in
   straight to `main` (no PRs) and update the wiki (default branch `master`) themselves.
   The core mandates above bind every such change: no secrets, the 2+-app inclusion bar,
   and `docs/conventions.md` stays the single source of truth.
+- **`main` and the wiki (`master`) move together — end to end, in the same pass.** Whenever a change
+  you push to `main` alters something the wiki describes (a shared component added / removed / renamed,
+  a new standard or convention, a brand or engine change, an area's purpose), reflect it in the wiki
+  (`master`) **before you call the task done** — never leave the wiki lagging `main`. The wiki is the
+  human-facing summary of this repo, so updating it is part of "done", exactly like keeping
+  `docs/conventions.md` current. (A pure internal refactor that changes nothing the wiki states needs
+  no wiki edit — but verify that before skipping it.) This binds every app agent (Pathivu, Varisankya,
+  future siblings) equally.
 - There is **no agent-to-agent coordination protocol** anymore. The former local
   `.agent-mailbox/` channel was retired once migration finished; coordinate by editing
   this repo's committed docs directly. `docs/agent-resume.md` is the durable record of

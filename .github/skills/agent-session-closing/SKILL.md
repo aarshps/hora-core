@@ -12,6 +12,9 @@ documented state.
 - Review what was accomplished.
 - Update `AGENTS.md`/`CLAUDE.md`, `README.md`, and any relevant `SKILL.md` to reflect new
   architectural decisions, environment changes, or newly discovered constraints.
+- **Keep the wiki in step.** If the change touched a repo whose wiki documents the changed area
+  (hora-core's wiki `master`, or an app's wiki), update that wiki in the **same** pass — a repo's
+  `main` and its wiki must never diverge (see the repo's `AGENTS.md` working agreements).
 - If a new repeated task emerged, write a new granular skill (keep it short — see
   `agent-skill-standards`) in the repo's own skill directory.
 
