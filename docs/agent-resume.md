@@ -193,6 +193,13 @@
   Pathivu adopts both in **beta.37 / vc37** — its first build under the new `versionName` scheme
   (was a static `1.0`), plus the sync + `themes.xml` trim of its 26 duplicated styles.
 
+- **No launcher long-press shortcuts — family behaviour (2026-06-23).** Hora apps ship **no** static
+  or dynamic app shortcuts; the long-press app-icon menu stays empty. Varisankya dropped its unused
+  ones in beta.9; **Pathivu removed its two (add-habit / stats) in beta.38** — deleted
+  `res/xml/shortcuts.xml` + the manifest `android.app.shortcuts` meta-data + the `ACTION_*` intent
+  handling in `MainActivity` + the orphaned shortcut icons/strings. Codified in the
+  **`android-platform-standards`** skill (UX expectations + checklist) so every app agent sees it.
+
 ## Decisions
 
 - **Shared-skill consumption = per-app sync script (decided 2026-06-16 by the user).**

@@ -31,9 +31,15 @@ sits around SDK 35–36; keep `minSdk` high enough to use native APIs without co
 - Support the **predictive back** gesture natively (manifest opt-in + per-screen previews).
 - Use newer `HapticFeedbackConstants` freely (e.g. `CONFIRM`, `REJECT`) — see
   `m3e-haptic-standards`.
+- **No launcher long-press shortcuts.** Hora apps ship **no** static (`res/xml/shortcuts.xml` + the
+  manifest `android.app.shortcuts` meta-data) **or** dynamic (`ShortcutManager`) app shortcuts — the
+  long-press app-icon menu stays empty. They were tried (e.g. add-habit / stats) and dropped as
+  low-value clutter; every primary action already has an obvious in-app entry point. Remove the xml,
+  the manifest meta-data, any `ACTION_*` intent handling, and the orphaned icons/strings together.
 
 ## Checklist
 - [ ] Edge-to-edge enabled natively; bottom sheets + lists handle insets.
 - [ ] Auth via Credential Manager; no legacy sign-in client.
 - [ ] Native APIs preferred over compat shims where `minSdk` allows.
 - [ ] Predictive back supported.
+- [ ] No launcher long-press shortcuts (static or dynamic).
