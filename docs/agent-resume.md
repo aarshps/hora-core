@@ -148,9 +148,12 @@
     now emitted by the one engine (`notification_icon()`), so `brand/notification-icon/` was
     **deleted** and its rationale folded into `brand/launcher-icon/README.md`.
     `conventions.md`, `brand/README.md`, and the `hora-repo-map` skill were updated to match.
-  - **Open for the app agents** (adoption owned per app, not done from here): sync
-    `settings-page-standards` + `shared/android/` source per app. *(Icon-engine adoption is
-    now done for both apps — Pathivu beta.35, Varisankya beta.8; see the 2026-06-23 entry.)*
+  - ~~**Open for the app agents** (adoption owned per app, not done from here): sync
+    `settings-page-standards` + `shared/android/` source per app.~~ **RESOLVED (2026-06-23):**
+    both apps have now adopted every shared component landed in this entry — Pathivu beta.35
+    (icon engine) and beta.37 (settings/shared-source/styles_shared/colors-ids-attrs);
+    Varisankya beta.8 (icon engine) + beta.9 (styles_shared) + the 06-23 re-sync of
+    colors/ids/attrs. See the dated 06-23 entries below.
 
 - **Varisankya adopted the unified icon engine — all platforms (2026-06-23).** Ran
   `gen_launcher_icon.py varisankya` and shipped it: the വരി wordmark (Baloo Chettan 2 700) +
