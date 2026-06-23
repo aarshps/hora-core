@@ -209,6 +209,19 @@
   `main`. Codified in `AGENTS.md` (Working agreements) and the `agent-session-closing` skill checklist.
   Pure internal refactors that change nothing the wiki states are exempt — verify before skipping.
 
+- **More shared Android source promoted (2026-06-23).** Added to `shared/android/`: `util/TimeProvider.kt`
+  (injectable clock), the top-level `PillProgressView.kt` (custom progress `View`; colours via the shared
+  `ThemeHelper`), the four `res/anim/slide_*` M3 nav transitions, and the `chip_stroke_app` /
+  `outline_stroke_app` color selectors — all byte-identical across Pathivu + Varisankya (package-
+  normalised). Wired into the template + Pathivu sync, README / conventions / `shared-android-source`
+  skill. Pathivu consumes them in **beta.39**. **Deferred (tracked in a GitHub issue):**
+  `BiometricAuthManager` (hardcodes `"Unlock <app>"` — externalise to a string first); the ~25
+  byte-identical drawables (stable assets, low drift — optional); the `google_sans_flex` font
+  (licensing / redistribution check before centralising the binary in a public repo); the
+  `SelectionBottomSheet` + `bottom_sheet_selection` layout (UI bundle; needs a layout-sharing pattern);
+  and `BaseActivity` (references app-specific `R.style.Theme_<App>` — needs a theme-name placeholder in
+  the sync).
+
 ## Decisions
 
 - **Shared-skill consumption = per-app sync script (decided 2026-06-16 by the user).**

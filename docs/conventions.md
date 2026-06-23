@@ -122,8 +122,9 @@ building blocks two or more apps use **verbatim** — `res/values/dimens.xml`,
 `res/values/type.xml` (`TextAppearance.App.*`), `res/values/styles_shared.xml` (the
 byte-identical `Widget.App.*` / `ShapeAppearance.App.*` widget & shape styles),
 `res/values/colors.xml` (the `mono_*` monochrome palette), `res/values/ids.xml`,
-`res/values/attrs.xml`, the chip color selectors, and `util/ChipHelper.kt` /
-`ThemeHelper.kt` / `AnimationHelper.kt`. Each
+`res/values/attrs.xml`, the chip color selectors (+ `chip_stroke_app` / `outline_stroke_app`),
+the `res/anim/slide_*` nav transitions, and `util/ChipHelper.kt` / `ThemeHelper.kt` /
+`AnimationHelper.kt` / `TimeProvider.kt` plus the top-level `PillProgressView.kt`. Each
 app keeps its own `themes.xml` for app-specific theme config + any styles that genuinely
 diverge between apps. Unlike a doc skill (which
 explains *intent*), this folder is the *code itself*. The paired `.github/skills/`

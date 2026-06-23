@@ -39,6 +39,12 @@ RES_FILES=(
   color/chip_background_color.xml
   color/chip_text_color.xml
   color/chip_stroke_color.xml
+  color/chip_stroke_app.xml
+  color/outline_stroke_app.xml
+  anim/slide_in_left.xml
+  anim/slide_in_right.xml
+  anim/slide_out_left.xml
+  anim/slide_out_right.xml
 )
 
 # Kotlin utils — the "__HORA_PKG__" placeholder is rewritten to $APP_PKG.
@@ -46,6 +52,8 @@ KT_FILES=(
   util/ChipHelper.kt
   util/ThemeHelper.kt
   util/AnimationHelper.kt
+  util/TimeProvider.kt
+  PillProgressView.kt
 )
 
 {

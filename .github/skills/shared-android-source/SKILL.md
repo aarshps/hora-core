@@ -17,8 +17,11 @@ artifact.
 - Widget & shape styles: `res/values/styles_shared.xml` (the byte-identical
   `Widget.App.*` / `ShapeAppearance.App.*` / `App.*` layer; app-specific theme config +
   divergent styles stay in each app's own `themes.xml`).
-- Chip color selectors: `res/color/chip_{background,text,stroke}_color.xml`.
-- Kotlin utils: `util/ChipHelper.kt`, `util/ThemeHelper.kt`, `util/AnimationHelper.kt`.
+- Chip color selectors: `res/color/chip_{background,text,stroke}_color.xml` (+ `chip_stroke_app`,
+  `outline_stroke_app`).
+- Motion: `res/anim/slide_{in,out}_{left,right}.xml` (M3 nav transitions).
+- Kotlin: `util/ChipHelper.kt`, `util/ThemeHelper.kt`, `util/AnimationHelper.kt`,
+  `util/TimeProvider.kt` (injectable clock), and the top-level `PillProgressView.kt` (custom View).
 
 These are the *code* behind the design skills (`m3e-animation-standards`,
 `settings-page-standards`, etc.) — the skills explain intent, `shared/android/` is the impl.

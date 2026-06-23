@@ -21,9 +21,14 @@ hand-edit the generated copy inside an app (it is overwritten on the next sync).
 | `res/color/chip_background_color.xml` | `…/res/color/…` | chip selector — selected = tertiary, unselected = surfaceContainerHigh |
 | `res/color/chip_text_color.xml` | `…/res/color/…` | chip selector |
 | `res/color/chip_stroke_color.xml` | `…/res/color/…` | chip selector — tertiary border when unselected |
+| `res/color/chip_stroke_app.xml` | `…/res/color/…` | chip-stroke selector (app-styled variant) |
+| `res/color/outline_stroke_app.xml` | `…/res/color/…` | outline-stroke selector (focused / unfocused) |
+| `res/anim/slide_{in,out}_{left,right}.xml` | `…/res/anim/…` | M3 slide transitions for activity / sheet navigation |
 | `kotlin/util/ChipHelper.kt` | `…/java/<pkg>/util/ChipHelper.kt` | selected = primary squircle, unselected = bordered pill |
 | `kotlin/util/ThemeHelper.kt` | `…/java/<pkg>/util/ThemeHelper.kt` | resolve M3 color attrs at runtime |
 | `kotlin/util/AnimationHelper.kt` | `…/java/<pkg>/util/AnimationHelper.kt` | M3 emphasized interpolators + helpers; needs the app's `Constants.ANIM_*` |
+| `kotlin/util/TimeProvider.kt` | `…/java/<pkg>/util/TimeProvider.kt` | injectable time source (today / now) for testable date logic |
+| `kotlin/PillProgressView.kt` | `…/java/<pkg>/PillProgressView.kt` | custom pill-shaped progress `View` (colours via `ThemeHelper`) |
 
 These pair with the documentation skills in `.github/skills/` (`m3e-animation-standards`,
 `settings-page-standards`, etc.) — the skills explain the *intent*, this folder is the *code*.
