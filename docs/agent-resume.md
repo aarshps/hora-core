@@ -182,8 +182,8 @@
   outlined-box vs Pathivu filled-box), `App.Button.Destructive` (outlined-error vs tonal) —
   plus all `Theme.*`. Varisankya adopted now (synced + `themes.xml` trimmed to theme +
   divergent styles; debug build green; shipped in **beta.9 / vc66** alongside removing its
-  unused long-press app shortcuts). **Pathivu still has the duplicated copies** — it adopts
-  on its next pass (sync + trim, same as Varisankya). This closes the staged follow-up.
+  unused long-press app shortcuts). Pathivu **adopted in beta.37 / vc37** (synced + `themes.xml`
+  trimmed; see the 2026-06-23 full-sweep entry below). This closes the staged follow-up.
 
 - **Full shared-resource sweep + family versioning standard (2026-06-23).** (a) Promoted the
   remaining byte-identical `res/values/` files into `shared/android/` — `colors.xml` (the `mono_*`
