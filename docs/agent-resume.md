@@ -336,4 +336,12 @@
     - Shipped beta release `1.0-beta.41` (versionCode `41`), tagged `v1.0-beta.41`, cut GitHub release, and published to Google Play internal/closed testing tracks.
     - Logged updates in GitHub Discussions (Thread #33).
 
+  - **ConfirmationBottomSheet Rollout & Release (2026-06-25):** 
+    - Adopted the promoted `ConfirmationBottomSheet` and its layout resource in Pathivu via `sync_shared_android.sh`.
+    - Verified compilation and passing unit tests on both Android and Web.
+    - Bumped Pathivu Android app version to `1.0-beta.42` (versionCode `42`).
+    - Shipped and tagged `v1.0-beta.42`, cut GitHub release with sideloadable APK, and uploaded to Google Play internal track, then promoted to alpha closed testing track.
+    - Logged updates in GitHub Discussions (Thread #33).
+
+
 
