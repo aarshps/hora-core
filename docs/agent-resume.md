@@ -343,5 +343,10 @@
     - Shipped and tagged `v1.0-beta.42`, cut GitHub release with sideloadable APK, and uploaded to Google Play internal track, then promoted to alpha closed testing track.
     - Logged updates in GitHub Discussions (Thread #33).
 
+  - **AboutBottomSheet Promotion & Release (2026-06-26):**
+    - Promoted `AboutBottomSheet` (parameterised `githubUrl` constructor arg) and `bottom_sheet_about.xml` layout (MaterialDivider replacing Space) from Pathivu/Varisankya to hora-core shared library (`9b2bc00`). Added both to `sync_shared_android.sh` template.
+    - Synced into Pathivu via `sync_shared_android.sh`; updated `SettingsActivity` to pass `"https://github.com/aarshps/pathivu"` as the URL.
+    - Bumped Pathivu Android app version to `1.0-beta.43` (versionCode `43`).
+    - Shipped and tagged `v1.0-beta.43`, cut GitHub release with sideloadable APK, and uploaded to Google Play internal track, then promoted to alpha closed testing track.
 
 
