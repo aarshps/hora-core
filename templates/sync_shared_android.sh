@@ -83,6 +83,7 @@ KT_FILES=(
   util/AnimationHelper.kt
   util/TimeProvider.kt
   util/BiometricAuthManager.kt
+  util/DragReorderCallback.kt
   BaseActivity.kt
   SelectionBottomSheet.kt
   PillProgressView.kt
