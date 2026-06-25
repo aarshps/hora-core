@@ -1,0 +1,20 @@
+<!-- SHARED (hora-core/shared/android) — generated into apps by sync_shared_android.sh; edit in hora-core, not the app copy. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorControlNormal">
+  <path
+      android:pathData="M11,11m-8,0a8,8 0 1,1 16,0a8,8 0 1,1 -16,0"
+      android:strokeColor="@android:color/white"
+      android:strokeWidth="2.5"
+      android:strokeLineCap="round"
+      android:strokeLineJoin="round"/>
+  <path
+      android:pathData="M21,21l-4.35,-4.35"
+      android:strokeColor="@android:color/white"
+      android:strokeWidth="2.5"
+      android:strokeLineCap="round"
+      android:strokeLineJoin="round"/>
+</vector>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SHARED (hora-core/shared/android) — generated into apps by sync_shared_android.sh; edit in hora-core, not the app copy. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <size android:width="4dp" />
+    <solid android:color="?attr/colorPrimary" />
+    <corners android:radius="2dp" />
+</shape>

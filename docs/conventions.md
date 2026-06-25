@@ -123,8 +123,11 @@ building blocks two or more apps use **verbatim** — `res/values/dimens.xml`,
 byte-identical `Widget.App.*` / `ShapeAppearance.App.*` widget & shape styles),
 `res/values/colors.xml` (the `mono_*` monochrome palette), `res/values/ids.xml`,
 `res/values/attrs.xml`, the chip color selectors (+ `chip_stroke_app` / `outline_stroke_app`),
-the `res/anim/slide_*` nav transitions, and `util/ChipHelper.kt` / `ThemeHelper.kt` /
-`AnimationHelper.kt` / `TimeProvider.kt` plus the top-level `PillProgressView.kt`. Each
+the `res/anim/slide_*` nav transitions, `res/values-night/colors.xml` (dark palette), the
+**brand font** `res/font/google_sans_flex.xml` (+ variable `.ttf`), the `res/xml/*` backup
+policy, the generic shape drawables + the shared `res/drawable/ic_*` icon set, and
+`util/ChipHelper.kt` / `ThemeHelper.kt` / `AnimationHelper.kt` / `TimeProvider.kt` plus the
+top-level `PillProgressView.kt`. Each
 app keeps its own `themes.xml` for app-specific theme config + any styles that genuinely
 diverge between apps. Unlike a doc skill (which
 explains *intent*), this folder is the *code itself*. The paired `.github/skills/`
@@ -136,8 +139,8 @@ entries (`m3e-animation-standards`, `settings-page-standards`, …) describe the
 verbatim, rewrites the Kotlin package placeholder `__HORA_PKG__` → the app's base
 package, and writes a `.hora-core-synced-android` provenance manifest. Edit a shared file
 here in hora-core and re-run the sync in each app — never hand-edit the generated copy.
-The app must already ship `res/font/google_sans_flex` and a `Constants` with the
-`ANIM_*` durations the helpers reference.
+The brand font now ships from here (`res/font/google_sans_flex` + the variable `.ttf`); the
+app only needs a `Constants` with the `ANIM_*` durations the helpers reference.
 
 ## Design tokens (reference — confirm against the app's design-system doc)
 

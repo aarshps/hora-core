@@ -45,6 +45,34 @@ RES_FILES=(
   anim/slide_in_right.xml
   anim/slide_out_left.xml
   anim/slide_out_right.xml
+  values-night/colors.xml
+  font/google_sans_flex.xml
+  font/google_sans_flex_variable.ttf
+  xml/backup_rules.xml
+  xml/data_extraction_rules.xml
+  drawable/background_pill_secondary.xml
+  drawable/cursor_rounded_fat.xml
+  drawable/shape_circle_dot.xml
+  drawable/shape_circle_error_container.xml
+  drawable/shape_rounded_line.xml
+  drawable/ic_add.xml
+  drawable/ic_back.xml
+  drawable/ic_check.xml
+  drawable/ic_check_circle.xml
+  drawable/ic_chevron_right.xml
+  drawable/ic_close.xml
+  drawable/ic_delete.xml
+  drawable/ic_delete_sweep.xml
+  drawable/ic_edit.xml
+  drawable/ic_google_logo.xml
+  drawable/ic_history.xml
+  drawable/ic_list.xml
+  drawable/ic_open_in_new.xml
+  drawable/ic_pause.xml
+  drawable/ic_power.xml
+  drawable/ic_search.xml
+  drawable/ic_settings.xml
+  drawable/ic_show_chart.xml
 )
 
 # Kotlin utils — the "__HORA_PKG__" placeholder is rewritten to $APP_PKG.

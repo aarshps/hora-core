@@ -24,6 +24,11 @@ hand-edit the generated copy inside an app (it is overwritten on the next sync).
 | `res/color/chip_stroke_app.xml` | `…/res/color/…` | chip-stroke selector (app-styled variant) |
 | `res/color/outline_stroke_app.xml` | `…/res/color/…` | outline-stroke selector (focused / unfocused) |
 | `res/anim/slide_{in,out}_{left,right}.xml` | `…/res/anim/…` | M3 slide transitions for activity / sheet navigation |
+| `res/values-night/colors.xml` | `…/res/values-night/colors.xml` | the **dark-mode** counterpart of the `mono_*` palette (pairs with `values/colors.xml`) |
+| `res/font/google_sans_flex.xml` + `…_variable.ttf` | `…/res/font/…` | the family **brand font** (Google Sans Flex, `ROND 100`, weights 400/500/700). The hard dependency `type.xml` / `themes.xml` reference as `@font/google_sans_flex` |
+| `res/xml/{backup_rules,data_extraction_rules}.xml` | `…/res/xml/…` | Android Auto-Backup / device-transfer data-extraction policy (family default) |
+| `res/drawable/{background_pill_secondary,cursor_rounded_fat,shape_circle_dot,shape_circle_error_container,shape_rounded_line}.xml` | `…/res/drawable/…` | generic Hora shape primitives (pills, cursor, dots, lines) |
+| `res/drawable/ic_*.xml` (18) | `…/res/drawable/…` | the shared **icon set** — generic 24dp UI vectors (add, back, check, close, delete, edit, search, settings, chevron, history, list, …). App-domain icons + brand/launcher/splash art stay app-local |
 | `kotlin/util/ChipHelper.kt` | `…/java/<pkg>/util/ChipHelper.kt` | selected = primary squircle, unselected = bordered pill |
 | `kotlin/util/ThemeHelper.kt` | `…/java/<pkg>/util/ThemeHelper.kt` | resolve M3 color attrs at runtime |
 | `kotlin/util/AnimationHelper.kt` | `…/java/<pkg>/util/AnimationHelper.kt` | M3 emphasized interpolators + helpers; needs the app's `Constants.ANIM_*` |

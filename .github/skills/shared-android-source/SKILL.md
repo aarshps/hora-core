@@ -20,6 +20,13 @@ artifact.
 - Chip color selectors: `res/color/chip_{background,text,stroke}_color.xml` (+ `chip_stroke_app`,
   `outline_stroke_app`).
 - Motion: `res/anim/slide_{in,out}_{left,right}.xml` (M3 nav transitions).
+- Dark palette: `res/values-night/colors.xml` (dark counterpart of the `mono_*` palette).
+- Brand font: `res/font/google_sans_flex.xml` + the variable `.ttf` (`@font/google_sans_flex`,
+  the hard dependency `type.xml` / `themes.xml` reference). Backup policy: `res/xml/{backup_rules,
+  data_extraction_rules}.xml`.
+- Drawables: generic shape primitives (`background_pill_secondary`, `cursor_rounded_fat`,
+  `shape_*`) + the shared **icon set** (`res/drawable/ic_*.xml`, 18 generic 24dp UI vectors).
+  App-domain icons (e.g. `ic_autopay`) + brand/launcher/splash art stay **app-local**.
 - Kotlin: `util/ChipHelper.kt`, `util/ThemeHelper.kt`, `util/AnimationHelper.kt`,
   `util/TimeProvider.kt` (injectable clock), and the top-level `PillProgressView.kt` (custom View).
 
