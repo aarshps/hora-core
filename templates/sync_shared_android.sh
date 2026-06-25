@@ -73,6 +73,7 @@ RES_FILES=(
   drawable/ic_search.xml
   drawable/ic_settings.xml
   drawable/ic_show_chart.xml
+  layout/bottom_sheet_selection.xml
 )
 
 # Kotlin utils — the "__HORA_PKG__" placeholder is rewritten to $APP_PKG.
@@ -81,6 +82,9 @@ KT_FILES=(
   util/ThemeHelper.kt
   util/AnimationHelper.kt
   util/TimeProvider.kt
+  util/BiometricAuthManager.kt
+  BaseActivity.kt
+  SelectionBottomSheet.kt
   PillProgressView.kt
 )
 
