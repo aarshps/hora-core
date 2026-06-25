@@ -51,6 +51,8 @@ logs — git history is the record. Durable state and handoff notes go in
   `docs/conventions.md` current. (A pure internal refactor that changes nothing the wiki states needs
   no wiki edit — but verify that before skipping it.) This binds every app agent (Pathivu, Varisankya,
   future siblings) equally.
+- **No transient/transactional updates in the main repository.** Progress tracking, live testing countdowns, current tester numbers, active progress metrics, and other transient status tracking belong strictly in the wiki repository (`master`). The main repository (`main`) must only contain static documentation, configurations, stable milestone releases, and architectural specs.
+
 - There is **no agent-to-agent coordination protocol** anymore. The former local
   `.agent-mailbox/` channel was retired once migration finished; coordinate by editing
   this repo's committed docs directly. `docs/agent-resume.md` is the durable record of
