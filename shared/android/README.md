@@ -29,10 +29,18 @@ hand-edit the generated copy inside an app (it is overwritten on the next sync).
 | `res/xml/{backup_rules,data_extraction_rules}.xml` | `…/res/xml/…` | Android Auto-Backup / device-transfer data-extraction policy (family default) |
 | `res/drawable/{background_pill_secondary,cursor_rounded_fat,shape_circle_dot,shape_circle_error_container,shape_rounded_line}.xml` | `…/res/drawable/…` | generic Hora shape primitives (pills, cursor, dots, lines) |
 | `res/drawable/ic_*.xml` (18) | `…/res/drawable/…` | the shared **icon set** — generic 24dp UI vectors (add, back, check, close, delete, edit, search, settings, chevron, history, list, …). App-domain icons + brand/launcher/splash art stay app-local |
+| `res/layout/bottom_sheet_{selection,about,confirmation}.xml` | `…/res/layout/…` | layouts for the shared bottom-sheet classes below |
 | `kotlin/util/ChipHelper.kt` | `…/java/<pkg>/util/ChipHelper.kt` | selected = primary squircle, unselected = bordered pill |
 | `kotlin/util/ThemeHelper.kt` | `…/java/<pkg>/util/ThemeHelper.kt` | resolve M3 color attrs at runtime |
 | `kotlin/util/AnimationHelper.kt` | `…/java/<pkg>/util/AnimationHelper.kt` | M3 emphasized interpolators + helpers; needs the app's `Constants.ANIM_*` |
 | `kotlin/util/TimeProvider.kt` | `…/java/<pkg>/util/TimeProvider.kt` | injectable time source (today / now) for testable date logic |
+| `kotlin/util/BiometricAuthManager.kt` | `…/java/<pkg>/util/BiometricAuthManager.kt` | app-lock biometric prompt wrapper |
+| `kotlin/util/DragReorderCallback.kt` | `…/java/<pkg>/util/DragReorderCallback.kt` | standalone long-press drag-reorder `ItemTouchHelper` callback |
+| `kotlin/util/SwipeHelpers.kt` | `…/java/<pkg>/util/SwipeHelpers.kt` | `SwipeActionCallback` — sticky-damped swipe-to-action with M3E haptics + **opt-in** drag-reorder (`dragEnabled`, NestedScrollView edge auto-scroll). Abstract `onSwipeRight`; drag off by default so swipe-only screens are unaffected |
+| `kotlin/BaseActivity.kt` | `…/java/<pkg>/BaseActivity.kt` | shared activity base (theme/locale/nav-anim wiring) |
+| `kotlin/SelectionBottomSheet.kt` | `…/java/<pkg>/SelectionBottomSheet.kt` | single-choice chip selection sheet (uses `ChipHelper`) |
+| `kotlin/ConfirmationBottomSheet.kt` | `…/java/<pkg>/ConfirmationBottomSheet.kt` | confirm/cancel sheet with optional destructive styling |
+| `kotlin/AboutBottomSheet.kt` | `…/java/<pkg>/AboutBottomSheet.kt` | About sheet — takes a `githubUrl` ctor param; shows version + repo link |
 | `kotlin/PillProgressView.kt` | `…/java/<pkg>/PillProgressView.kt` | custom pill-shaped progress `View` (colours via `ThemeHelper`) |
 
 These pair with the documentation skills in `.github/skills/` (`m3e-animation-standards`,

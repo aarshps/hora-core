@@ -27,8 +27,14 @@ artifact.
 - Drawables: generic shape primitives (`background_pill_secondary`, `cursor_rounded_fat`,
   `shape_*`) + the shared **icon set** (`res/drawable/ic_*.xml`, 18 generic 24dp UI vectors).
   App-domain icons (e.g. `ic_autopay`) + brand/launcher/splash art stay **app-local**.
-- Kotlin: `util/ChipHelper.kt`, `util/ThemeHelper.kt`, `util/AnimationHelper.kt`,
-  `util/TimeProvider.kt` (injectable clock), and the top-level `PillProgressView.kt` (custom View).
+- Kotlin util: `util/ChipHelper.kt`, `util/ThemeHelper.kt`, `util/AnimationHelper.kt`,
+  `util/TimeProvider.kt` (injectable clock), `util/BiometricAuthManager.kt` (app-lock prompt),
+  `util/DragReorderCallback.kt` (standalone drag-reorder callback), and `util/SwipeHelpers.kt`
+  (`SwipeActionCallback` — sticky-damped swipe-to-action + **opt-in** drag-reorder via the
+  `dragEnabled` flag; drag is off by default so swipe-only screens are unaffected).
+- Kotlin top-level: `BaseActivity.kt`, `SelectionBottomSheet.kt`, `ConfirmationBottomSheet.kt`,
+  `AboutBottomSheet.kt` (takes a `githubUrl` ctor param), and `PillProgressView.kt` (custom View),
+  plus their `res/layout/bottom_sheet_*.xml`.
 
 These are the *code* behind the design skills (`m3e-animation-standards`,
 `settings-page-standards`, etc.) — the skills explain intent, `shared/android/` is the impl.

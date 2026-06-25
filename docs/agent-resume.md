@@ -349,4 +349,9 @@
     - Bumped Pathivu Android app version to `1.0-beta.43` (versionCode `43`).
     - Shipped and tagged `v1.0-beta.43`, cut GitHub release with sideloadable APK, and uploaded to Google Play internal track, then promoted to alpha closed testing track.
 
+  - **SwipeHelpers Promotion + Agent-Scope Skill (2026-06-26, Varisankya agent):**
+    - Promoted `SwipeHelpers.kt` (`SwipeActionCallback`) to `hora-core/shared/android/kotlin/util/` — Varisankya carried the canonical version after Pathivu's enhancement added **opt-in** long-press drag-reorder (`dragEnabled` flag, NestedScrollView edge auto-scroll, scale anim) on top of the sticky-damped swipe-to-action. Drag defaults off, so swipe-only screens are unaffected. Added to `templates/sync_shared_android.sh` `KT_FILES`, the `shared/android/README.md` table, and the `shared-android-source` skill. Also brought the README/skill component lists current with the other recently-promoted classes (`BaseActivity`, `Selection/Confirmation/AboutBottomSheet`, `DragReorderCallback`, `BiometricAuthManager`).
+    - Added `hora-agent-scope` skill (started by Varisankya agent `15642df`, refined by Pathivu agent `196d912`) — fixed per-agent write scope (own app repo+wiki + hora-core repo+wiki; sibling repos read-only). Wired a pointer into `AGENTS.md` working agreements.
+    - Varisankya adopted via sync; shipped Android `v3.9-beta.13` (versionCode `70`).
+
 
