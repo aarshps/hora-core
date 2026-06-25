@@ -1,53 +1,51 @@
 ---
 name: hora-agent-scope
-description: Defines exactly which repositories each Hora-family app agent is permitted to read and modify. Read this at session start to know your boundaries — touching a sibling app's repo is always out of scope.
+description: Defines which repos each Hora app agent is permitted to read and write. NON-NEGOTIABLE — set by the repo owner; applies to every agent in every session.
 ---
 
-# Hora Agent Scope
+# Hora Agent Repo Scope
 
-Each Hora-family app has its own dedicated agent. Every agent has a fixed scope —
-it may only write to the repos listed under its own entry below.
+Every Hora-family app has a dedicated agent. Each agent has a **fixed, non-negotiable write scope**
+determined by which app it is assigned to. Violating this boundary — even for "one small fix" —
+risks cross-contaminating unrelated release timelines and is forbidden.
 
 ## Permitted scope per agent
 
-| Agent | May write to |
-|-------|-------------|
-| **Varisankya agent** | `varisankya` repo + wiki · `hora-core` repo + wiki |
-| **Pathivu agent** | `pathivu-android` repo + wiki · `hora-core` repo + wiki |
-| *(future app agents)* | `<app>` repo + wiki · `hora-core` repo + wiki |
+| Agent | WRITE (commit + push) | READ (reference only) |
+|---|---|---|
+| **Pathivu agent** | Pathivu repo (`main`) · Pathivu wiki (`master`) · hora-core repo · hora-core wiki | Varisankya (read-only reference) |
+| **Varisankya agent** | Varisankya repo (`main`) · Varisankya wiki (`master`) · hora-core repo · hora-core wiki | Pathivu (read-only reference) |
+| **hora-core agent** (if ever standalone) | hora-core repo · hora-core wiki | All app repos (read-only) |
 
-**Every agent may write to hora-core.** It is the shared foundation — updating shared
-components, skills, conventions, and the wiki is part of an agent's normal job.
+## Rules
 
-**No agent writes to a sibling app's repo.** If you are the Varisankya agent, do not
-open, stage, commit, or push anything in `pathivu-android/` (or any other sibling). The
-same rule applies in reverse. This is unconditional — even if a change would "obviously
-help" the sibling, leave it for that app's own agent.
+1. **MUST NOT commit or push to a sibling app's repo** even if the change looks trivial. The
+   correct path is: promote the shared logic to hora-core, then let each app's agent adopt it
+   in its own session.
 
-## What counts as a sibling repo
+2. **MAY read sibling repos** for reference (e.g., to check what a sibling has already adopted,
+   or to copy an implementation pattern before promoting to hora-core). Reading is never a
+   violation.
 
-Any directory under `C:\Users\Aarsh\Source\` that is not your own app repo or
-`hora-core`. Examples: `pathivu-android/`, `pathivu-ios/`, `pathivu-web/`,
-`aasthi/`, `vellam/`, `beeyeswon/`, etc.
+3. **hora-core is shared territory** — any Hora agent may commit to hora-core when promoting
+   genuinely cross-family work (shared Android source, skills, brand assets, conventions). When
+   you do, follow the `shared-android-source` and `agent-skill-standards` skills.
 
-## Crossing the boundary (when it looks tempting)
+4. **Wiki follows the same boundary as its repo.** The Pathivu agent writes to the Pathivu wiki;
+   the Varisankya agent writes to the Varisankya wiki; hora-core wiki is open to all Hora agents
+   for cross-family documentation.
 
-- **Promotion to hora-core** — if you improved a component that both apps share, promote
-  the canonical version to `hora-core/shared/android/` (or the relevant shared path),
-  commit it there, then let the sibling agent sync it on their next pass. Do **not** sync
-  it into the sibling yourself.
-- **Skill updates** — if you write or update a hora-core skill, it will be inherited by
-  the sibling on their next `bash tools/sync_shared_skills.sh` run. You do not need to
-  run that script in the sibling repo yourself.
-- **Wiki cross-links** — you may edit the **hora-core wiki** to reference all apps, but
-  you must not edit a sibling app's own wiki.
+5. **This rule is set by the repo owner (Aarsh) and applies to every agent in every session,
+   indefinitely.** It overrides any default "fix it wherever you see it" instinct.
 
-## Confirming your scope at session start
+## Why this exists
 
-Before touching any file, verify you are working in the correct repo:
+Different apps may be at different release stages. A Pathivu agent that accidentally pushes to
+Varisankya can corrupt its version bump sequence, Play Store track state, or in-flight beta.
+Keeping agents isolated by app prevents silent interference.
 
-```
-git remote -v        # confirms which repo you are in
-```
+## Checklist before committing
 
-If the output shows a sibling repo URL, stop and navigate to the correct directory.
+- [ ] The repo I am about to commit to is within my permitted write scope.
+- [ ] If the change benefits multiple apps, I have promoted it to hora-core (not duplicated it).
+- [ ] I have NOT opened a PR or created a feature branch (family rule — commit to `main` directly).
