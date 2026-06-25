@@ -327,3 +327,11 @@
 - Before adding shared code, confirm 2+ apps need it and record the consumption
   mechanism in `docs/conventions.md`.
 - Update this file when durable repo state changes.
+
+- **Standardization Rollout & Web UI Mapping (2026-06-25):** 
+  - Adopted Varisankya's Web UI standardization in Pathivu (synced `web_shared.css`, imported it in `globals.css`, and mapped M3 semantic color tokens). Pushed to `pathivu` main, deploying via Vercel.
+  - Centralized remaining byte-identical Android components to `hora-core/shared/android/`: `BiometricAuthManager`, `BaseActivity`, `SelectionBottomSheet`, and the `bottom_sheet_selection.xml` layout. Generalized prompts dynamically using resource strings/theme resolution to keep them generic.
+  - Updated Pathivu's local sync scripts and pulled down the generated shared assets. Verified compile and unit test suites on Android.
+  - Bumped version in Pathivu to `1.0-beta.40` (versionCode `40`), tagged `v1.0-beta.40`, cut GitHub release, and published to Google Play internal track and promoted to alpha/closed testing track.
+  - Logged update in GitHub Discussions (Thread #33).
+
