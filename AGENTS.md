@@ -38,6 +38,11 @@ logs — git history is the record. Durable state and handoff notes go in
 
 ## Working agreements
 
+- **Agent scope is fixed per app — read `hora-agent-scope` skill before any session.**
+  Each agent owns exactly: its own app repo + wiki, and `hora-core` repo + wiki. No agent
+  may read from or write to a sibling app's repo under any circumstances. Promotions to
+  `hora-core/shared/` are the correct channel for sharing improvements across apps — never
+  directly editing a sibling. Full rules: `.github/skills/hora-agent-scope/SKILL.md`.
 - **Any Hora-family app agent may edit this repo directly.** The migration that needed a
   coordination layer is complete — Pathivu, Varisankya, and future sibling agents commit
   straight to `main` (no PRs) and update the wiki (default branch `master`) themselves.
