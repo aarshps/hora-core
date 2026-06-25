@@ -15,7 +15,7 @@
 set -euo pipefail
 
 # 1) Path to the local hora-core checkout (override per machine with the HORA_CORE env var).
-HORA_CORE="${HORA_CORE:-C:/Users/Aarsh/Source/hora-core}"
+HORA_CORE="${HORA_CORE:-C:/Users/Aarsh/Source/hora-core/hora-core}"
 
 # 2) This app's skill directory, relative to repo root or absolute.
 #    Pathivu: android/.claude/skills   ·   Varisankya: android/.agent/skills

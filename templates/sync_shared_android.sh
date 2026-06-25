@@ -12,7 +12,7 @@
 set -euo pipefail
 
 # 1) Local hora-core checkout (override per machine with the HORA_CORE env var).
-HORA_CORE="${HORA_CORE:-C:/Users/Aarsh/Source/hora-core}"
+HORA_CORE="${HORA_CORE:-C:/Users/Aarsh/Source/hora-core/hora-core}"
 
 # 2) This app's base package — the Kotlin "__HORA_PKG__" token is rewritten to this.
 #    Pathivu: com.hora.pathivu   ·   Varisankya: com.hora.varisankya

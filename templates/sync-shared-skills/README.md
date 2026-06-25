@@ -27,8 +27,8 @@ the app checkout still sees them (its native skill dir is where it looks).
 
    Then `git add --renormalize` the script once after adding the rule.
 2. Edit the three values at the top:
-   - `HORA_CORE` — path to the local hora-core checkout (default assumes the standard
-     `C:/Users/Aarsh/Source/hora-core`; override with the `HORA_CORE` env var).
+    - `HORA_CORE` — path to the local hora-core checkout (default assumes the standard
+      `C:/Users/Aarsh/Source/hora-core/hora-core`; override with the `HORA_CORE` env var).
    - `DEST` — this app's skill dir (`android/.claude/skills` or `android/.agent/skills`).
    - `SKILLS` — the shared skills this app actually consumes.
 3. Run it. It overwrites each listed skill under `DEST/` and writes a
