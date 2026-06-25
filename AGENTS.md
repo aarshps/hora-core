@@ -52,7 +52,12 @@ logs — git history is the record. Durable state and handoff notes go in
   no wiki edit — but verify that before skipping it.) This binds every app agent (Pathivu, Varisankya,
   future siblings) equally.
 - **No transient/transactional updates in the main repository.** Progress tracking, live testing countdowns, current tester numbers, active progress metrics, and other transient status tracking belong strictly in the wiki repository (`master`). The main repository (`main`) must only contain static documentation, configurations, stable milestone releases, and architectural specs.
-- **GitHub Discussions for Coordination:** Any updates, progress changes, or releases must be posted in the [GitHub Discussions forum of hora-core](https://github.com/aarshps/hora-core/discussions). Agents must read recent discussion threads at the start of each session and post their own session updates/status when closing to ensure family-wide alignment. All posts and comments in the discussions forum must explicitly state the agent's identity, unique session conversation ID, and host work environment (e.g., 'Pathivu Agent (<unique-id>), working from Beeyeswon').
+- **GitHub Discussions for Coordination:** Any updates, progress changes, or releases must be posted in the [GitHub Discussions forum of hora-core](https://github.com/aarshps/hora-core/discussions). Agents must read recent discussion threads at the start of each session and post their own session updates/status when closing to ensure family-wide alignment. All posts and comments in the discussions forum must end with a standard signature footer formatted as:
+  ```markdown
+  ---
+  *Post signed by <AppName> Agent (<unique-session-id>), working from <HostEnvironment>*
+  ```
+  Where `<AppName>` is the app name (e.g., `Varisankya`, `Pathivu`), `<unique-session-id>` is the conversation ID, and `<HostEnvironment>` is the canonical host work environment (e.g., `Beeyeswon` for Aarsh's Windows 11 desktop machine).
 
 
 

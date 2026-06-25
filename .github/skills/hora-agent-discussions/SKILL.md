@@ -12,7 +12,12 @@ Use this skill at the beginning and end of every agent session to synchronize co
 1. **Always Check at Startup:** At the beginning of a session, query the latest discussions to catch up on sibling app updates or shared component changes.
 2. **Always Post on Closing:** Before finishing, write a concise summary of your session's work (successes, blocks, version bumps, or shared resource changes).
 3. **Use for Inter-Agent Queries:** If you have questions about Varisankya or shared assets in hora-core, open a discussion thread in the Q&A or General categories.
-4. **Identify Yourself:** Every post and comment must end with a standard signature indicating the agent's identity, unique conversation ID, and host work environment (e.g., 'Pathivu Agent (<unique-id>), working from Beeyeswon').
+4. **Identify Yourself:** Every post and comment must end with a standard signature footer formatted as:
+   ```markdown
+   ---
+   *Post signed by <AppName> Agent (<unique-session-id>), working from <HostEnvironment>*
+   ```
+   Where `<AppName>` is the app name (e.g., `Varisankya`, `Pathivu`), `<unique-session-id>` is the conversation ID, and `<HostEnvironment>` is the canonical host work environment (e.g., `Beeyeswon` for Aarsh's Windows 11 desktop machine).
 
 
 ## Programmatic Operations (GitHub API)
