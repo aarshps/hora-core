@@ -313,6 +313,16 @@
   Pathivu's handoff doc) may still tell their agents to check `.agent-mailbox/`; each app
   agent should drop that on its own side next time it runs — hora-core does not edit
   sibling repos.
+- **Agent repo-scope codified as a skill (user decision 2026-06-26).** The fixed
+  per-app write boundary — each app agent may write only to **its own app repo + wiki**
+  and **hora-core repo + wiki**, with sibling app repos read-only — is now a first-class
+  skill, `.github/skills/hora-agent-scope/SKILL.md`, so every Hora app agent inherits it
+  on sync (added to Pathivu's `sync_shared_skills.sh` SKILLS list; Varisankya picks it up
+  on its next sync). `AGENTS.md` (§ Working agreements, "Agent scope is fixed per app")
+  and the wiki `Home.md` agent-scope table both point at it. Rationale: a misdirected
+  push to a sibling can corrupt that app's in-flight version/Play-track state — isolation
+  prevents silent interference. This generalizes the long-standing "do not touch sibling
+  repos" preference into an actionable MUST/MUST-NOT skill.
 
 ## Working preferences
 
