@@ -1,0 +1,125 @@
+/*
+ * Hora family shared Web design system tokens.
+ * Sourced canonically from hora-core/shared/web/res/css/web_shared.css.
+ * Syncs to apps as web/app/web_shared.css. Do not hand-edit synced copies.
+ *
+ * Maps M3 role tokens -> app CSS variables, defines Tailwind @theme aliases,
+ * and provides standardized layout utility classes.
+ */
+
+:root {
+  /* Semantic spacing / sizing - mirrors Android dimens.xml */
+  --radius-large:  28px;   /* hero cards, single items, first/last items */
+  --radius-medium: 24px;   /* buttons */
+  --radius-small:  12px;   /* middle items in grouped lists */
+  --radius-pill:   999px;  /* chips, FAB, status pills */
+  --radius-card:   var(--radius-large);
+
+  /* Bottom sheet default shapes (matches Android BottomSheet shape) */
+  --radius-sheet-top-left:     32px;
+  --radius-sheet-top-right:    32px;
+  --radius-sheet-bottom-left:  0px;
+  --radius-sheet-bottom-right: 0px;
+}
+
+/* Tailwind @theme inline configuration template */
+@theme inline {
+  --color-bg:                    var(--bg);
+  --color-surface:               var(--surface);
+  --color-surface-2:             var(--surface-2);
+  --color-surface-3:             var(--surface-3);
+  --color-on-surface:            var(--on-surface);
+  --color-on-surface-variant:    var(--on-surface-variant);
+  --color-outline:               var(--outline);
+  --color-outline-strong:        var(--outline-strong);
+  --color-primary:               var(--primary);
+  --color-on-primary:            var(--on-primary);
+  --color-primary-container:     var(--primary-container);
+  --color-on-primary-container:  var(--on-primary-container);
+  --color-secondary-container:   var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+  --color-error:                 var(--error);
+  --color-on-error:              var(--on-error);
+  --color-error-container:       var(--error-container);
+  --color-on-error-container:    var(--on-error-container);
+  --font-sans: var(--font-rounded), ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+  --radius-card: var(--radius-large);
+}
+
+/* ── M3 component utility classes ─────────────────────────────────────────── */
+@layer components {
+  /* M3 surface card */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius-large);
+  }
+
+  /* Grouped list shapes - mirrors Android SubscriptionAdapter */
+  .item-single {
+    border-radius: var(--radius-large);
+  }
+  .item-first {
+    border-top-left-radius:    var(--radius-large);
+    border-top-right-radius:   var(--radius-large);
+    border-bottom-left-radius: var(--radius-small);
+    border-bottom-right-radius: var(--radius-small);
+  }
+  .item-middle {
+    border-radius: var(--radius-small);
+  }
+  .item-last {
+    border-top-left-radius:    var(--radius-small);
+    border-top-right-radius:   var(--radius-small);
+    border-bottom-left-radius: var(--radius-large);
+    border-bottom-right-radius: var(--radius-large);
+  }
+
+  /* Bottom sheet shape mapping */
+  .sheet {
+    background: var(--md-surface-container-low);
+    border-top-left-radius:    var(--radius-sheet-top-left);
+    border-top-right-radius:   var(--radius-sheet-top-right);
+    border-bottom-left-radius: var(--radius-sheet-bottom-left);
+    border-bottom-right-radius: var(--radius-sheet-bottom-right);
+  }
+
+  /* Status pills */
+  .pill-active {
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+  .pill-overdue {
+    background: var(--error-container);
+    color: var(--on-error-container);
+  }
+  .pill-inactive {
+    background: var(--md-surface-variant);
+    color: var(--md-on-surface-variant);
+  }
+
+  /* M3 filter chip (selected=rect, unselected=pill) */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1px solid var(--outline);
+    background: transparent;
+    color: var(--on-surface);
+    transition: background 150ms, color 150ms, border-color 150ms, border-radius 150ms;
+    cursor: pointer;
+  }
+  .chip-selected {
+    background: var(--on-surface);
+    color: var(--md-surface-container-lowest);
+    border-color: transparent;
+    border-radius: var(--radius-small);
+  }
+}
+
+/* ── Scrollbar utilities ─────────────────────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

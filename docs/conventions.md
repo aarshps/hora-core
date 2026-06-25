@@ -140,7 +140,11 @@ verbatim, rewrites the Kotlin package placeholder `__HORA_PKG__` → the app's b
 package, and writes a `.hora-core-synced-android` provenance manifest. Edit a shared file
 here in hora-core and re-run the sync in each app — never hand-edit the generated copy.
 The brand font now ships from here (`res/font/google_sans_flex` + the variable `.ttf`); the
-app only needs a `Constants` with the `ANIM_*` durations the helpers reference.
+## Shared Web source
+
+[`shared/web/`](../shared/web/res/css/web_shared.css) is the canonical home for Web stylesheet declarations and utility classes every Hora web app shares **verbatim** — including M3 semantic variables, shape radii matching Android dimen tokens, Tailwind `@theme` configuration aliases, and standardized card/item/sheet components.
+
+**Consumption:** an app copies [`templates/sync_shared_web.sh`](../templates/sync_shared_web.sh) into `web/scripts/sync_shared_web.sh`, sets `HORA_CORE`/`WEB_APP_ROOT`, and runs it. The script copies the stylesheet verbatim and writes a generated header. The app's local `globals.css` then references it using `@import "./web_shared.css";` to inherit the M3 design system. Edit the shared file in `hora-core` and run the script — never hand-edit the copy.
 
 ## Design tokens (reference — confirm against the app's design-system doc)
 
