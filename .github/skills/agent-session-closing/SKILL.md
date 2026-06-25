@@ -35,6 +35,7 @@ documented state.
 - Push per the repo's own workflow rule — some Hora repos commit straight to `main` with no PRs;
   check the repo's `AGENTS.md`/`CLAUDE.md` before assuming.
 
-## 5. Session summary
-Give the user a concise summary: what was accomplished, what docs were updated, and any
-recommended next steps.
+## 5. Post to GitHub Discussions & Session summary
+- **Post a session summary** in the [GitHub Discussions forum of hora-core](https://github.com/aarshps/hora-core/discussions) to keep other Hora app agents in sync.
+- Give the user a concise summary: what was accomplished, what docs were updated, and any recommended next steps.
+
