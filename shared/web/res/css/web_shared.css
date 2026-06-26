@@ -1,52 +1,113 @@
 /*
- * Hora family shared Web design system tokens.
- * Sourced canonically from hora-core/shared/web/res/css/web_shared.css.
- * Syncs to apps as web/app/web_shared.css. Do not hand-edit synced copies.
+ * Hora family shared Web design system.
+ * Canonical source: hora-core/shared/web/res/css/web_shared.css
+ * Apps sync this to web/app/web_shared.css via web/scripts/sync_shared_web.sh
+ * (generated copy — do not hand-edit in an app; edit here and re-run the sync).
  *
- * Maps M3 role tokens -> app CSS variables, defines Tailwind @theme aliases,
- * and provides standardized layout utility classes.
+ * Layering (the family's 3-layer web token architecture):
+ *   1. app  theme.css   — the app's Material 3 `--md-*` tonal palette (app-specific;
+ *                          generated from the brand seed, or hand-authored to match the
+ *                          native app). Flips per light/dark.
+ *   2. THIS file        — maps `--md-*` -> semantic role tokens, declares the Tailwind
+ *                          `@theme` aliases, and ships the M3 component utility classes.
+ *   3. app  globals.css — `@import "tailwindcss"; @import "./theme.css"; @import "./web_shared.css";`
+ *                          plus base styles only (font, color-scheme, body).
+ *
+ * Because the role mapping only references `--md-*` (which the app's theme.css flips per
+ * theme), this file is theme-agnostic and identical for every app.
  */
 
+/* ── Shape tokens (semantic; mirror Android dimens.xml) ───────────────────────── */
 :root {
-  /* Semantic spacing / sizing - mirrors Android dimens.xml */
-  --radius-large:  28px;   /* hero cards, single items, first/last items */
+  --radius-large:  28px;   /* hero cards, single items, first/last grouped items */
   --radius-medium: 24px;   /* buttons */
   --radius-small:  12px;   /* middle items in grouped lists */
   --radius-pill:   999px;  /* chips, FAB, status pills */
   --radius-card:   var(--radius-large);
 
-  /* Bottom sheet default shapes (matches Android BottomSheet shape) */
+  /* Bottom-sheet shape (matches Android BottomSheet: 32dp top, square bottom) */
   --radius-sheet-top-left:     32px;
   --radius-sheet-top-right:    32px;
   --radius-sheet-bottom-left:  0px;
   --radius-sheet-bottom-right: 0px;
 }
 
-/* Tailwind @theme inline configuration template */
+/* ── M3 role-token mapping (the app's theme.css supplies the `--md-*` palette) ──── */
+:root {
+  /* Surfaces — the full M3 elevation scale + Varisankya's --surface-2/3 aliases */
+  --bg:                var(--md-background);
+  --surface:           var(--md-surface-container-low);
+  --surface-lowest:    var(--md-surface-container-lowest);
+  --surface-low:       var(--md-surface-container-low);
+  --surface-container: var(--md-surface-container);
+  --surface-high:      var(--md-surface-container-high);
+  --surface-highest:   var(--md-surface-container-highest);
+  --surface-2:         var(--md-surface-container);       /* alias of --surface-container */
+  --surface-3:         var(--md-surface-container-high);  /* alias of --surface-high */
+  --surface-variant:   var(--md-surface-variant);
+
+  /* Content */
+  --on-surface:         var(--md-on-surface);
+  --on-surface-variant: var(--md-on-surface-variant);
+
+  /* Outlines — `--outline` is the soft hairline; `--outline-strong` is the M3 outline */
+  --outline:         var(--md-outline-variant);
+  --outline-variant: var(--md-outline-variant);  /* alias for `border-outline-variant` usages */
+  --outline-strong:  var(--md-outline);
+
+  /* Primary / accent */
+  --primary:              var(--md-primary);
+  --on-primary:           var(--md-on-primary);
+  --primary-container:    var(--md-primary-container);
+  --on-primary-container: var(--md-on-primary-container);
+  --primary-soft:         color-mix(in srgb, var(--md-primary) 13%, transparent);
+
+  /* Secondary */
+  --secondary-container:    var(--md-secondary-container);
+  --on-secondary-container: var(--md-on-secondary-container);
+
+  /* Error / danger */
+  --error:              var(--md-error);
+  --on-error:           var(--md-on-error);
+  --error-container:    var(--md-error-container);
+  --on-error-container: var(--md-on-error-container);
+
+  --scrim: var(--md-scrim);
+}
+
+/* ── Tailwind @theme aliases — exposes every role token as a utility colour ────── */
 @theme inline {
-  --color-bg:                    var(--bg);
-  --color-surface:               var(--surface);
-  --color-surface-2:             var(--surface-2);
-  --color-surface-3:             var(--surface-3);
-  --color-on-surface:            var(--on-surface);
-  --color-on-surface-variant:    var(--on-surface-variant);
-  --color-outline:               var(--outline);
-  --color-outline-strong:        var(--outline-strong);
-  --color-primary:               var(--primary);
-  --color-on-primary:            var(--on-primary);
-  --color-primary-container:     var(--primary-container);
-  --color-on-primary-container:  var(--on-primary-container);
-  --color-secondary-container:   var(--secondary-container);
+  --color-bg:                     var(--bg);
+  --color-surface:                var(--surface);
+  --color-surface-lowest:         var(--surface-lowest);
+  --color-surface-low:            var(--surface-low);
+  --color-surface-container:      var(--surface-container);
+  --color-surface-high:           var(--surface-high);
+  --color-surface-highest:        var(--surface-highest);
+  --color-surface-2:              var(--surface-2);
+  --color-surface-3:              var(--surface-3);
+  --color-surface-variant:        var(--surface-variant);
+  --color-on-surface:             var(--on-surface);
+  --color-on-surface-variant:     var(--on-surface-variant);
+  --color-outline:                var(--outline);
+  --color-outline-variant:        var(--outline-variant);
+  --color-outline-strong:         var(--outline-strong);
+  --color-primary:                var(--primary);
+  --color-on-primary:             var(--on-primary);
+  --color-primary-container:      var(--primary-container);
+  --color-on-primary-container:   var(--on-primary-container);
+  --color-primary-soft:           var(--primary-soft);
+  --color-secondary-container:    var(--secondary-container);
   --color-on-secondary-container: var(--on-secondary-container);
-  --color-error:                 var(--error);
-  --color-on-error:              var(--on-error);
-  --color-error-container:       var(--error-container);
-  --color-on-error-container:    var(--on-error-container);
+  --color-error:                  var(--error);
+  --color-on-error:               var(--on-error);
+  --color-error-container:        var(--error-container);
+  --color-on-error-container:     var(--on-error-container);
   --font-sans: var(--font-rounded), ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
   --radius-card: var(--radius-large);
 }
 
-/* ── M3 component utility classes ─────────────────────────────────────────── */
+/* ── M3 component utility classes (consume role tokens only) ──────────────────── */
 @layer components {
   /* M3 surface card */
   .card {
@@ -54,50 +115,37 @@
     border-radius: var(--radius-large);
   }
 
-  /* Grouped list shapes - mirrors Android SubscriptionAdapter */
-  .item-single {
-    border-radius: var(--radius-large);
-  }
+  /* Grouped-list shapes — mirror the Android list-item corner grouping */
+  .item-single { border-radius: var(--radius-large); }
   .item-first {
-    border-top-left-radius:    var(--radius-large);
-    border-top-right-radius:   var(--radius-large);
-    border-bottom-left-radius: var(--radius-small);
+    border-top-left-radius:     var(--radius-large);
+    border-top-right-radius:    var(--radius-large);
+    border-bottom-left-radius:  var(--radius-small);
     border-bottom-right-radius: var(--radius-small);
   }
-  .item-middle {
-    border-radius: var(--radius-small);
-  }
+  .item-middle { border-radius: var(--radius-small); }
   .item-last {
-    border-top-left-radius:    var(--radius-small);
-    border-top-right-radius:   var(--radius-small);
-    border-bottom-left-radius: var(--radius-large);
+    border-top-left-radius:     var(--radius-small);
+    border-top-right-radius:    var(--radius-small);
+    border-bottom-left-radius:  var(--radius-large);
     border-bottom-right-radius: var(--radius-large);
   }
 
-  /* Bottom sheet shape mapping */
+  /* Bottom-sheet surface + shape (the Sheet component composes this) */
   .sheet {
-    background: var(--md-surface-container-low);
-    border-top-left-radius:    var(--radius-sheet-top-left);
-    border-top-right-radius:   var(--radius-sheet-top-right);
-    border-bottom-left-radius: var(--radius-sheet-bottom-left);
+    background: var(--surface-low);
+    border-top-left-radius:     var(--radius-sheet-top-left);
+    border-top-right-radius:    var(--radius-sheet-top-right);
+    border-bottom-left-radius:  var(--radius-sheet-bottom-left);
     border-bottom-right-radius: var(--radius-sheet-bottom-right);
   }
 
   /* Status pills */
-  .pill-active {
-    background: var(--primary);
-    color: var(--on-primary);
-  }
-  .pill-overdue {
-    background: var(--error-container);
-    color: var(--on-error-container);
-  }
-  .pill-inactive {
-    background: var(--md-surface-variant);
-    color: var(--md-on-surface-variant);
-  }
+  .pill-active   { background: var(--primary);          color: var(--on-primary); }
+  .pill-overdue  { background: var(--error-container);   color: var(--on-error-container); }
+  .pill-inactive { background: var(--surface-variant);   color: var(--on-surface-variant); }
 
-  /* M3 filter chip (selected=rect, unselected=pill) */
+  /* M3 filter chip (unselected = bordered pill, selected = filled square-ish) */
   .chip {
     display: inline-flex;
     align-items: center;
@@ -114,12 +162,12 @@
   }
   .chip-selected {
     background: var(--on-surface);
-    color: var(--md-surface-container-lowest);
+    color: var(--surface-lowest);
     border-color: transparent;
     border-radius: var(--radius-small);
   }
 }
 
-/* ── Scrollbar utilities ─────────────────────────────────────────────────── */
+/* ── Scrollbar utilities — hide scrollbars on horizontal strips ───────────────── */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

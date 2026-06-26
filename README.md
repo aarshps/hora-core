@@ -30,6 +30,10 @@ hora-core/
 ├── docs/
 │   ├── conventions.md      The shared stack and conventions every Hora app follows
 │   └── agent-resume.md     Durable repo state + handoff notes for AI agents
+├── shared/                 Cross-app source modules consumed via per-app sync scripts
+│   ├── android/            Kotlin utils + res design tokens (see shared/android/README.md)
+│   ├── ios/                Swift services + views (see shared/ios/README.md)
+│   └── web/                Next.js design system + components (see shared/web/README.md)
 ├── templates/              Copy-and-customize starting points (e.g. shared/firebase)
 └── .github/skills/         Agent skills shared across the family
 ```
@@ -43,9 +47,13 @@ repo), and **never** secrets, keys, service-account JSON, or `google-services.js
 
 ## How apps consume hora-core
 
-Today the shared material is documentation and assets, consumed by reference. As
-concrete code modules are extracted, the consumption mechanism (git submodule vs. a
-published artifact) will be decided per module and recorded in `docs/conventions.md`.
+Documentation, brand, and skills are consumed **by reference**. Concrete code modules
+under `shared/{android,ios,web}/` are consumed as **generated copies**: each app runs a
+small per-app sync script (`tools/sync_shared_android.sh`, `tools/sync_shared_ios.sh`,
+`scripts/sync_shared_web.sh`) that copies the canonical files in, applies any token
+substitution, and records provenance (source path, timestamp, hora-core commit) in a
+`.hora-core-synced-*` manifest. Edit the canonical file here, then re-run the sync in each
+app — never hand-edit the generated copy. See each `shared/<platform>/README.md`.
 
 ## For AI agents
 
