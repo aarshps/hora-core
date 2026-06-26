@@ -146,6 +146,22 @@ The brand font now ships from here (`res/font/google_sans_flex` + the variable `
 
 **Consumption:** an app copies [`templates/sync_shared_web.sh`](../templates/sync_shared_web.sh) into `web/scripts/sync_shared_web.sh`, sets `HORA_CORE`/`WEB_APP_ROOT`, and runs it. The script copies the stylesheet verbatim and writes a generated header. The app's local `globals.css` then references it using `@import "./web_shared.css";` to inherit the M3 design system. Edit the shared file in `hora-core` and run the script — never hand-edit the copy.
 
+## Shared iOS source
+
+[`shared/ios/swift/`](../shared/ios/README.md) is the canonical home for Swift used **verbatim**
+(modulo one display-name token) by 2+ Hora apps — the SwiftUI counterpart of the Android shared
+layer. Today: `Haptics.swift` (M3E haptic helper), `BiometricAuth.swift` (App-Lock / LocalAuthentication
+wrapper), `SelectionSheet.swift` (glass single-choice picker — the counterpart of Android's
+`SelectionBottomSheet`).
+
+**Consumption:** an app copies [`templates/sync_shared_ios.sh`](../templates/sync_shared_ios.sh)
+into `ios/tools/sync_shared_ios.sh`, sets `HORA_CORE`/`APP_NAME`/`IOS_APP_ROOT`, and runs it. The
+script writes each file to its mapped path under the app's iOS source root, rewriting the
+`__HORA_APP_NAME__` token to the app's display name, and records provenance in
+`ios/tools/.hora-core-synced-ios`. Generated copies carry a "do not hand-edit" header; edit the
+canonical file in `hora-core` and re-run. The app's iOS target uses XcodeGen, so the files compile
+in place at their existing paths (no project edit needed); CI (`ios-build.yml`) validates the build.
+
 ## Design tokens (reference — confirm against the app's design-system doc)
 
 As of the most recent family app (Varisankya), Android uses Material 3 Expressive

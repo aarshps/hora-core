@@ -18,6 +18,11 @@ the right area before editing.
   type / chip-color resources + `ChipHelper`/`ThemeHelper`/`AnimationHelper.kt`). Synced
   into each app via `templates/sync_shared_android.sh`; the `shared-android-source` skill
   has the detail.
+- `shared/ios/swift/` — canonical **Swift** shared verbatim (modulo one display-name token)
+  across apps (`Haptics`, `BiometricAuth`, `SelectionSheet`). Synced via
+  `templates/sync_shared_ios.sh`; see `shared/ios/README.md`.
+- `shared/web/res/css/` — canonical **Web** stylesheet (`web_shared.css`: M3 tokens, shapes,
+  shared component classes). Synced via `templates/sync_shared_web.sh`.
 - `templates/` — copy-and-customize starting points for a new app's `shared/`
   contract folder (e.g. `shared-firebase/`) plus the per-app sync scripts. Not a runtime
   dependency.
