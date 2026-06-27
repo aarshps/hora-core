@@ -35,6 +35,8 @@ FILES=(
   "components/SignIn.tsx:components/SignIn.tsx"
   "components/ConfirmDialog.tsx:components/ConfirmDialog.tsx"
   "components/AboutSheet.tsx:components/AboutSheet.tsx"
+  "components/settings.tsx:components/settings.tsx"
+  "components/EmptyState.tsx:components/EmptyState.tsx"
 )
 
 commit="$(git -C "$HORA_CORE" rev-parse --short HEAD 2>/dev/null || echo unknown)"

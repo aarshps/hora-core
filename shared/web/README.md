@@ -20,6 +20,8 @@ the generated copy inside an app (it is overwritten on the next sync). This mirr
 | `components/SignIn.tsx` | `web/components/SignIn.tsx` | Google sign-in shell (presentational). Prop-driven (`appName`, `tagline`, `iconSrc`, `onSignIn`, `externalError`) — the caller supplies the app's auth + analytics wiring. Verbatim. |
 | `components/ConfirmDialog.tsx` | `web/components/ConfirmDialog.tsx` | Confirmation dialog — Cancel / confirm button pair in a `Sheet`; `danger` swaps to the destructive button, `busy` disables + shows a working label. Prop-driven; the caller owns the action. Verbatim. |
 | `components/AboutSheet.tsx` | `web/components/AboutSheet.tsx` | About sheet — app identity (icon + name + sub-label) + description, with an optional list of external legal links. Prop-driven (`appName`, `description`, `iconSrc`, `subLabel`, `links`) and string-free. Verbatim. |
+| `components/settings.tsx` | `web/components/settings.tsx` | Settings design language — `SettingsSection`, `SettingsSectionLabel`, `SettingsRow`, `SettingsToggle`, `SettingsDivider`, `SettingsLinkRow`. Pure layout primitives a Settings screen is assembled from. Verbatim. |
+| `components/EmptyState.tsx` | `web/components/EmptyState.tsx` | Empty-state card — centered icon disc + title + description + optional CTA. Prop-driven (`icon`, `title`, `description`, `actionLabel`, `onAction`). Verbatim. |
 
 ## The 3-layer token architecture
 
