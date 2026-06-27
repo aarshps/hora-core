@@ -18,6 +18,8 @@ the generated copy inside an app (it is overwritten on the next sync). This mirr
 | `components/Sheet.tsx` | `web/components/Sheet.tsx` | Bottom-anchored modal sheet (mobile sheet / desktop card) — the web counterpart of the native BottomSheet / SwiftUI `.sheet`. Composes the `.sheet` utility; slide-up + scrim + Escape + scroll-lock. Verbatim. |
 | `components/controls.tsx` | `web/components/controls.tsx` | M3 form controls — `Button`, `Switch`, `Field`, `TextInput`, `Select`, `Segmented`. Role-token themed; pure UI. Verbatim. |
 | `components/SignIn.tsx` | `web/components/SignIn.tsx` | Google sign-in shell (presentational). Prop-driven (`appName`, `tagline`, `iconSrc`, `onSignIn`, `externalError`) — the caller supplies the app's auth + analytics wiring. Verbatim. |
+| `components/ConfirmDialog.tsx` | `web/components/ConfirmDialog.tsx` | Confirmation dialog — Cancel / confirm button pair in a `Sheet`; `danger` swaps to the destructive button, `busy` disables + shows a working label. Prop-driven; the caller owns the action. Verbatim. |
+| `components/AboutSheet.tsx` | `web/components/AboutSheet.tsx` | About sheet — app identity (icon + name + sub-label) + description, with an optional list of external legal links. Prop-driven (`appName`, `description`, `iconSrc`, `subLabel`, `links`) and string-free. Verbatim. |
 
 ## The 3-layer token architecture
 
