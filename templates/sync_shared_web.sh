@@ -38,6 +38,8 @@ FILES=(
   "components/settings.tsx:components/settings.tsx"
   "components/EmptyState.tsx:components/EmptyState.tsx"
   "components/ScreenHeader.tsx:components/ScreenHeader.tsx"
+  "components/AppBar.tsx:components/AppBar.tsx"
+  "components/Fab.tsx:components/Fab.tsx"
   "lib/haptics-core.ts:lib/haptics-core.ts"
 )
 
