@@ -37,6 +37,7 @@ FILES=(
   "components/AboutSheet.tsx:components/AboutSheet.tsx"
   "components/settings.tsx:components/settings.tsx"
   "components/EmptyState.tsx:components/EmptyState.tsx"
+  "components/ScreenHeader.tsx:components/ScreenHeader.tsx"
 )
 
 commit="$(git -C "$HORA_CORE" rev-parse --short HEAD 2>/dev/null || echo unknown)"

@@ -22,6 +22,7 @@ the generated copy inside an app (it is overwritten on the next sync). This mirr
 | `components/AboutSheet.tsx` | `web/components/AboutSheet.tsx` | About sheet — app identity (icon + name + sub-label) + description, with an optional list of external legal links. Prop-driven (`appName`, `description`, `iconSrc`, `subLabel`, `links`) and string-free. Verbatim. |
 | `components/settings.tsx` | `web/components/settings.tsx` | Settings design language — `SettingsSection`, `SettingsSectionLabel`, `SettingsRow`, `SettingsToggle`, `SettingsDivider`, `SettingsLinkRow`. Pure layout primitives a Settings screen is assembled from. Verbatim. |
 | `components/EmptyState.tsx` | `web/components/EmptyState.tsx` | Empty-state card — centered icon disc + title + description + optional CTA. Prop-driven (`icon`, `title`, `description`, `actionLabel`, `onAction`). Verbatim. |
+| `components/ScreenHeader.tsx` | `web/components/ScreenHeader.tsx` | Sticky top app-bar for secondary screens — back button + title + optional trailing slot. Prop-driven (`title`, `onBack`, `trailing`, `centered`, `className`); navigation owned by the caller. Verbatim. |
 
 ## The 3-layer token architecture
 
