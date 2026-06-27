@@ -115,7 +115,15 @@
     border-radius: var(--radius-large);
   }
 
-  /* Grouped-list shapes — mirror the Android list-item corner grouping */
+  /* Grouped-list — the family standard for a list of items: a `.grouped-list`
+     container (a tight 2px-gap column) whose children each take a position class
+     so N items read as one continuous rounded surface (the app computes
+     single/first/middle/last). Mirrors the Android list-item corner grouping. */
+  .grouped-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
   .item-single { border-radius: var(--radius-large); }
   .item-first {
     border-top-left-radius:     var(--radius-large);

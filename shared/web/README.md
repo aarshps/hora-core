@@ -13,7 +13,7 @@ the generated copy inside an app (it is overwritten on the next sync). This mirr
 
 | File | Consumed as | Notes |
 | --- | --- | --- |
-| `res/css/web_shared.css` | `web/app/web_shared.css` | The design system: `--md-*` → role-token mapping, the Tailwind `@theme` colour aliases, and the M3 component utility classes (`.card`, `.item-*`, `.sheet`, `.pill-*`, `.chip`, `.no-scrollbar`) + shape tokens. |
+| `res/css/web_shared.css` | `web/app/web_shared.css` | The design system: `--md-*` → role-token mapping, the Tailwind `@theme` colour aliases, and the M3 component utility classes (`.card`, `.grouped-list` + `.item-*`, `.sheet`, `.pill-*`, `.chip`, `.no-scrollbar`) + shape tokens. |
 | `components/ServiceWorker.tsx` | `web/components/ServiceWorker.tsx` | Registers the offline-shell service worker once, client-side, in production. Verbatim. |
 | `components/Sheet.tsx` | `web/components/Sheet.tsx` | Bottom-anchored modal sheet (mobile sheet / desktop card) — the web counterpart of the native BottomSheet / SwiftUI `.sheet`. Composes the `.sheet` utility; slide-up + scrim + Escape + scroll-lock. Verbatim. |
 | `components/controls.tsx` | `web/components/controls.tsx` | M3 form controls — `Button`, `Switch`, `Field`, `TextInput`, `Select`, `Segmented`. Role-token themed; pure UI. Verbatim. |
