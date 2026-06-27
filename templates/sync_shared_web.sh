@@ -38,6 +38,7 @@ FILES=(
   "components/settings.tsx:components/settings.tsx"
   "components/EmptyState.tsx:components/EmptyState.tsx"
   "components/ScreenHeader.tsx:components/ScreenHeader.tsx"
+  "lib/haptics-core.ts:lib/haptics-core.ts"
 )
 
 commit="$(git -C "$HORA_CORE" rev-parse --short HEAD 2>/dev/null || echo unknown)"

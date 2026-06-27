@@ -23,6 +23,7 @@ the generated copy inside an app (it is overwritten on the next sync). This mirr
 | `components/settings.tsx` | `web/components/settings.tsx` | Settings design language — `SettingsSection`, `SettingsSectionLabel`, `SettingsRow`, `SettingsToggle`, `SettingsDivider`, `SettingsLinkRow`. Pure layout primitives a Settings screen is assembled from. Verbatim. |
 | `components/EmptyState.tsx` | `web/components/EmptyState.tsx` | Empty-state card — centered icon disc + title + description + optional CTA. Prop-driven (`icon`, `title`, `description`, `actionLabel`, `onAction`). Verbatim. |
 | `components/ScreenHeader.tsx` | `web/components/ScreenHeader.tsx` | Sticky top app-bar for secondary screens — back button + title + optional trailing slot. Prop-driven (`title`, `onBack`, `trailing`, `centered`, `className`); navigation owned by the caller. Verbatim. |
+| `lib/haptics-core.ts` | `web/lib/haptics-core.ts` (+ a one-line local `lib/haptics.ts` wiring) | M3E web-haptics **factory** — `createHaptics(isEnabled)` → `{ tick, click, success, warning, error }` over the Vibration API (matches the native Android/iOS haptic scheme). Not used verbatim like a component: the "enabled" pref is injected, so each app exports `haptics = createHaptics(() => <its pref>)` in a thin local `lib/haptics.ts`. |
 
 ## The 3-layer token architecture
 
@@ -44,8 +45,10 @@ works regardless of which selector the app flips.
 ## Adding a shared file
 
 1. Put the canonical file under `shared/web/` (CSS under `res/css/`, components under
-   `components/`). Keep it free of app-specific identifiers — components take props or read role
-   tokens; CSS references only `--md-*` / role tokens.
+   `components/`, framework-agnostic utilities under `lib/`). Keep it free of app-specific
+   identifiers — components take props or read role tokens; CSS references only `--md-*` / role
+   tokens; a util with an app-specific dependency (e.g. a stored preference) takes it **injected**
+   (a factory like `createHaptics(isEnabled)`) rather than importing app code.
 2. Add it to the `FILES` map in each app's `web/scripts/sync_shared_web.sh` (and the family
    template, if one is published).
 3. Re-run the sync in each app and let the app's build (`next build`) validate it.
