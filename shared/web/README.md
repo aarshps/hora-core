@@ -26,6 +26,7 @@ the generated copy inside an app (it is overwritten on the next sync). This mirr
 | `components/AppBar.tsx` | `web/components/AppBar.tsx` | Home top app-bar — leading (avatar) slot + **centered** title + trailing actions slot. The family-standard home header. Prop-driven (`leading`, `title`, `actions`, `className`). Verbatim. |
 | `components/Fab.tsx` | `web/components/Fab.tsx` | Extended FAB (icon + label) — the family-standard primary action, `primary-container`, fixed bottom-right. Prop-driven (`icon`, `label`, `onClick`, `className`). Verbatim. |
 | `lib/haptics-core.ts` | `web/lib/haptics-core.ts` (+ a one-line local `lib/haptics.ts` wiring) | M3E web-haptics **factory** — `createHaptics(isEnabled)` → `{ tick, click, success, warning, error }` over the Vibration API (matches the native Android/iOS haptic scheme). Not used verbatim like a component: the "enabled" pref is injected, so each app exports `haptics = createHaptics(() => <its pref>)` in a thin local `lib/haptics.ts`. |
+| `res/theme-palette.mjs` | `web/scripts/theme-palette.mjs` | The canonical family colour **palette values** — `LIGHT`/`DARK` `--md-*` maps: the monochrome neutral surface scale + the uniform family accent. Not CSS: the single source of truth for the values; each app applies them in its own `theme.css` (Varisankya's `gen-theme.mjs` imports this synced copy; a hand-authored `theme.css` matches it). Toggle selectors (`data-theme` attr vs `.dark` class) stay app-local. |
 
 ## The 3-layer token architecture
 

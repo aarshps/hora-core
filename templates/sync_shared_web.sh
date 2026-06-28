@@ -41,6 +41,7 @@ FILES=(
   "components/AppBar.tsx:components/AppBar.tsx"
   "components/Fab.tsx:components/Fab.tsx"
   "lib/haptics-core.ts:lib/haptics-core.ts"
+  "res/theme-palette.mjs:scripts/theme-palette.mjs"
 )
 
 commit="$(git -C "$HORA_CORE" rev-parse --short HEAD 2>/dev/null || echo unknown)"
