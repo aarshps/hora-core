@@ -11,9 +11,13 @@ all platforms. One engine, one look.
 - **Font:** Baloo Chettan 2, weight **700** (`fonts/BalooChettan2-700.ttf`, OFL — see `fonts/OFL.txt`).
 - **Wordmark:** the app's short Malayalam name, shaped with harfbuzz (correct ligatures/positioning).
 - **Proportions:** **+45% vertical stretch** (`YSTRETCH=1.45`), **no horizontal squeeze**.
-- **Size/position:** centered; bounding-circle radius = **`R_FRAC=0.2435`** of the canvas (the size
-  the icon has always used). iOS/web flat icons use a fuller `R_FRAC≈0.30` (0.24 for maskable); the
-  **Play Store 512 fills more — `R_FRAC=0.41`** (`PLAY_RFRAC`) so the wordmark reads big on the listing.
+- **Size/position — the "max-in-circle" rule (locked 2026-07):** centered; the wordmark is scaled so its
+  **circumscribing circle** (smallest centred circle containing its bounding box) is the **largest circle
+  that fits the icon's usable area** (max size within that circle). `r_frac` = circle radius / canvas:
+  **`FULL_RFRAC=0.5`** for unmasked/circular icons (Play 512, iOS AppIcon, web favicon + PWA "any",
+  legacy + round launcher — radius = canvas/2), **`FG_RFRAC=0.305`** for the Android adaptive foreground +
+  monochrome (66dp-of-108dp adaptive safe circle), **`MASK_RFRAC=0.40`** for the maskable web icon (W3C
+  80%-diameter safe circle). Never pad smaller — every icon fills its usable circle.
 - **Colours:** slate `#445353`, background `#FCFCFC`.
 - **Rendering:** **FreeType** (the font's own nonzero rasteriser) — so self-intersecting Malayalam
   strokes (e.g. ത) fill correctly with **no holes**, and edges are crisp.

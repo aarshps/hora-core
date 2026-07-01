@@ -203,6 +203,17 @@ Baloo glyph. Canonical standard, generator, and per-app config live in
 conventions, not hedged references — do not revert to hand-authored raster tuning, nor
 to a framed or stroked-glyph notification treatment.
 
+**Wordmark sizing — the "max-in-circle" rule (locked 2026-07).** The wordmark is scaled so
+its **circumscribing circle** (the smallest circle, centred on the canvas, that exactly
+contains the wordmark's bounding box) is the **largest circle that fits the icon's usable
+area** — i.e. the wordmark is the maximum size that fits inside that centred circle. The
+usable circle depends only on the masking context: `FULL_RFRAC = 0.5` for unmasked/circular
+icons (Play 512, iOS AppIcon, web favicon + PWA "any" icons, legacy + round launcher —
+radius = canvas/2); `FG_RFRAC = 0.305` for the Android adaptive foreground + monochrome
+(the 66dp-of-108dp adaptive safe circle); `MASK_RFRAC = 0.40` for the maskable web icon
+(the W3C 80%-diameter safe circle). `r_frac` in the generator is exactly *circle radius /
+canvas*. Do not pad icons smaller than this — every Hora icon fills its usable circle.
+
 ## Cross-language code sharing
 
 No cross-language code generation. Kotlin/Swift/TypeScript do not share compiled code

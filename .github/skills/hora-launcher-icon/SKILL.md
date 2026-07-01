@@ -6,9 +6,13 @@ description: Generate ALL Hora-family app icons (Android launcher + notification
 # Hora app icons — one engine, Baloo Chettan 2 wordmark
 
 **As of 2026-06 there IS a shared engine** — use it, don't hand-tune per app. The family icon is the
-app's short Malayalam name (Pathivu **പതി**, Varisankya **വരി**) set in **Baloo Chettan 2** (700,
-+45% vertical stretch), slate **#445353** on **#FCFCFC**, centered, bounding-circle `R_FRAC=0.2435`.
-Canonical generator + font + full spec:
+app's short Malayalam name (Pathivu **പതി**, Varisankya **വരി**, Muthal **മുത**) set in **Baloo Chettan 2**
+(700, +45% vertical stretch), slate **#445353** on **#FCFCFC**, centered.
+**Sizing (locked 2026-07 — the "max-in-circle" rule):** the wordmark is scaled so its circumscribing
+circle (centred on the canvas) is the **largest circle that fits the icon's usable area** — max size
+in that circle. `r_frac` = circle radius / canvas: `FULL_RFRAC=0.5` (unmasked/circular: Play, iOS, web
+favicon/PWA-any, legacy+round launcher), `FG_RFRAC=0.305` (adaptive foreground + monochrome safe
+circle), `MASK_RFRAC=0.40` (maskable web safe circle). Canonical generator + font + full spec:
 **[`brand/launcher-icon/`](../../../brand/launcher-icon/README.md)** → `gen_launcher_icon.py`.
 
 ```

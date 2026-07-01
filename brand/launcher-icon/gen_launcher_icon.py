@@ -24,9 +24,24 @@ FONT      = os.path.join(FONTS, "BalooChettan2-700.ttf")  # Baloo Chettan 2, wei
 SLATE     = (0x44, 0x53, 0x53)
 BG        = (0xFC, 0xFC, 0xFC)
 YSTRETCH  = 1.45     # vertical stretch ("taller")
-R_FRAC    = 0.2435   # wordmark bounding-circle radius / canvas (= existing icon's size)
-PLAY_RFRAC= 0.41     # Play Store 512: wordmark sized to FILL (bigger than the padded launcher foreground)
 EM        = 2000     # FreeType em pixels (hi-res master for crisp downsamples)
+
+# ---- Icon sizing standard (locked with Aarsh, 2026-07) ----------------------
+# THE RULE: the wordmark is scaled so its *circumscribing circle* (the smallest circle,
+# centred on the canvas, that exactly contains the wordmark's bounding box) is the
+# LARGEST circle that fits the icon's usable area — i.e. the wordmark is the maximum
+# size that fits inside that centred circle. `r_frac` = that circle's radius / canvas.
+# Every Hora icon follows this; only the "usable circle" differs by masking context:
+#   FULL_RFRAC (0.5)   — unmasked/circular icons (Play 512, iOS AppIcon, web favicon +
+#                        PWA "any" icons, legacy + round launcher): the largest circle
+#                        that fits the square canvas (radius = canvas/2).
+#   FG_RFRAC   (0.305) — Android adaptive foreground + monochrome: the adaptive safe
+#                        circle (66dp of the 108dp canvas → radius 33/108).
+#   MASK_RFRAC (0.40)  — maskable web icon: the W3C maskable safe circle (80% diameter).
+FULL_RFRAC = 0.5
+FG_RFRAC   = 0.305
+MASK_RFRAC = 0.40
+R_FRAC     = FULL_RFRAC   # back-compat default
 
 def wordmark_mask(text, font=FONT, ystretch=YSTRETCH):
     """Alpha mask of the shaped, FreeType-rasterised wordmark, vertically stretched, cropped to ink."""
@@ -79,21 +94,21 @@ LG = {"mdpi": 48, "hdpi": 72, "xhdpi": 96, "xxhdpi": 144, "xxxhdpi": 192}
 def generate(text, res_dir):
     """Write the full Android asset set for `text` into `res_dir`."""
     for dpi, px in FG.items():
-        _save(render(text, px, SLATE), os.path.join(res_dir, f"mipmap-{dpi}", "ic_launcher_foreground.png"))
-    _save(render(text, 432, (0, 0, 0)),
+        _save(render(text, px, SLATE, r_frac=FG_RFRAC), os.path.join(res_dir, f"mipmap-{dpi}", "ic_launcher_foreground.png"))
+    _save(render(text, 432, (0, 0, 0), r_frac=FG_RFRAC),
           os.path.join(res_dir, "drawable-nodpi", "ic_launcher_monochrome.png"))
     for dpi, px in LG.items():
-        _save(render(text, px, SLATE, r_frac=0.34, bg=BG).convert("RGB"),
+        _save(render(text, px, SLATE, r_frac=FULL_RFRAC, bg=BG).convert("RGB"),
               os.path.join(res_dir, f"mipmap-{dpi}", "ic_launcher.png"))
-        _save(render(text, px, SLATE, r_frac=0.34, bg=BG, circle=True),
+        _save(render(text, px, SLATE, r_frac=FULL_RFRAC, bg=BG, circle=True),
               os.path.join(res_dir, f"mipmap-{dpi}", "ic_launcher_round.png"))
 
 def play_icon(text, out_path):
-    """Play Store 512 listing icon (full-bleed square, wordmark sized to FILL — bigger than the
-    padded launcher foreground). Write OUTSIDE res/ (not a build resource)."""
-    _save(render(text, 512, SLATE, r_frac=PLAY_RFRAC, bg=BG).convert("RGB"), out_path)
+    """Play Store 512 listing icon (full-bleed square, wordmark maxed in the canvas circle —
+    FULL_RFRAC). Write OUTSIDE res/ (not a build resource)."""
+    _save(render(text, 512, SLATE, r_frac=FULL_RFRAC, bg=BG).convert("RGB"), out_path)
 
-def flat_icon(text, out_path, px=1024, r_frac=0.30):
+def flat_icon(text, out_path, px=1024, r_frac=FULL_RFRAC):
     """Flat square icon (iOS AppIcon, web favicon/PWA) — slate wordmark on near-white, no mask."""
     _save(render(text, px, SLATE, r_frac=r_frac, bg=BG).convert("RGB"), out_path)
 
@@ -187,7 +202,7 @@ def generate_all(cfg):
     flat_icon(cfg["text"], os.path.join(web, "public", "apple-touch-icon.png"), 180)
     flat_icon(cfg["text"], os.path.join(web, "public", "icon-192.png"), 192)
     flat_icon(cfg["text"], os.path.join(web, "public", "icon-512.png"), 512)
-    flat_icon(cfg["text"], os.path.join(web, "public", "icon-maskable-512.png"), 512, r_frac=0.24)
+    flat_icon(cfg["text"], os.path.join(web, "public", "icon-maskable-512.png"), 512, r_frac=MASK_RFRAC)
     play_icon(cfg["text"], os.path.join(repo, "android", "play_icon_512.png"))
 
 if __name__ == "__main__":
