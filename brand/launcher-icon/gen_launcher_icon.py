@@ -170,6 +170,10 @@ APPS = {
         text="വരി", letter="വ", ios_dir="Varisankya",
         repo=r"C:\Users\Aarsh\Source\varisankya\varisankya",
     ),
+    "muthal": dict(
+        text="മുത", letter="മ", ios_dir="Muthal",
+        repo=r"C:\Users\Aarsh\Source\muthal\muthal",
+    ),
 }
 
 def generate_all(cfg):

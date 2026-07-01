@@ -13,6 +13,7 @@ that app's repo; if two or more apps need it, it belongs here.
 | --- | --- | --- |
 | **Varisankya** | Subscription & recurring-payment tracker | `varisankya` (android · ios · web) |
 | **Pathivu** | Habit tracker | `pathivu` (android · ios · web) |
+| **Muthal** | Income & expense ledger for institutions | `muthal` (android · ios · web) |
 | _future siblings_ | — | — |
 
 Each app is its own cross-platform monorepo and keeps an internal `shared/` folder

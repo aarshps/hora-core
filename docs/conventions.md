@@ -125,9 +125,12 @@ byte-identical `Widget.App.*` / `ShapeAppearance.App.*` widget & shape styles),
 `res/values/attrs.xml`, the chip color selectors (+ `chip_stroke_app` / `outline_stroke_app`),
 the `res/anim/slide_*` nav transitions, `res/values-night/colors.xml` (dark palette), the
 **brand font** `res/font/google_sans_flex.xml` (+ variable `.ttf`), the `res/xml/*` backup
-policy, the generic shape drawables + the shared `res/drawable/ic_*` icon set, and
-`util/ChipHelper.kt` / `ThemeHelper.kt` / `AnimationHelper.kt` / `TimeProvider.kt` plus the
-top-level `PillProgressView.kt`. Each
+policy, the generic shape drawables + the shared `res/drawable/ic_*` icon set, the
+`res/layout/bottom_sheet_{selection,about,confirmation}.xml` layouts, and the shared Kotlin —
+`util/ChipHelper.kt` / `ThemeHelper.kt` / `AnimationHelper.kt` / `TimeProvider.kt` /
+`BiometricAuthManager.kt` / `DragReorderCallback.kt` / `SwipeHelpers.kt` plus the top-level
+`BaseActivity.kt` / `SelectionBottomSheet.kt` / `ConfirmationBottomSheet.kt` /
+`AboutBottomSheet.kt` / `PillProgressView.kt`. Each
 app keeps its own `themes.xml` for app-specific theme config + any styles that genuinely
 diverge between apps. Unlike a doc skill (which
 explains *intent*), this folder is the *code itself*. The paired `.github/skills/`
@@ -140,6 +143,8 @@ verbatim, rewrites the Kotlin package placeholder `__HORA_PKG__` → the app's b
 package, and writes a `.hora-core-synced-android` provenance manifest. Edit a shared file
 here in hora-core and re-run the sync in each app — never hand-edit the generated copy.
 The brand font now ships from here (`res/font/google_sans_flex` + the variable `.ttf`); the
+app only needs a `Constants` with the `ANIM_*` durations the helpers reference.
+
 ## Shared Web source
 
 [`shared/web/`](../shared/web/README.md) is the canonical home for the Web building blocks every Hora web app shares **verbatim**: the design-system stylesheet (`res/css/web_shared.css` — the `--md-*` → role-token mapping, Tailwind `@theme` aliases, shape radii matching Android dimens, and the `.card`/`.grouped-list`+`.item-*`/`.sheet`/`.pill-*`/`.chip` utilities) plus a set of presentational React components — `ServiceWorker`, `Sheet`, `controls` (Button/Switch/Field/TextInput/Select/Segmented), `SignIn`, `ConfirmDialog`, `AboutSheet`, the settings primitives (`settings.tsx`: SettingsSection/SectionLabel/Row/Toggle/Divider/LinkRow), `EmptyState`, `ScreenHeader`, the home `AppBar` (centered title), and the extended `Fab`. It also ships one framework-agnostic web util — the M3E haptics factory `lib/haptics-core.ts` (`createHaptics(isEnabled)`; each app injects its own "haptics enabled" pref via a one-line local `lib/haptics.ts`, so the shared file stays free of app storage keys). The **canonical web colour palette** also lives here — `shared/web/res/theme-palette.mjs` (`LIGHT`/`DARK` `--md-*` maps: a monochrome neutral surface scale + the **uniform family accent**, the "neutral surfaces + uniform accents" rule). It's the single source of truth for the colour values; each app applies them in its own `theme.css` (the light/dark toggle selectors — `data-theme` attribute vs `.dark` class — stay app-local, only the values are shared). The components are prop-driven and free of app-specific strings/logic; the CSS references only `--md-*` / role tokens. Bar for inclusion is the family standard: **2+ apps use it verbatim**.
