@@ -37,22 +37,33 @@ EM        = 2000     # FreeType em pixels (hi-res master for crisp downsamples)
 # earlier "fill the safe circle" experiment (FULL=0.5 / FG=0.305 / MASK=0.40) was applied
 # to one app only and read as oversized/edge-touching; reverted to these per-surface values
 # so the whole family matches (confirmed with Aarsh, 2026-07).
-#   PLAY_RFRAC     (0.41)  — Play Store 512 listing icon. Smaller than full-bleed because
-#                            Play re-crops + shadow-frames it in its own grid/detail chrome.
-#   FLAT_RFRAC     (0.30)  — flat square icons: iOS AppIcon + web favicon / PWA "any" icons.
-#   LAUNCHER_RFRAC (0.343) — Android legacy + round launcher (full-bleed slate-on-BG square).
-#   FG_RFRAC       (0.246) — Android adaptive foreground + monochrome (well inside the
-#                            66dp/108dp adaptive safe circle, with family margin to spare).
-#   MASK_RFRAC     (0.24)  — maskable web icon (comfortably inside the W3C maskable safe zone).
-PLAY_RFRAC     = 0.41
-FLAT_RFRAC     = 0.30
-LAUNCHER_RFRAC = 0.343
-FG_RFRAC       = 0.246
-MASK_RFRAC     = 0.24
+# Since 2026-07-02 the r_frac circle circumscribes the (ink width × BASE-LETTER BAND
+# height) box — NOT the full ink box (see "band rule" below). Constants were
+# re-calibrated from the previous full-ink values by ×0.9329 (the Pathivu band/full
+# diagonal ratio) so Pathivu's rendered base-letter size is unchanged; every app's
+# BASE LETTERS now render at the same size and sit on the same optical line, with
+# ascenders (ീ/ി) and descenders (ു) extending beyond the band.
+#   PLAY_RFRAC     (0.3825) — Play Store 512 listing icon. Smaller than full-bleed because
+#                             Play re-crops + shadow-frames it in its own grid/detail chrome.
+#   FLAT_RFRAC     (0.2799) — flat square icons: iOS AppIcon + web favicon / PWA "any" icons.
+#   LAUNCHER_RFRAC (0.3200) — Android legacy + round launcher (full-bleed slate-on-BG square).
+#   FG_RFRAC       (0.2295) — Android adaptive foreground + monochrome (full ink hard-capped
+#                             to the 66dp/108dp adaptive safe circle, 0.305).
+#   MASK_RFRAC     (0.2239) — maskable web icon (full ink hard-capped to the W3C 0.40 zone).
+PLAY_RFRAC     = 0.3825
+FLAT_RFRAC     = 0.2799
+LAUNCHER_RFRAC = 0.3200
+FG_RFRAC       = 0.2295
+MASK_RFRAC     = 0.2239
+FG_SAFE_HARD   = 0.305   # adaptive-icon safe circle — full ink must never exceed this
+MASK_SAFE_HARD = 0.40    # W3C maskable safe circle — full ink must never exceed this
 R_FRAC         = FLAT_RFRAC   # back-compat default for bare render() calls
 
-def wordmark_mask(text, font=FONT, ystretch=YSTRETCH):
-    """Alpha mask of the shaped, FreeType-rasterised wordmark, vertically stretched, cropped to ink."""
+def wordmark_mask_with_baseline(text, font=FONT, ystretch=YSTRETCH):
+    """Alpha mask of the shaped, FreeType-rasterised wordmark, vertically stretched,
+    cropped to ink — plus the BASELINE row inside the cropped mask (float). The
+    baseline is what lets the band rule locate the base-letter band regardless of
+    ascenders (ീ/ി) or descenders (ു) in the wordmark."""
     ft = freetype.Face(font); upem = ft.units_per_EM; ft.set_pixel_sizes(0, EM)
     hbf = hb.Font(hb.Face(hb.Blob.from_file_path(font)))
     buf = hb.Buffer(); buf.add_str(text); buf.guess_segment_properties(); hb.shape(hbf, buf)
@@ -71,17 +82,60 @@ def wordmark_mask(text, font=FONT, ystretch=YSTRETCH):
     for x, y, a in items:
         px = int(round(x-minx)); py = int(round(y-miny)); gi = Image.fromarray(a)
         reg = cv.crop((px, py, px+a.shape[1], py+a.shape[0])); cv.paste(ImageChops.lighter(reg, gi), (px, py))
+    baseline = float(-miny)                      # glyph y's are baseline-relative; row 0 = miny
     if ystretch != 1.0:
         cv = cv.resize((cv.width, int(round(cv.height*ystretch))), Image.LANCZOS)
-    return cv.crop(cv.getbbox())
+        baseline *= ystretch
+    l, t, r, b = cv.getbbox()
+    return cv.crop((l, t, r, b)), baseline - t
 
-def render(text, canvas_px, color, r_frac=R_FRAC, bg=None, circle=False, ss=4):
-    """Wordmark centered, bounding-circle radius = r_frac*canvas, tinted `color`. Optional bg / circle mask."""
+def wordmark_mask(text, font=FONT, ystretch=YSTRETCH):
+    """Back-compat: mask only."""
+    return wordmark_mask_with_baseline(text, font, ystretch)[0]
+
+# ---- Base-letter band (THE band rule, locked with Aarsh 2026-07-02) ----------
+# Malayalam vowel signs break naive bbox fitting: ു (Muthal "മുത") descends BELOW the
+# base letters while ീ/ി (Pathivu "പതി", Varisankya "വരി") ascend ABOVE them — so
+# fitting the full ink box makes the *base letters* render at different sizes and
+# different vertical positions per app. The fix: all scaling and centering is done on
+# the BASE-LETTER BAND — the ink band of a plain base consonant (they all share the
+# same band in Baloo Chettan 2: പ/മ/വ/ത ≈ equal height, sitting on the baseline).
+# Ascenders/descenders simply extend beyond the band. REF_BAND_GLYPH defines the band
+# once, family-wide.
+REF_BAND_GLYPH = "പ"   # പ
+
+_band_cache = None
+def _band():
+    """(band_h, band_top_rel) — band height and its top relative to the baseline
+    (negative = above), measured through the identical shaping/stretch pipeline."""
+    global _band_cache
+    if _band_cache is None:
+        ref, ref_base = wordmark_mask_with_baseline(REF_BAND_GLYPH)
+        _band_cache = (float(ref.height), -ref_base)
+    return _band_cache
+
+def render(text, canvas_px, color, r_frac=R_FRAC, bg=None, circle=False, ss=4, hard_rfrac=0.5):
+    """Wordmark rendered under the BAND rule: the circle of radius r_frac*canvas
+    circumscribes the box (full ink width × base-letter band height), and the BAND's
+    vertical centre sits on the canvas centre. Ascenders/descenders extend beyond the
+    band; `hard_rfrac` is a safety clamp — if the FULL ink would poke outside that
+    circle (e.g. the adaptive-icon safe zone), the whole wordmark scales down to fit,
+    band stays centred. Optional bg / circle mask as before."""
     S = canvas_px * ss
-    m = wordmark_mask(text); w, h = m.size; A = w / h
-    th = 2 * r_frac * S / math.sqrt(1 + A*A); tw = A * th
-    m = m.resize((max(1, round(tw)), max(1, round(th))), Image.LANCZOS)
-    alpha = Image.new("L", (S, S), 0); alpha.paste(m, ((S - m.size[0])//2, (S - m.size[1])//2))
+    m, base = wordmark_mask_with_baseline(text); w, h = m.size
+    band_h, band_top_rel = _band()
+    band_center = base + band_top_rel + band_h / 2.0        # row of band centre in mask
+    R = r_frac * S
+    s = 2.0 * R / math.hypot(w, band_h)
+    # Safety clamp on the FULL ink box (corner farthest from the canvas centre).
+    d_top = abs(0 - band_center); d_bot = abs(h - band_center)
+    dmax = max(math.hypot(w / 2.0, d_top), math.hypot(w / 2.0, d_bot))
+    if s * dmax > hard_rfrac * S:
+        s = hard_rfrac * S / dmax
+    tw = max(1, round(w * s)); th = max(1, round(h * s))
+    m = m.resize((tw, th), Image.LANCZOS)
+    alpha = Image.new("L", (S, S), 0)
+    alpha.paste(m, ((S - tw) // 2, round(S / 2.0 - band_center * s)))
     img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     if bg is not None:
         if circle:
@@ -102,8 +156,9 @@ LG = {"mdpi": 48, "hdpi": 72, "xhdpi": 96, "xxhdpi": 144, "xxxhdpi": 192}
 def generate(text, res_dir):
     """Write the full Android asset set for `text` into `res_dir`."""
     for dpi, px in FG.items():
-        _save(render(text, px, SLATE, r_frac=FG_RFRAC), os.path.join(res_dir, f"mipmap-{dpi}", "ic_launcher_foreground.png"))
-    _save(render(text, 432, (0, 0, 0), r_frac=FG_RFRAC),
+        _save(render(text, px, SLATE, r_frac=FG_RFRAC, hard_rfrac=FG_SAFE_HARD),
+              os.path.join(res_dir, f"mipmap-{dpi}", "ic_launcher_foreground.png"))
+    _save(render(text, 432, (0, 0, 0), r_frac=FG_RFRAC, hard_rfrac=FG_SAFE_HARD),
           os.path.join(res_dir, "drawable-nodpi", "ic_launcher_monochrome.png"))
     for dpi, px in LG.items():
         _save(render(text, px, SLATE, r_frac=LAUNCHER_RFRAC, bg=BG).convert("RGB"),
@@ -118,9 +173,9 @@ def play_icon(text, out_path):
     resource)."""
     _save(render(text, 512, SLATE, r_frac=PLAY_RFRAC, bg=BG).convert("RGB"), out_path)
 
-def flat_icon(text, out_path, px=1024, r_frac=FLAT_RFRAC):
+def flat_icon(text, out_path, px=1024, r_frac=FLAT_RFRAC, hard_rfrac=0.5):
     """Flat square icon (iOS AppIcon, web favicon/PWA) — slate wordmark on near-white, no mask."""
-    _save(render(text, px, SLATE, r_frac=r_frac, bg=BG).convert("RGB"), out_path)
+    _save(render(text, px, SLATE, r_frac=r_frac, bg=BG, hard_rfrac=hard_rfrac).convert("RGB"), out_path)
 
 # --- Notification small icon: solid disc with the app's initial knocked out -------
 import re as _re
@@ -212,7 +267,8 @@ def generate_all(cfg):
     flat_icon(cfg["text"], os.path.join(web, "public", "apple-touch-icon.png"), 180)
     flat_icon(cfg["text"], os.path.join(web, "public", "icon-192.png"), 192)
     flat_icon(cfg["text"], os.path.join(web, "public", "icon-512.png"), 512)
-    flat_icon(cfg["text"], os.path.join(web, "public", "icon-maskable-512.png"), 512, r_frac=MASK_RFRAC)
+    flat_icon(cfg["text"], os.path.join(web, "public", "icon-maskable-512.png"), 512,
+              r_frac=MASK_RFRAC, hard_rfrac=MASK_SAFE_HARD)
     play_icon(cfg["text"], os.path.join(repo, "android", "play_icon_512.png"))
 
 if __name__ == "__main__":

@@ -164,6 +164,19 @@ family error-handling rule is: **only `GetCredentialCancellationException` may b
 reported as "cancelled"** — map other credential exceptions to a real error message,
 or a missing-SHA misconfiguration masquerades as the user changing their mind.
 
+### Material You Dynamic Colors (required on every Android app)
+
+Every family Android app derives its palette from the user's wallpaper on Android 12+.
+Two hooks are BOTH required (Muthal shipped three betas on the static palette because it
+had neither — synced resources alone do nothing):
+
+1. An `Application` subclass (registered via `android:name` in the manifest) calling
+   `DynamicColors.applyToActivitiesIfAvailable(this)` in `onCreate`.
+2. Every activity extends the synced shared `BaseActivity`, which re-applies
+   `DynamicColors.applyToActivityIfAvailable(this)` after its manual `setTheme()` call
+   (the manual theme set for the font preference otherwise overrides the global
+   callback, which runs in `onActivityPreCreated`).
+
 Shared skills live in this repo at `.github/skills/<name>/SKILL.md` — that's the
 canonical location for family-wide skills, resolving the location question that
 otherwise varies per app (Pathivu uses `.claude/skills/`, Varisankya uses
@@ -280,30 +293,45 @@ Baloo glyph. Canonical standard, generator, and per-app config live in
 conventions, not hedged references — do not revert to hand-authored raster tuning, nor
 to a framed or stroked-glyph notification treatment.
 
-**Wordmark sizing — per-surface `r_frac` (the established family look).** The wordmark is
-scaled so its **circumscribing circle** (the smallest circle, centred on the canvas, that
-exactly contains the wordmark's bounding box) has radius `r_frac × canvas`. `r_frac` is
-therefore exactly *circle radius / canvas* and is aspect-independent — `render()` solves
-the width/height so the circumscribing circle equals `r_frac × canvas` no matter the
-wordmark's proportions, which is what makes every family app's icons line up. **Each
-surface has its own `r_frac`**, and these are the values Pathivu and Varisankya actually
-ship (measured off their committed assets — the single source of truth):
+**Wordmark sizing — the BAND rule (locked with Aarsh, 2026-07-02).** Malayalam vowel
+signs break naive bounding-box fitting: **ു descends below** the base letters (Muthal
+"മുത") while **ീ/ി ascend above** them (Pathivu "പതി", Varisankya "വരി"). Fit the full
+ink box and the *base letters* render at different sizes and different vertical
+positions per app — icons never look standardised. So all scaling and centering is done
+on the **base-letter band**, not the ink box:
 
-| Surface | Constant | `r_frac` |
+- The **band** is the ink band of a plain base consonant (`REF_BAND_GLYPH = "പ"` in the
+  engine — all Baloo Chettan 2 base consonants share the same band height, sitting on
+  the baseline). The engine measures it once through the identical shaping/stretch
+  pipeline and locates it inside each wordmark via the baseline.
+- **Scale:** the circle of radius `r_frac × canvas` circumscribes the box
+  *(full ink width × band height)*.
+- **Position:** the band's vertical centre sits on the canvas centre; ascenders and
+  descenders extend naturally above/below the band.
+- **Safety clamp:** the *full ink* must still fit inside a per-surface hard circle
+  (`FG_SAFE_HARD = 0.305` adaptive safe zone, `MASK_SAFE_HARD = 0.40` W3C maskable,
+  `0.5` otherwise) — if a long ascender/descender would poke out, the whole wordmark
+  scales down with the band kept centred.
+
+Result: every app's **base letters render at the same size and sit on the same optical
+line**; only the marks differ. Per-surface constants (re-calibrated ×0.9329 — the
+Pathivu band/full diagonal ratio — so Pathivu's rendered base-letter size is unchanged
+from its previously shipped icons):
+
+| Surface | Constant | `r_frac` (band-box) |
 | --- | --- | --- |
-| Play Store 512 listing icon | `PLAY_RFRAC` | **0.41** |
-| Flat square — iOS AppIcon + web favicon / PWA "any" icons | `FLAT_RFRAC` | **0.30** |
-| Android legacy + round launcher (full-bleed slate-on-BG) | `LAUNCHER_RFRAC` | **0.343** |
-| Android adaptive foreground + monochrome | `FG_RFRAC` | **0.246** |
-| Maskable web icon | `MASK_RFRAC` | **0.24** |
+| Play Store 512 listing icon | `PLAY_RFRAC` | **0.3825** |
+| Flat square — iOS AppIcon + web favicon / PWA "any" icons | `FLAT_RFRAC` | **0.2799** |
+| Android legacy + round launcher (full-bleed slate-on-BG) | `LAUNCHER_RFRAC` | **0.3200** |
+| Android adaptive foreground + monochrome | `FG_RFRAC` | **0.2295** |
+| Maskable web icon | `MASK_RFRAC` | **0.2239** |
 
-An earlier "fill the safe circle" experiment (a single unified `FULL_RFRAC = 0.5` plus
-`FG = 0.305` / `MASK = 0.40`) was applied to one app only and read as oversized /
-edge-touching — most visibly on the Play 512, where Play's own grid/detail chrome
-re-crops and shadow-frames the icon. It was **reverted to the per-surface values above so
-the whole family matches** (confirmed with Aarsh, 2026-07). When adding a new app, run the
-generator and it inherits these automatically; do not reintroduce a single full-bleed
-`r_frac`.
+History: a "fill the safe circle" experiment (unified 0.5) read as oversized and was
+reverted; the pre-band per-surface values (0.41/0.30/0.343/0.246/0.24) fitted the full
+ink box and mis-sized wordmarks with descenders. The band rule supersedes both.
+**Pathivu/Varisankya agents:** re-run `python gen_launcher_icon.py <app>` on your next
+pass — your base letters keep their current size, but vertical centering improves (the
+band, not the box, is now centred).
 
 ### Marketing & static-image typography — Google Sans Flex, ROND maxed
 
