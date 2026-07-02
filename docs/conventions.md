@@ -243,6 +243,26 @@ radius = canvas/2); `FG_RFRAC = 0.305` for the Android adaptive foreground + mon
 (the W3C 80%-diameter safe circle). `r_frac` in the generator is exactly *circle radius /
 canvas*. Do not pad icons smaller than this — every Hora icon fills its usable circle.
 
+### Marketing & static-image typography — Google Sans Flex, ROND maxed
+
+Any English text baked into a **static image asset** — a Play Store feature graphic,
+a promo/banner image, a marketing screenshot overlay, a social-preview card, etc. —
+is set in the literal **Google Sans Flex** variable font (the same file the Android
+apps ship: `shared/android/res/font/google_sans_flex_variable.ttf`), with the
+**`'ROND'` (roundness) axis maxed at 100** — i.e. `fontVariationSettings: "'ROND' 100,
+'wght' <weight>"` — matching the family's native Android type scale (`type.xml`,
+`TextAppearance.App.*`) exactly. This is distinct from the runtime web app, which
+uses **Nunito** as a bundleable open-source approximation of Google Sans Flex
+(licensing/bundle-size reasons don't apply to a one-off rendered PNG) — a static
+marketing image has no such constraint, so it uses the real brand font at its
+roundest setting, not the Nunito approximation and not a system font (Segoe UI,
+Arial, etc.). iOS's `.design(.rounded)` (SF Rounded) remains iOS-only, runtime-only —
+never used for authoring a marketing image either. When generating a feature graphic
+or similar asset (e.g. with Pillow/PIL), load
+`google_sans_flex_variable.ttf` and set its variation axes to `ROND=100` at the
+weight that matches the design (400 regular / 500 medium / 700 bold), the same
+axis values `google_sans_flex.xml` already declares for the app UI.
+
 ## Cross-language code sharing
 
 No cross-language code generation. Kotlin/Swift/TypeScript do not share compiled code
