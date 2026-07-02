@@ -142,7 +142,27 @@ needs `sdk.dir=` pointed at that path (plus signing properties — see Secrets b
 the file is gitignored per-app and not templated here since it's machine-, not
 family-, specific.
 
-## Agent skills
+### Google Sign-In on Android — SHA fingerprints (learned the hard way, 2026-07)
+
+Google Sign-In via Credential Manager (`GetGoogleIdOption` + the web `serverClientId`)
+only works when the **SHA-1** of the *actual signing certificate* is registered on the
+Firebase Android app (Project settings → Your apps → SHA certificate fingerprints).
+SHA-256 alone is **not** sufficient — the Google OAuth Android client is keyed on SHA-1.
+And with Play App Signing there are **two** signing certificates:
+
+- the **upload key** (signs local/side-loaded builds), and
+- the **Play App Signing key** (signs everything installed *from Play* — internal
+  testing onwards).
+
+Register **both SHA-1s (and ideally both SHA-256s)** in Firebase. Both cert fingerprints
+are shown in Play Console → *Test and release → App integrity → App signing*. No app
+rebuild is needed after adding them — the check is server-side.
+
+Symptom when missing: sign-in fails on Play-installed builds while local builds work
+(or vice-versa), surfacing as a generic `GetCredentialException`. Which is why the
+family error-handling rule is: **only `GetCredentialCancellationException` may be
+reported as "cancelled"** — map other credential exceptions to a real error message,
+or a missing-SHA misconfiguration masquerades as the user changing their mind.
 
 Shared skills live in this repo at `.github/skills/<name>/SKILL.md` — that's the
 canonical location for family-wide skills, resolving the location question that
@@ -189,8 +209,18 @@ entries (`m3e-animation-standards`, `settings-page-standards`, …) describe the
 verbatim, rewrites the Kotlin package placeholder `__HORA_PKG__` → the app's base
 package, and writes a `.hora-core-synced-android` provenance manifest. Edit a shared file
 here in hora-core and re-run the sync in each app — never hand-edit the generated copy.
-The brand font now ships from here (`res/font/google_sans_flex` + the variable `.ttf`); the
-app only needs a `Constants` with the `ANIM_*` durations the helpers reference.
+The brand font now ships from here (`res/font/google_sans_flex` + the variable `.ttf`).
+The app must supply **two small app-local objects in its base package** for the synced
+Kotlin to compile (they are app-local because they hold app preferences/tuning, not shared
+logic): `Constants` (the `ANIM_*` durations) **and `PreferenceHelper`** (haptics +
+Google-font preference reads and the `performHaptics`/`performClickHaptic`/
+`performSuccessHaptic`/`attachNestedScrollHaptics` helpers the shared sheets and
+swipe/drag helpers call). Copy either sibling's implementation as the starting point.
+The app's `themes.xml` must also wire the brand typography itself: set
+`android:fontFamily`/`fontFamily` to `@font/google_sans_flex` and point all fifteen
+`textAppearance*` theme attrs at the `TextAppearance.App.*` styles from the synced
+`type.xml` — syncing the files alone does **not** change any rendered text (Muthal
+shipped its first two betas in Roboto because of exactly this).
 
 ## Shared Web source
 
