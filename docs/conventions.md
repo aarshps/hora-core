@@ -215,6 +215,9 @@ app keeps its own `themes.xml` for app-specific theme config + any styles that g
 diverge between apps. Unlike a doc skill (which
 explains *intent*), this folder is the *code itself*. The paired `.github/skills/`
 entries (`m3e-animation-standards`, `settings-page-standards`, …) describe the why.
+Screen-level anatomy is standardized too: **`splash-and-home-standards`** (splash + Home
+on all three platforms) and **`settings-page-standards`** (Settings) — every family app's
+splash, Home, and Settings screens share one structure; only the business content differs.
 
 **Consumption (same generated-copies model as skills):** an app copies
 [`templates/sync_shared_android.sh`](../templates/sync_shared_android.sh) into
