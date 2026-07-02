@@ -32,13 +32,19 @@ EM        = 2000     # FreeType em pixels (hi-res master for crisp downsamples)
 # LARGEST circle that fits the icon's usable area — i.e. the wordmark is the maximum
 # size that fits inside that centred circle. `r_frac` = that circle's radius / canvas.
 # Every Hora icon follows this; only the "usable circle" differs by masking context:
-#   FULL_RFRAC (0.5)   — unmasked/circular icons (Play 512, iOS AppIcon, web favicon +
-#                        PWA "any" icons, legacy + round launcher): the largest circle
-#                        that fits the square canvas (radius = canvas/2).
+#   FULL_RFRAC (0.5)   — unmasked/circular icons (iOS AppIcon, web favicon + PWA "any"
+#                        icons, legacy + round launcher): the largest circle that fits
+#                        the square canvas (radius = canvas/2).
+#   PLAY_RFRAC (0.41)  — Play Store 512 listing icon ONLY. The Play grid/detail chrome
+#                        re-crops and shadow-frames the 512, so a full-canvas wordmark
+#                        reads as cramped/edge-touching there. The listing icon therefore
+#                        sits inside a smaller circle (radius ≈ 210/512) — the established
+#                        family look (matches Pathivu/Varisankya's shipped Play icons).
 #   FG_RFRAC   (0.305) — Android adaptive foreground + monochrome: the adaptive safe
 #                        circle (66dp of the 108dp canvas → radius 33/108).
 #   MASK_RFRAC (0.40)  — maskable web icon: the W3C maskable safe circle (80% diameter).
 FULL_RFRAC = 0.5
+PLAY_RFRAC = 0.41
 FG_RFRAC   = 0.305
 MASK_RFRAC = 0.40
 R_FRAC     = FULL_RFRAC   # back-compat default
@@ -104,9 +110,11 @@ def generate(text, res_dir):
               os.path.join(res_dir, f"mipmap-{dpi}", "ic_launcher_round.png"))
 
 def play_icon(text, out_path):
-    """Play Store 512 listing icon (full-bleed square, wordmark maxed in the canvas circle —
-    FULL_RFRAC). Write OUTSIDE res/ (not a build resource)."""
-    _save(render(text, 512, SLATE, r_frac=FULL_RFRAC, bg=BG).convert("RGB"), out_path)
+    """Play Store 512 listing icon (full-bleed square). Wordmark maxed inside the smaller
+    PLAY_RFRAC circle (not the full canvas) so it doesn't read as cramped inside Play's
+    own grid/detail chrome — the established family look. Write OUTSIDE res/ (not a build
+    resource)."""
+    _save(render(text, 512, SLATE, r_frac=PLAY_RFRAC, bg=BG).convert("RGB"), out_path)
 
 def flat_icon(text, out_path, px=1024, r_frac=FULL_RFRAC):
     """Flat square icon (iOS AppIcon, web favicon/PWA) — slate wordmark on near-white, no mask."""

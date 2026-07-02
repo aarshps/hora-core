@@ -237,11 +237,20 @@ its **circumscribing circle** (the smallest circle, centred on the canvas, that 
 contains the wordmark's bounding box) is the **largest circle that fits the icon's usable
 area** — i.e. the wordmark is the maximum size that fits inside that centred circle. The
 usable circle depends only on the masking context: `FULL_RFRAC = 0.5` for unmasked/circular
-icons (Play 512, iOS AppIcon, web favicon + PWA "any" icons, legacy + round launcher —
-radius = canvas/2); `FG_RFRAC = 0.305` for the Android adaptive foreground + monochrome
+icons (iOS AppIcon, web favicon + PWA "any" icons, legacy + round launcher —
+radius = canvas/2); `PLAY_RFRAC = 0.41` for the **Play Store 512 listing icon only**;
+`FG_RFRAC = 0.305` for the Android adaptive foreground + monochrome
 (the 66dp-of-108dp adaptive safe circle); `MASK_RFRAC = 0.40` for the maskable web icon
 (the W3C 80%-diameter safe circle). `r_frac` in the generator is exactly *circle radius /
 canvas*. Do not pad icons smaller than this — every Hora icon fills its usable circle.
+
+**Play 512 is the one deliberate exception to full-bleed (locked with Aarsh, 2026-07).**
+The Play Store re-crops and shadow-frames the listing icon inside its own grid/detail
+chrome, so a full-canvas wordmark reads as cramped and edge-touching there. The Play
+512 therefore uses the smaller `PLAY_RFRAC = 0.41` circle (radius ≈ 210/512), giving the
+wordmark comfortable margin — the established family look that Pathivu and Varisankya's
+shipped Play icons already use. This is *only* the Play listing icon; every other
+full-bleed surface (iOS AppIcon, web, legacy/round launcher) still uses `FULL_RFRAC = 0.5`.
 
 ### Marketing & static-image typography — Google Sans Flex, ROND maxed
 
