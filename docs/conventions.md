@@ -259,6 +259,11 @@ script writes each file to its mapped path under the app's iOS source root, rewr
 `ios/tools/.hora-core-synced-ios`. Generated copies carry a "do not hand-edit" header; edit the
 canonical file in `hora-core` and re-run. The app's iOS target uses XcodeGen, so the files compile
 in place at their existing paths (no project edit needed); CI (`ios-build.yml`) validates the build.
+The app must also supply one **app-local glue object** for the synced Swift to compile:
+`Services/Preferences.swift` with a `Preferences.shared` singleton exposing at least
+`hapticsEnabled` (the shared `Haptics.swift` reads it) — the iOS counterpart of the Android
+`Constants`/`PreferenceHelper` requirement. Copy either sibling's implementation; keep its
+UserDefaults keys aligned with any `@AppStorage` keys the app's own views use.
 
 ## Design tokens (reference — confirm against the app's design-system doc)
 
