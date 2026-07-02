@@ -21,6 +21,35 @@ shared contract folder:
 Each app talks to its **own** Firebase project. The Firestore data model is kept
 identical across an app's platforms via that app's `shared/domain/SPEC.md` — field
 names, types, and layouts must match across Android/iOS/web.
+### Web hosting and authentication proxy
+
+Every family app hosts its web platform on **Vercel**. 
+
+To handle Google Sign-In and Firebase Auth reliably across strict mobile browsers and Safari (which partition third-party storage/cookies), the web app uses a **same-origin reverse-proxy** for Auth. 
+
+1. **Firebase authDomain:** In `web/lib/firebase.ts`, the `authDomain` is dynamically initialized to `window.location.hostname` in the browser:
+   ```typescript
+   authDomain:
+     typeof window !== "undefined"
+       ? window.location.hostname
+       : process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+   ```
+2. **Rewrites:** The `web/next.config.ts` file configures request-time rewrites proxying `/__/auth/*` and `/__/firebase/*` to the project's native Firebase Auth handler (`https://<project-id>.firebaseapp.com`):
+   ```typescript
+   async rewrites() {
+     return [
+       {
+         source: "/__/auth/:path*",
+         destination: "https://<project-id>.firebaseapp.com/__/auth/:path*",
+       },
+       {
+         source: "/__/firebase/:path*",
+         destination: "https://<project-id>.firebaseapp.com/__/firebase/:path*",
+       },
+     ];
+   }
+   ```
+3. **Google Console:** Any deployment domain (e.g. `<app>-web.vercel.app`) must be added to the Google Cloud Console / Firebase Console under Authorized JavaScript Origins and Authorized redirect URIs (`<domain>/__/auth/handler`).
 
 ### Firebase contract folder
 
