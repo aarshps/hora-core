@@ -47,6 +47,13 @@ app (Varisankya: subscriptions; Pathivu: habits; Muthal: institution ledger) but
 ### Android (`activity_main.xml`)
 Top-level: `CoordinatorLayout`, background `?attr/colorSurface`.
 
+⚠️ **Insets pitfall (caused a real "empty gap above the toolbar" bug):** the
+`AppBarLayout`'s own `fitsSystemWindows="true"` already consumes/pads for the status
+bar. Do **not** also apply a manual `WindowInsetsCompat` top-padding to the root — that
+double-applies the status-bar inset. A window-insets listener on the root should only
+handle the **bottom** inset (FAB margin + list/scroll clearance), exactly as Varisankya's
+`MainActivity` does.
+
 1. **App bar** — `AppBarLayout` (`fitsSystemWindows`, elevation 0dp, `liftOnScroll=false`)
    → `MaterialToolbar` (height `?attr/actionBarSize`, `contentInsetStart/End=24dp`):
    - **Left — "jewel logo" + name:** a `MaterialCardView` (radius 10dp,
