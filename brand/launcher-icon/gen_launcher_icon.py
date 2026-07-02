@@ -26,28 +26,30 @@ BG        = (0xFC, 0xFC, 0xFC)
 YSTRETCH  = 1.45     # vertical stretch ("taller")
 EM        = 2000     # FreeType em pixels (hi-res master for crisp downsamples)
 
-# ---- Icon sizing standard (locked with Aarsh, 2026-07) ----------------------
+# ---- Icon sizing standard (the established family look; matches Pathivu/Varisankya) ---
 # THE RULE: the wordmark is scaled so its *circumscribing circle* (the smallest circle,
-# centred on the canvas, that exactly contains the wordmark's bounding box) is the
-# LARGEST circle that fits the icon's usable area — i.e. the wordmark is the maximum
-# size that fits inside that centred circle. `r_frac` = that circle's radius / canvas.
-# Every Hora icon follows this; only the "usable circle" differs by masking context:
-#   FULL_RFRAC (0.5)   — unmasked/circular icons (iOS AppIcon, web favicon + PWA "any"
-#                        icons, legacy + round launcher): the largest circle that fits
-#                        the square canvas (radius = canvas/2).
-#   PLAY_RFRAC (0.41)  — Play Store 512 listing icon ONLY. The Play grid/detail chrome
-#                        re-crops and shadow-frames the 512, so a full-canvas wordmark
-#                        reads as cramped/edge-touching there. The listing icon therefore
-#                        sits inside a smaller circle (radius ≈ 210/512) — the established
-#                        family look (matches Pathivu/Varisankya's shipped Play icons).
-#   FG_RFRAC   (0.305) — Android adaptive foreground + monochrome: the adaptive safe
-#                        circle (66dp of the 108dp canvas → radius 33/108).
-#   MASK_RFRAC (0.40)  — maskable web icon: the W3C maskable safe circle (80% diameter).
-FULL_RFRAC = 0.5
-PLAY_RFRAC = 0.41
-FG_RFRAC   = 0.305
-MASK_RFRAC = 0.40
-R_FRAC     = FULL_RFRAC   # back-compat default
+# centred on the canvas, that exactly contains the wordmark's bounding box) has radius
+# `r_frac * canvas`. `r_frac` is therefore exactly *circle radius / canvas*, and is
+# aspect-independent (render() solves th/tw so circ_r == r_frac*canvas regardless of the
+# wordmark's proportions). Each surface has its own `r_frac`, chosen so every Hora app's
+# icons look identical across the family. These values are the ones Pathivu and Varisankya
+# actually ship (measured off their committed assets) — the single source of truth. An
+# earlier "fill the safe circle" experiment (FULL=0.5 / FG=0.305 / MASK=0.40) was applied
+# to one app only and read as oversized/edge-touching; reverted to these per-surface values
+# so the whole family matches (confirmed with Aarsh, 2026-07).
+#   PLAY_RFRAC     (0.41)  — Play Store 512 listing icon. Smaller than full-bleed because
+#                            Play re-crops + shadow-frames it in its own grid/detail chrome.
+#   FLAT_RFRAC     (0.30)  — flat square icons: iOS AppIcon + web favicon / PWA "any" icons.
+#   LAUNCHER_RFRAC (0.343) — Android legacy + round launcher (full-bleed slate-on-BG square).
+#   FG_RFRAC       (0.246) — Android adaptive foreground + monochrome (well inside the
+#                            66dp/108dp adaptive safe circle, with family margin to spare).
+#   MASK_RFRAC     (0.24)  — maskable web icon (comfortably inside the W3C maskable safe zone).
+PLAY_RFRAC     = 0.41
+FLAT_RFRAC     = 0.30
+LAUNCHER_RFRAC = 0.343
+FG_RFRAC       = 0.246
+MASK_RFRAC     = 0.24
+R_FRAC         = FLAT_RFRAC   # back-compat default for bare render() calls
 
 def wordmark_mask(text, font=FONT, ystretch=YSTRETCH):
     """Alpha mask of the shaped, FreeType-rasterised wordmark, vertically stretched, cropped to ink."""
@@ -104,9 +106,9 @@ def generate(text, res_dir):
     _save(render(text, 432, (0, 0, 0), r_frac=FG_RFRAC),
           os.path.join(res_dir, "drawable-nodpi", "ic_launcher_monochrome.png"))
     for dpi, px in LG.items():
-        _save(render(text, px, SLATE, r_frac=FULL_RFRAC, bg=BG).convert("RGB"),
+        _save(render(text, px, SLATE, r_frac=LAUNCHER_RFRAC, bg=BG).convert("RGB"),
               os.path.join(res_dir, f"mipmap-{dpi}", "ic_launcher.png"))
-        _save(render(text, px, SLATE, r_frac=FULL_RFRAC, bg=BG, circle=True),
+        _save(render(text, px, SLATE, r_frac=LAUNCHER_RFRAC, bg=BG, circle=True),
               os.path.join(res_dir, f"mipmap-{dpi}", "ic_launcher_round.png"))
 
 def play_icon(text, out_path):
@@ -116,7 +118,7 @@ def play_icon(text, out_path):
     resource)."""
     _save(render(text, 512, SLATE, r_frac=PLAY_RFRAC, bg=BG).convert("RGB"), out_path)
 
-def flat_icon(text, out_path, px=1024, r_frac=FULL_RFRAC):
+def flat_icon(text, out_path, px=1024, r_frac=FLAT_RFRAC):
     """Flat square icon (iOS AppIcon, web favicon/PWA) — slate wordmark on near-white, no mask."""
     _save(render(text, px, SLATE, r_frac=r_frac, bg=BG).convert("RGB"), out_path)
 

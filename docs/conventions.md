@@ -232,25 +232,30 @@ Baloo glyph. Canonical standard, generator, and per-app config live in
 conventions, not hedged references — do not revert to hand-authored raster tuning, nor
 to a framed or stroked-glyph notification treatment.
 
-**Wordmark sizing — the "max-in-circle" rule (locked 2026-07).** The wordmark is scaled so
-its **circumscribing circle** (the smallest circle, centred on the canvas, that exactly
-contains the wordmark's bounding box) is the **largest circle that fits the icon's usable
-area** — i.e. the wordmark is the maximum size that fits inside that centred circle. The
-usable circle depends only on the masking context: `FULL_RFRAC = 0.5` for unmasked/circular
-icons (iOS AppIcon, web favicon + PWA "any" icons, legacy + round launcher —
-radius = canvas/2); `PLAY_RFRAC = 0.41` for the **Play Store 512 listing icon only**;
-`FG_RFRAC = 0.305` for the Android adaptive foreground + monochrome
-(the 66dp-of-108dp adaptive safe circle); `MASK_RFRAC = 0.40` for the maskable web icon
-(the W3C 80%-diameter safe circle). `r_frac` in the generator is exactly *circle radius /
-canvas*. Do not pad icons smaller than this — every Hora icon fills its usable circle.
+**Wordmark sizing — per-surface `r_frac` (the established family look).** The wordmark is
+scaled so its **circumscribing circle** (the smallest circle, centred on the canvas, that
+exactly contains the wordmark's bounding box) has radius `r_frac × canvas`. `r_frac` is
+therefore exactly *circle radius / canvas* and is aspect-independent — `render()` solves
+the width/height so the circumscribing circle equals `r_frac × canvas` no matter the
+wordmark's proportions, which is what makes every family app's icons line up. **Each
+surface has its own `r_frac`**, and these are the values Pathivu and Varisankya actually
+ship (measured off their committed assets — the single source of truth):
 
-**Play 512 is the one deliberate exception to full-bleed (locked with Aarsh, 2026-07).**
-The Play Store re-crops and shadow-frames the listing icon inside its own grid/detail
-chrome, so a full-canvas wordmark reads as cramped and edge-touching there. The Play
-512 therefore uses the smaller `PLAY_RFRAC = 0.41` circle (radius ≈ 210/512), giving the
-wordmark comfortable margin — the established family look that Pathivu and Varisankya's
-shipped Play icons already use. This is *only* the Play listing icon; every other
-full-bleed surface (iOS AppIcon, web, legacy/round launcher) still uses `FULL_RFRAC = 0.5`.
+| Surface | Constant | `r_frac` |
+| --- | --- | --- |
+| Play Store 512 listing icon | `PLAY_RFRAC` | **0.41** |
+| Flat square — iOS AppIcon + web favicon / PWA "any" icons | `FLAT_RFRAC` | **0.30** |
+| Android legacy + round launcher (full-bleed slate-on-BG) | `LAUNCHER_RFRAC` | **0.343** |
+| Android adaptive foreground + monochrome | `FG_RFRAC` | **0.246** |
+| Maskable web icon | `MASK_RFRAC` | **0.24** |
+
+An earlier "fill the safe circle" experiment (a single unified `FULL_RFRAC = 0.5` plus
+`FG = 0.305` / `MASK = 0.40`) was applied to one app only and read as oversized /
+edge-touching — most visibly on the Play 512, where Play's own grid/detail chrome
+re-crops and shadow-frames the icon. It was **reverted to the per-surface values above so
+the whole family matches** (confirmed with Aarsh, 2026-07). When adding a new app, run the
+generator and it inherits these automatically; do not reintroduce a single full-bleed
+`r_frac`.
 
 ### Marketing & static-image typography — Google Sans Flex, ROND maxed
 
