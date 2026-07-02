@@ -100,6 +100,24 @@ Play release-notes read the same way:
 `hora-app-release` defers the numbers to this scheme; each app's `CLAUDE.md` "current version" line
 records the last shipped `versionName` / `versionCode` and the next free code.
 
+## Tester recruitment & Google Group standards
+
+To manage external testers for Google Play Console's Closed Testing tracks (e.g. the 20-testers requirement), each Hora app uses a standardized Google Group setup:
+
+- **Google Group Naming Pattern:** `<app>-testers@googlegroups.com` (e.g. `muthal-testers@googlegroups.com`, `varisankya-testers@googlegroups.com`).
+- **Privacy Settings:**
+  - **Who can join:** "Anyone can ask" or "Anyone can join" (to ensure external/public beta testers can join the group via a link).
+  - **Who can view conversations:** "Group members" (to maintain tester confidentiality).
+  - **Who can post:** "Group managers" / "Owners" (to avoid spamming other testers).
+- **Welcome Message Template:**
+  > Welcome to the <App> beta testing group! This group manages tester access for the <App> Android Closed Testing track on the Google Play Store.
+  >
+  > To install the app on your device:
+  > 1. Opt-in to the testing program using the Web Opt-in link: `https://play.google.com/apps/testing/com.hora.<app>`
+  > 2. Once opted-in, download and install the app from Google Play using the download link provided on the opt-in page.
+  >
+  > Thank you for helping us test!
+
 ## Android stack (reference — confirm against the app's `libs.versions.toml`)
 
 As of the most recent family app (Varisankya):

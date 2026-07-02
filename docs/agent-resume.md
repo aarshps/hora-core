@@ -399,3 +399,7 @@
     - Deployed the web app's static export to Firebase Hosting.
     - Used the `browser` subagent to upload `app-release.aab` to Google Play Console's internal testing track, retrieve the Play App-Signing SHA-256 fingerprint (`D0:53:78...4A`), and register the fingerprint in the Firebase project (`hora-muthal`) settings so Google Sign-In works for testers.
     - Updated `CLAUDE.md` and wiki `Build-and-Release.md`. Tagged the release as `v1.0-beta.2` in Git.
+
+  - **Tester recruitment & Google Group standards (2026-07-02, Muthal agent):**
+    - Documented `<app>-testers@googlegroups.com` Google Group naming pattern, privacy standards, and welcome message template as a family standard in `docs/conventions.md` and `hora-core.wiki` (`Home.md`).
+    - Redeployed Muthal web on Vercel (`muthal-web.vercel.app`) to pick up the regenerated `max-in-circle` icons (verified HTTP 200 on `/icon.png`).
