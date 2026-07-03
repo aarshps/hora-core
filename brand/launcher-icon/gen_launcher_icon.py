@@ -2,15 +2,17 @@
 """
 Hora-family launcher-icon engine (FINAL).
 
-The family icon is a Malayalam wordmark (Pathivu "പതി", Varisankya "വരി") set in
-**Baloo Chettan 2** (rounded, OFL) in slate on near-white, centered, sized to a fixed
-bounding circle. Rendering uses harfbuzz (shaping) + FreeType (the font's own nonzero
+The family icon is a Malayalam wordmark (Pathivu "പതി", Varisankya "വരി", Muthal "മുത")
+set in **Baloo Chettan 2** (rounded, OFL) in slate on near-white, laid out under the
+**v3 six-line geometry standard** (see the constants block): in every icon, on every
+surface, the base letters render at the same fixed size, centred, and the ink at the
+same fixed width. Rendering uses harfbuzz (shaping) + FreeType (the font's own nonzero
 rasterizer — no fill-rule holes), so edges are crisp and the ത/പ counters are correct.
 
-One algorithm, both apps: pass a different `text` (and res dir). Run from anywhere.
+One algorithm, every app: pass a different `text` (and res dir). Run from anywhere.
 Deps: uharfbuzz, freetype-py, fontTools (woff2->ttf), numpy, Pillow.
 """
-import os, math
+import os, sys, math
 import numpy as np
 import uharfbuzz as hb
 import freetype
@@ -26,38 +28,45 @@ BG        = (0xFC, 0xFC, 0xFC)
 YSTRETCH  = 1.45     # vertical stretch ("taller")
 EM        = 2000     # FreeType em pixels (hi-res master for crisp downsamples)
 
-# ---- Icon sizing standard (the established family look; matches Pathivu/Varisankya) ---
-# THE RULE: the wordmark is scaled so its *circumscribing circle* (the smallest circle,
-# centred on the canvas, that exactly contains the wordmark's bounding box) has radius
-# `r_frac * canvas`. `r_frac` is therefore exactly *circle radius / canvas*, and is
-# aspect-independent (render() solves th/tw so circ_r == r_frac*canvas regardless of the
-# wordmark's proportions). Each surface has its own `r_frac`, chosen so every Hora app's
-# icons look identical across the family. These values are the ones Pathivu and Varisankya
-# actually ship (measured off their committed assets) — the single source of truth. An
-# earlier "fill the safe circle" experiment (FULL=0.5 / FG=0.305 / MASK=0.40) was applied
-# to one app only and read as oversized/edge-touching; reverted to these per-surface values
-# so the whole family matches (confirmed with Aarsh, 2026-07).
-# Since 2026-07-02 the r_frac circle circumscribes the (ink width × BASE-LETTER BAND
-# height) box — NOT the full ink box (see "band rule" below). Constants were
-# re-calibrated from the previous full-ink values by ×0.9329 (the Pathivu band/full
-# diagonal ratio) so Pathivu's rendered base-letter size is unchanged; every app's
-# BASE LETTERS now render at the same size and sit on the same optical line, with
-# ascenders (ീ/ി) and descenders (ു) extending beyond the band.
-#   PLAY_RFRAC     (0.3825) — Play Store 512 listing icon. Smaller than full-bleed because
-#                             Play re-crops + shadow-frames it in its own grid/detail chrome.
-#   FLAT_RFRAC     (0.2799) — flat square icons: iOS AppIcon + web favicon / PWA "any" icons.
-#   LAUNCHER_RFRAC (0.3200) — Android legacy + round launcher (full-bleed slate-on-BG square).
-#   FG_RFRAC       (0.2295) — Android adaptive foreground + monochrome (full ink hard-capped
-#                             to the 66dp/108dp adaptive safe circle, 0.305).
-#   MASK_RFRAC     (0.2239) — maskable web icon (full ink hard-capped to the W3C 0.40 zone).
-PLAY_RFRAC     = 0.3825
-FLAT_RFRAC     = 0.2799
-LAUNCHER_RFRAC = 0.3200
-FG_RFRAC       = 0.2295
-MASK_RFRAC     = 0.2239
+# ---- Icon geometry standard v3 (locked with Aarsh, 2026-07-03) -----------------------
+# THE SIX-LINE RULE. In every Hora icon, on every surface, these four guides are
+# FAMILY INVARIANTS (identical position in every app):
+#   band top / baseline        — the base-letter band (see "band rule" below)
+#   ink left / ink right      — the wordmark's horizontal extent
+# and these two are per-app, bounded by the safe-fit check:
+#   ascender top (ി/ീ)         descender bottom (ു)
+#
+#   R1 FIXED LETTER SIZE — the band renders BAND_FRAC*canvas high on each surface.
+#                          (Replaces the earlier circle-diagonal rule, which coupled
+#                          letter size to wordmark width: an 8.9% size spread.)
+#   R2 FIXED POSITION    — the band's vertical centre sits on the canvas centre.
+#   R3 FIXED WIDTH       — ink width = WIDTH_RATIO * band height; each wordmark is
+#                          x-stretched to it. Same anisotropic-scaling family move as
+#                          YSTRETCH, on the other axis. Tracking was evaluated and
+#                          rejected (Varisankya's single letter-gap would triple).
+#   R4 NATURAL EXTENDERS — vowel signs extend freely beyond the band (treatment A;
+#                          compression variants were reviewed and declined).
+#   R5 SAFE-FIT          — the FULL ink must fit the surface's safe circle (adaptive
+#                          0.305, maskable 0.40). The family constants carry headroom
+#                          for all current apps; the clamp in render() must never
+#                          bind — if it does, revisit the constants family-wide.
+#
+# Calibration: BAND_FRAC preserves Pathivu's shipped rendering under the previous rule
+# (band_frac = 2*r_frac*band_h/hypot(w_pathivu, band_h); w_pathivu/band_h = 2.4741), and
+# WIDTH_RATIO is Pathivu's natural width ratio — so Pathivu is the do-nothing reference
+# (x-stretch 1.0) and siblings stretch to it (Varisankya 1.116, Muthal 1.066).
+# Per-surface sizes (why they differ): Play is re-cropped + shadow-framed by Play's own
+# chrome; the adaptive foreground / maskable icons answer to their safe circles; the
+# flat squares + full-bleed launcher carry the established family margins.
+PLAY_BAND_FRAC     = 0.2867   # Play Store 512 listing icon
+FLAT_BAND_FRAC     = 0.2098   # flat squares: iOS AppIcon + web favicon / PWA "any"
+LAUNCHER_BAND_FRAC = 0.2398   # Android legacy + round launcher (slate-on-BG square)
+FG_BAND_FRAC       = 0.1720   # Android adaptive foreground + monochrome
+MASK_BAND_FRAC     = 0.1678   # maskable web icon
+WIDTH_RATIO        = 2.4741   # family ink width / band height (R3)
+XS_MIN, XS_MAX     = 0.98, 1.20  # allowed per-app x-stretch; outside -> family decision
 FG_SAFE_HARD   = 0.305   # adaptive-icon safe circle — full ink must never exceed this
 MASK_SAFE_HARD = 0.40    # W3C maskable safe circle — full ink must never exceed this
-R_FRAC         = FLAT_RFRAC   # back-compat default for bare render() calls
 
 def wordmark_mask_with_baseline(text, font=FONT, ystretch=YSTRETCH):
     """Alpha mask of the shaped, FreeType-rasterised wordmark, vertically stretched,
@@ -114,23 +123,34 @@ def _band():
         _band_cache = (float(ref.height), -ref_base)
     return _band_cache
 
-def render(text, canvas_px, color, r_frac=R_FRAC, bg=None, circle=False, ss=4, hard_rfrac=0.5):
-    """Wordmark rendered under the BAND rule: the circle of radius r_frac*canvas
-    circumscribes the box (full ink width × base-letter band height), and the BAND's
-    vertical centre sits on the canvas centre. Ascenders/descenders extend beyond the
-    band; `hard_rfrac` is a safety clamp — if the FULL ink would poke outside that
-    circle (e.g. the adaptive-icon safe zone), the whole wordmark scales down to fit,
-    band stays centred. Optional bg / circle mask as before."""
+def render(text, canvas_px, color, band_frac=FLAT_BAND_FRAC, bg=None, circle=False, ss=4, hard_rfrac=0.5):
+    """Wordmark rendered under the v3 six-line geometry: the base-letter BAND renders
+    band_frac*canvas high (R1) with its centre on the canvas centre (R2); the ink is
+    x-stretched to WIDTH_RATIO*band_h wide (R3) and centred; ascenders/descenders
+    extend naturally beyond the band (R4). `hard_rfrac` is the R5 safe-fit clamp —
+    under the family constants it must never bind; if a future wordmark trips it the
+    engine warns loudly (the icon would fall off-standard) and scales down to fit,
+    band kept centred. Optional bg / circle mask as before."""
     S = canvas_px * ss
     m, base = wordmark_mask_with_baseline(text); w, h = m.size
     band_h, band_top_rel = _band()
+    # R3 fixed ink width — x-stretch to the family ratio (Pathivu = 1.0).
+    xs = WIDTH_RATIO * band_h / w
+    if not (XS_MIN <= xs <= XS_MAX):
+        raise ValueError(
+            f"wordmark '{text}' needs x-stretch {xs:.3f}, outside [{XS_MIN}, {XS_MAX}] — "
+            "revisiting WIDTH_RATIO is a deliberate family decision (see the README)")
+    if abs(xs - 1.0) > 1e-3:
+        m = m.resize((max(1, round(w * xs)), h), Image.LANCZOS); w = m.width
     band_center = base + band_top_rel + band_h / 2.0        # row of band centre in mask
-    R = r_frac * S
-    s = 2.0 * R / math.hypot(w, band_h)
-    # Safety clamp on the FULL ink box (corner farthest from the canvas centre).
+    s = band_frac * S / band_h                              # R1 fixed letter size
+    # R5 safe-fit clamp on the FULL ink box (corner farthest from the canvas centre).
     d_top = abs(0 - band_center); d_bot = abs(h - band_center)
     dmax = max(math.hypot(w / 2.0, d_top), math.hypot(w / 2.0, d_bot))
     if s * dmax > hard_rfrac * S:
+        print(f"WARNING: '{text}' trips the {hard_rfrac} safe-fit clamp — this icon is "
+              "OFF-standard (smaller letters than its siblings); revisit the family "
+              "constants instead of shipping it.", file=sys.stderr)
         s = hard_rfrac * S / dmax
     tw = max(1, round(w * s)); th = max(1, round(h * s))
     m = m.resize((tw, th), Image.LANCZOS)
@@ -156,26 +176,26 @@ LG = {"mdpi": 48, "hdpi": 72, "xhdpi": 96, "xxhdpi": 144, "xxxhdpi": 192}
 def generate(text, res_dir):
     """Write the full Android asset set for `text` into `res_dir`."""
     for dpi, px in FG.items():
-        _save(render(text, px, SLATE, r_frac=FG_RFRAC, hard_rfrac=FG_SAFE_HARD),
+        _save(render(text, px, SLATE, band_frac=FG_BAND_FRAC, hard_rfrac=FG_SAFE_HARD),
               os.path.join(res_dir, f"mipmap-{dpi}", "ic_launcher_foreground.png"))
-    _save(render(text, 432, (0, 0, 0), r_frac=FG_RFRAC, hard_rfrac=FG_SAFE_HARD),
+    _save(render(text, 432, (0, 0, 0), band_frac=FG_BAND_FRAC, hard_rfrac=FG_SAFE_HARD),
           os.path.join(res_dir, "drawable-nodpi", "ic_launcher_monochrome.png"))
     for dpi, px in LG.items():
-        _save(render(text, px, SLATE, r_frac=LAUNCHER_RFRAC, bg=BG).convert("RGB"),
+        _save(render(text, px, SLATE, band_frac=LAUNCHER_BAND_FRAC, bg=BG).convert("RGB"),
               os.path.join(res_dir, f"mipmap-{dpi}", "ic_launcher.png"))
-        _save(render(text, px, SLATE, r_frac=LAUNCHER_RFRAC, bg=BG, circle=True),
+        _save(render(text, px, SLATE, band_frac=LAUNCHER_BAND_FRAC, bg=BG, circle=True),
               os.path.join(res_dir, f"mipmap-{dpi}", "ic_launcher_round.png"))
 
 def play_icon(text, out_path):
-    """Play Store 512 listing icon (full-bleed square). Wordmark maxed inside the smaller
-    PLAY_RFRAC circle (not the full canvas) so it doesn't read as cramped inside Play's
-    own grid/detail chrome — the established family look. Write OUTSIDE res/ (not a build
+    """Play Store 512 listing icon (full-bleed square). Letters sized by PLAY_BAND_FRAC
+    (smaller than full-bleed) so the mark doesn't read as cramped inside Play's own
+    grid/detail chrome — the established family look. Write OUTSIDE res/ (not a build
     resource)."""
-    _save(render(text, 512, SLATE, r_frac=PLAY_RFRAC, bg=BG).convert("RGB"), out_path)
+    _save(render(text, 512, SLATE, band_frac=PLAY_BAND_FRAC, bg=BG).convert("RGB"), out_path)
 
-def flat_icon(text, out_path, px=1024, r_frac=FLAT_RFRAC, hard_rfrac=0.5):
+def flat_icon(text, out_path, px=1024, band_frac=FLAT_BAND_FRAC, hard_rfrac=0.5):
     """Flat square icon (iOS AppIcon, web favicon/PWA) — slate wordmark on near-white, no mask."""
-    _save(render(text, px, SLATE, r_frac=r_frac, bg=BG, hard_rfrac=hard_rfrac).convert("RGB"), out_path)
+    _save(render(text, px, SLATE, band_frac=band_frac, bg=BG, hard_rfrac=hard_rfrac).convert("RGB"), out_path)
 
 # --- Notification small icon: solid disc with the app's initial knocked out -------
 import re as _re
@@ -268,7 +288,7 @@ def generate_all(cfg):
     flat_icon(cfg["text"], os.path.join(web, "public", "icon-192.png"), 192)
     flat_icon(cfg["text"], os.path.join(web, "public", "icon-512.png"), 512)
     flat_icon(cfg["text"], os.path.join(web, "public", "icon-maskable-512.png"), 512,
-              r_frac=MASK_RFRAC, hard_rfrac=MASK_SAFE_HARD)
+              band_frac=MASK_BAND_FRAC, hard_rfrac=MASK_SAFE_HARD)
     play_icon(cfg["text"], os.path.join(repo, "android", "play_icon_512.png"))
 
 if __name__ == "__main__":

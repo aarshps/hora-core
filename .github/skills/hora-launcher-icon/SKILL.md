@@ -8,11 +8,14 @@ description: Generate ALL Hora-family app icons (Android launcher + notification
 **As of 2026-06 there IS a shared engine** — use it, don't hand-tune per app. The family icon is the
 app's short Malayalam name (Pathivu **പതി**, Varisankya **വരി**, Muthal **മുത**) set in **Baloo Chettan 2**
 (700, +45% vertical stretch), slate **#445353** on **#FCFCFC**, centered.
-**Sizing (locked 2026-07 — the "max-in-circle" rule):** the wordmark is scaled so its circumscribing
-circle (centred on the canvas) is the **largest circle that fits the icon's usable area** — max size
-in that circle. `r_frac` = circle radius / canvas: `FULL_RFRAC=0.5` (unmasked/circular: Play, iOS, web
-favicon/PWA-any, legacy+round launcher), `FG_RFRAC=0.305` (adaptive foreground + monochrome safe
-circle), `MASK_RFRAC=0.40` (maskable web safe circle). Canonical generator + font + full spec:
+**Geometry (locked 2026-07-03 — the v3 "six-line rule"):** in every icon, on every surface, four
+guides are family invariants — the base-letter **band top** + **baseline** (band renders exactly
+`BAND_FRAC × canvas` high, centred; per-surface constants in the engine) and the **ink left/right**
+edges (ink width = `2.4741 × band height`, each wordmark x-stretched to it — Pathivu 1.0 reference,
+Varisankya 1.116, Muthal 1.066). Vowel-sign ascenders/descenders extend naturally (per-app), and the
+full ink is verified against each surface's safe circle (adaptive 0.305, maskable 0.40); the engine
+raises if a new wordmark needs an x-stretch outside `[0.98, 1.20]` — a family decision, not a per-app
+tweak. Canonical generator + font + full spec:
 **[`brand/launcher-icon/`](../../../brand/launcher-icon/README.md)** → `gen_launcher_icon.py`.
 
 ```

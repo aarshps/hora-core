@@ -294,9 +294,14 @@ status-bar icon, the iOS AppIcon, web favicon/PWA icons, and the Play 512 — is
 generated from **one engine and one spec**: the app's Malayalam wordmark set in
 **Baloo Chettan 2** (700), slate `#445353` on near-white `#FCFCFC`, shaped with
 harfbuzz and rasterised by FreeType (so self-intersecting glyphs like ത fill with no
-holes). The notification icon is specifically a **solid white disc with the app's
-Malayalam initial knocked out as a hollow** (single `evenOdd` path) drawn from the same
-Baloo glyph. Canonical standard, generator, and per-app config live in
+holes). Geometry follows the **v3 six-line standard** (locked 2026-07-03): on every
+surface the base-letter band renders at the same fixed size, centred, and the ink at
+the same fixed width (`2.4741 ×` band height, via per-app horizontal stretch — Pathivu
+is the 1.0 reference), with vowel-sign ascenders/descenders extending naturally and the
+full ink verified against each surface's safe circle. The notification icon is
+specifically a **solid white disc with the app's Malayalam initial knocked out as a
+hollow** (single `evenOdd` path) drawn from the same Baloo glyph. Canonical standard,
+generator, and per-app config live in
 [`brand/launcher-icon/`](../brand/launcher-icon/README.md). These are firm family
 conventions, not hedged references — do not revert to hand-authored raster tuning, nor
 to a framed or stroked-glyph notification treatment.
