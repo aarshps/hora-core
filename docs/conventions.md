@@ -164,6 +164,44 @@ family error-handling rule is: **only `GetCredentialCancellationException` may b
 reported as "cancelled"** — map other credential exceptions to a real error message,
 or a missing-SHA misconfiguration masquerades as the user changing their mind.
 
+### Android App Links (`assetlinks.json`) — reuse the SHA-256s above (2026-07, Muthal)
+
+If an app has a universal link (e.g. `/join/{code}`) that should open the native app
+instead of falling back to the browser, Android verifies it against
+`https://<web-host>/.well-known/assetlinks.json`:
+
+```json
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "<applicationId>",
+    "sha256_cert_fingerprints": ["<upload-key SHA-256>", "<Play App Signing SHA-256>"]
+  }
+}]
+```
+
+It needs **both** SHA-256s from the section above — GitHub-release sideload APKs are
+signed with the upload key; Play-installed builds present the Play App Signing key.
+Corresponding manifest side: `android:autoVerify="true"` on the activity's `VIEW`
+intent-filter for that host/path.
+
+**Getting the fingerprints without a Play Console trip:**
+- **Upload key:** `keytool -list -v -keystore <path> -alias <alias> -storepass ... -keypass
+  ...`, grep the `SHA256:` line — this is always available locally, no API needed.
+- **Play App Signing key:** the Android Publisher v3 API has **no endpoint** that exposes
+  this cert (checked the discovery doc — don't waste time looking). But if the app already
+  registered it in Firebase for the Google Sign-In fix above, read it back with
+  `firebase apps:android:sha:list <app-id> --project <project>` instead of opening Play
+  Console → App integrity again. Only works if that registration already happened once;
+  for a brand-new app, Play Console's App integrity page is still the only source.
+
+**Verify the live file**, don't just trust that it loads — hit Google's own Digital Asset
+Links API and confirm the statements parse and match:
+```bash
+curl -s "https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://<web-host>&relation=delegate_permission/common.handle_all_urls"
+```
+
 ### Material You Dynamic Colors (required on every Android app)
 
 Every family Android app derives its palette from the user's wallpaper on Android 12+.
