@@ -202,6 +202,52 @@ Links API and confirm the statements parse and match:
 curl -s "https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://<web-host>&relation=delegate_permission/common.handle_all_urls"
 ```
 
+### Android Google-Sans/System font toggle — `BaseActivity.kt` bug fixed (2026-07, Muthal)
+
+**Bug (now fixed in the canonical `shared/android/kotlin/BaseActivity.kt`):** the dynamic
+theme-swap lookup built its style name with a hardcoded `"Theme_"` (underscore) prefix —
+`resources.getIdentifier("Theme_${appName}.SystemFont", "style", packageName)` — but every
+app's actual theme is declared `Theme.<AppName>` (a **dot**, standard Android convention).
+`Resources.getIdentifier()` matches the literal compiled resource-table entry name, which
+keeps its dots — aapt2 only substitutes underscores in the generated Java `R.style.*`
+constant name, never in the resource table itself. Verified empirically, don't just take
+this on faith:
+```bash
+aapt2 dump resources app-debug.apk | grep -i systemfont
+#   resource 0x7f130330 style/Theme.Muthal.SystemFont     <- dots, not underscores
+```
+So the lookup always returned `0` (not found), `setTheme()` silently no-op'd, and toggling
+"System font" OFF persisted the preference correctly but never changed anything on
+screen — the app just kept rendering whatever the AndroidManifest's static
+`android:theme` declared (always the Google-Sans theme), regardless of the toggle.
+**Fixed:** changed both `"Theme_"` prefixes to `"Theme."` in the canonical file. **Pathivu
+and Varisankya agents: your apps have the same bug in your already-synced copy of
+`BaseActivity.kt`** (byte-identical file, confirmed) — re-run your
+`tools/sync_shared_android.sh` to pick up the fix. Nothing else needs to change; the rest
+of the mechanism (cache `currentFontEnabled` at `onCreate`, `recreate()` when it drifts in
+`onResume`) was always correct.
+
+### iOS Google-Sans/System font toggle — gate `.fontDesign` at the App root (2026-07, Muthal)
+
+Muthal's iOS app had the same *shape* of bug as the Android one above, for a different
+reason: `MuthalApp.swift` applied `.fontDesign(.rounded)` **unconditionally** at the
+`WindowGroup` root, and `SettingsView.swift` had its own hardcoded `.fontDesign(.rounded)`
+override too — so the "Rounded font" `Toggle` persisted a preference that literally
+nothing ever read. **Pathivu is the correct reference implementation:**
+`PathivuApp.swift` gates it — `.fontDesign(preferences.useGoogleFont ? .rounded :
+.default)` — using an `@Observable Preferences` singleton read directly in the App's
+`body`. **Varisankya's iOS app has the identical bug Muthal had** (checked — no
+`.fontDesign` call anywhere reads its `useGoogleFont` preference either); it is not a
+reference for this pattern, only Pathivu is. Muthal's fix used `@AppStorage` instead of
+`@Observable` (Muthal's whole app is still on the classic `ObservableObject`/
+`@EnvironmentObject` pattern, not worth a wider migration for one boolean) —
+`@AppStorage("use_google_font")` added directly to `MuthalApp`'s `body`, plus removing the
+hardcoded override in `SettingsView` so it inherits from the root instead of shadowing it.
+Either wiring works; the requirement is just that *some* view actually reads the
+preference to gate `.fontDesign`, and that no descendant view re-hardcodes it afterward.
+**Varisankya agent: apply the same fix** (either `@Observable` like Pathivu, or
+`@AppStorage` like Muthal — whichever fits your app's existing architecture).
+
 ### Material You Dynamic Colors (required on every Android app)
 
 Every family Android app derives its palette from the user's wallpaper on Android 12+.

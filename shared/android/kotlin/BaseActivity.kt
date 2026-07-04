@@ -21,11 +21,20 @@ open class BaseActivity : AppCompatActivity() {
         // Cache the current preference value used to create this activity
         currentFontEnabled = PreferenceHelper.isGoogleFontEnabled(this)
         
-        // 1. Apply the Base Theme (decides the font)
+        // 1. Apply the Base Theme (decides the font).
+        // NOTE: style resource names keep their dots at runtime — aapt2 only replaces
+        // dots with underscores in the generated Java `R` field name (R.style.Theme_App),
+        // not in the resource table entry itself, which Resources.getIdentifier() matches
+        // against literally. Verified with `aapt2 dump resources` against a built APK:
+        // the compiled entry is "style/Theme.Muthal.SystemFont", never
+        // "style/Theme_Muthal.SystemFont". An earlier "Theme_" (underscore) prefix here
+        // never matched anything, so setTheme() silently no-op'd (styleRes == 0) and the
+        // System-font option appeared to do nothing — the toggle persisted the
+        // preference correctly, but the visual theme swap never actually happened.
         val styleRes = if (!currentFontEnabled) {
-            resources.getIdentifier("Theme_${resources.getString(R.string.app_name)}.SystemFont", "style", packageName)
+            resources.getIdentifier("Theme.${resources.getString(R.string.app_name)}.SystemFont", "style", packageName)
         } else {
-            resources.getIdentifier("Theme_${resources.getString(R.string.app_name)}", "style", packageName)
+            resources.getIdentifier("Theme.${resources.getString(R.string.app_name)}", "style", packageName)
         }
         if (styleRes != 0) {
             setTheme(styleRes)
