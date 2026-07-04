@@ -100,6 +100,27 @@ Play release-notes read the same way:
 `hora-app-release` defers the numbers to this scheme; each app's `CLAUDE.md` "current version" line
 records the last shipped `versionName` / `versionCode` and the next free code.
 
+### Stable (production) cut — proven procedure (first walked by Pathivu v1.0, 2026-07-05)
+
+Once Google grants production access (the closed-test gate: ≥ 12 testers, 14 continuous days,
+then an application reviewed in ~2–7 days), the stable cut is a **version-name promotion, not a
+feature change** — ship the beta code as-is under the stable name:
+
+1. **Version:** `versionName` drops the suffix (`1.0-beta.53` → `1.0`), `versionCode` +1 as
+   always (the stable cut is its own build — versionName is baked into the binary).
+2. **Release notes:** add `release-notes/<locale>/production.txt` with **public-facing** copy
+   (what the app is, for a first-time store visitor) — distinct from the tester-facing
+   `internal.txt`. Both ≤ 500 chars, plain ASCII.
+3. **Ship order:** build → publish **internal** → promote **alpha** (testers keep receiving
+   stable builds; the closed track never goes stale) → promote **production**
+   (`--release-status completed`; use a staged rollout only if the release carries risk —
+   a pure version-name promotion of an already-tested beta doesn't).
+4. **Git/GitHub:** tag `vMAJOR.MINOR`; the GitHub release is **not** marked pre-release
+   (betas are; the stable isn't — that's the visible difference in the release list).
+5. **After:** the next feature work opens a new beta line (`MAJOR.(MINOR+1)-beta.1`).
+   Update the app's `CLAUDE.md` current-version line and its wiki's release/gate sections
+   in the same pass.
+
 ## Tester recruitment & Google Group standards
 
 To manage external testers for Google Play Console's Closed Testing tracks (e.g. the 20-testers requirement), each Hora app uses a standardized Google Group setup:
