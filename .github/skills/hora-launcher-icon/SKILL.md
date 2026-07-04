@@ -8,16 +8,18 @@ description: Generate ALL Hora-family app icons (Android launcher + notification
 **As of 2026-06 there IS a shared engine** — use it, don't hand-tune per app. The family icon is the
 app's short Malayalam name (Pathivu **പതി**, Varisankya **വരി**, Muthal **മുത**) set in **Baloo Chettan 2**
 (700, +45% vertical stretch), slate **#445353** on **#FCFCFC**, centered.
-**Geometry (locked 2026-07-03 — the v3 "six-line rule"; Y-shift added 2026-07-04):** in every icon,
-on every surface, four guides are family invariants — the base-letter **band top** + **baseline**
-(band renders exactly `BAND_FRAC × canvas` high, centred **`Y_SHIFT_FRAC` (4%) of canvas below**
-canvas centre — dead-centre read as too high on review) and the **ink left/right** edges (ink width
-= `2.4741 × band height`, each wordmark x-stretched to it — Pathivu 1.0 reference, Varisankya 1.116,
-Muthal 1.066). Vowel-sign ascenders/descenders extend naturally (per-app), and the full ink is
-verified against each surface's safe circle (adaptive 0.305, maskable 0.40 — the 4% shift keeps
->=3pp of margin under the tightest one); the engine raises if a new wordmark needs an x-stretch
-outside `[0.98, 1.20]` — a family decision, not a per-app tweak. Canonical generator + font + full
-spec: **[`brand/launcher-icon/`](../../../brand/launcher-icon/README.md)** → `gen_launcher_icon.py`.
+**Geometry (locked 2026-07-03 — the v3 "six-line rule"; Y-shift added + tuned to 2% on 2026-07-04):**
+in every icon, on every surface, four guides are family invariants — the base-letter **band top** +
+**baseline** (band renders exactly `BAND_FRAC × canvas` high, centred **`Y_SHIFT_FRAC` (2%) of canvas
+below** canvas centre — 0% read as too high, 4% was tried and over-corrected Muthal (its descender-only
+extent sank under a shared line that looked right for the two ascender-only apps); 2% is the final,
+reviewed value) and the **ink left/right** edges (ink width = `2.4741 × band height`, each wordmark
+x-stretched to it — Pathivu 1.0 reference, Varisankya 1.116, Muthal 1.066). Vowel-sign
+ascenders/descenders extend naturally (per-app), and the full ink is verified against each surface's
+safe circle (adaptive 0.305, maskable 0.40 — the 2% shift keeps a worst-case 3.43pp of margin under
+the tightest one, Muthal on FG); the engine raises if a new wordmark needs an x-stretch outside
+`[0.98, 1.20]` — a family decision, not a per-app tweak. Canonical generator + font + full spec:
+**[`brand/launcher-icon/`](../../../brand/launcher-icon/README.md)** → `gen_launcher_icon.py`.
 
 ```
 pip install uharfbuzz freetype-py fonttools brotli numpy pillow

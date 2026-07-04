@@ -40,10 +40,21 @@ EM        = 2000     # FreeType em pixels (hi-res master for crisp downsamples)
 #                          (Replaces the earlier circle-diagonal rule, which coupled
 #                          letter size to wordmark width: an 8.9% size spread.)
 #   R2 FIXED POSITION    — the band's vertical centre sits Y_SHIFT_FRAC*canvas BELOW the
-#                          canvas centre (locked 2026-07-04: dead-centre read as too high;
-#                          4% down is clearly perceptible with >=3pp of margin under the
-#                          tightest safe-fit clamp — FG allows up to 7.16% before tripping,
-#                          PLAY/LAUNCHER/FLAT/MASK all allow 10.76-24.82%).
+#                          canvas centre (locked 2026-07-04, revised same day to 2%).
+#                          History: dead-centre (0%) read as too high on first review;
+#                          4% was tried next but over-corrected — with one SHARED line
+#                          across apps, Muthal (descender-only, no ascender) sank
+#                          visibly, while Pathivu/Varisankya (ascender-only) looked
+#                          right. Principled family-fair analysis (centroid-centering
+#                          each app, then averaging/minimax across all three) converges
+#                          to ~0-0.3%, confirming a uniform shift can't optically serve
+#                          an ascender-heavy and a descender-heavy app at once — any
+#                          uniform value is a deliberate compromise, not a computed
+#                          optimum. Final call after side-by-side review: 2% down —
+#                          perceptibly off dead-centre without Muthal sinking, with a
+#                          worst-case 3.43pp margin under the tightest safe-fit clamp
+#                          (Muthal on the adaptive-foreground surface; FG allows up to
+#                          7.16% before tripping; PLAY/LAUNCHER/FLAT/MASK allow far more).
 #   R3 FIXED WIDTH       — ink width = WIDTH_RATIO * band height; each wordmark is
 #                          x-stretched to it. Same anisotropic-scaling family move as
 #                          YSTRETCH, on the other axis. Tracking was evaluated and
@@ -68,7 +79,7 @@ LAUNCHER_BAND_FRAC = 0.2398   # Android legacy + round launcher (slate-on-BG squ
 FG_BAND_FRAC       = 0.1720   # Android adaptive foreground + monochrome
 MASK_BAND_FRAC     = 0.1678   # maskable web icon
 WIDTH_RATIO        = 2.4741   # family ink width / band height (R3)
-Y_SHIFT_FRAC       = 0.04     # band centre offset below canvas centre, all surfaces (R2)
+Y_SHIFT_FRAC       = 0.02     # band centre offset below canvas centre, all surfaces (R2)
 XS_MIN, XS_MAX     = 0.98, 1.20  # allowed per-app x-stretch; outside -> family decision
 FG_SAFE_HARD   = 0.305   # adaptive-icon safe circle — full ink must never exceed this
 MASK_SAFE_HARD = 0.40    # W3C maskable safe circle — full ink must never exceed this

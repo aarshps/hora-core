@@ -419,20 +419,28 @@ Baloo glyph. Canonical standard, generator, and per-app config live in
 conventions, not hedged references — do not revert to hand-authored raster tuning, nor
 to a framed or stroked-glyph notification treatment.
 
-**Icon geometry — the v3 six-line rule (locked 2026-07-03, Y-shift added 2026-07-04).**
-Malayalam vowel signs break naive bounding-box fitting: **ു descends below** the base
-letters (Muthal "മുത") while **ീ/ി ascend above** them (Pathivu "പതി", Varisankya "വരി"),
-and wordmark widths differ ~10% app to app. Fitting the full ink box (or a circle around
-it) couples letter size to width and ascender/descender extent — icons never read as
-standardised. So the engine fixes **four family-invariant guides** per icon, on every
-surface, and leaves only two guides natural per app:
+**Icon geometry — the v3 six-line rule (locked 2026-07-03, Y-shift added and tuned
+2026-07-04).** Malayalam vowel signs break naive bounding-box fitting: **ു descends
+below** the base letters (Muthal "മുത") while **ീ/ി ascend above** them (Pathivu "പതി",
+Varisankya "വരി"), and wordmark widths differ ~10% app to app. Fitting the full ink box
+(or a circle around it) couples letter size to width and ascender/descender extent —
+icons never read as standardised. So the engine fixes **four family-invariant guides**
+per icon, on every surface, and leaves only two guides natural per app:
 
 - **Band top / baseline (R1 + R2)** — the *base-letter band* (`REF_BAND_GLYPH = "പ"`;
   all Baloo Chettan 2 base consonants share one band height, measured once via the
   baseline) renders exactly `BAND_FRAC × canvas` high, and its vertical centre sits
-  **`Y_SHIFT_FRAC` (4%) of canvas below** the canvas centre — dead-centre read as too
-  high, and 4% down is clearly perceptible while keeping >=3 percentage points of
-  margin under the tightest safe-fit clamp (see below).
+  **`Y_SHIFT_FRAC` (2%) of canvas below** the canvas centre. History: dead-centre (0%)
+  read as too high on first review; 4% was tried next but over-corrected — with one
+  shared line across every app, Muthal (descender-only, no ascender) sank visibly while
+  Pathivu/Varisankya (ascender-only) looked right at that value. A principled
+  family-fair check (centroid-centring each app individually, then averaging/minimax
+  across all three) converges to ~0–0.3%, confirming a uniform shift can never
+  optically satisfy an ascender-heavy and a descender-heavy app simultaneously — any
+  nonzero uniform value is a deliberate compromise. Final call after side-by-side
+  review of both the family-fair analysis and rendered candidates: **2% down** —
+  perceptibly off dead-centre without Muthal sinking, with a worst-case 3.43
+  percentage-point margin under the tightest safe-fit clamp (see below).
 - **Ink left / ink right (R3)** — ink width is fixed at `WIDTH_RATIO (2.4741) × band
   height`; each wordmark is **x-stretched** to it (the same anisotropic-scaling move as
   the long-standing `YSTRETCH = 1.45`, on the other axis). Pathivu is the 1.0 reference;

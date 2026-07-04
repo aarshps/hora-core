@@ -19,11 +19,17 @@ all platforms. One engine, one look.
   per-app:
   1. **Fixed letter size** — the *base-letter band* (the ink band of a plain base consonant,
      പ/മ/വ/ത — they share one band in this font) renders exactly `BAND_FRAC × canvas` high.
-  2. **Fixed position** — the band's centre sits `Y_SHIFT_FRAC` (4%) of canvas **below** the
-     canvas centre, so **band top** and **baseline** land at the same (shifted) y in every
-     icon. Dead-centre read as too high on review; 4% down is clearly perceptible while
-     keeping >=3 percentage points of margin under the tightest safe-fit clamp (FG, which
-     allows up to 7.16% before tripping — the other four surfaces allow 10.76-24.82%).
+  2. **Fixed position** — the band's centre sits `Y_SHIFT_FRAC` (**2%**) of canvas
+     **below** the canvas centre, so **band top** and **baseline** land at the same
+     (shifted) y in every icon. Tuning history: 0% (dead-centre) read as too high; 4%
+     over-corrected — with one shared line across every app, Muthal (descender-only)
+     sank visibly while the two ascender-only apps looked right at that value. A
+     family-fair check (centroid-centring each app, then averaging/minimax across all
+     three) converges to ~0–0.3%, proving no uniform shift can optically satisfy an
+     ascender-heavy and a descender-heavy app at once. **2% down** was the final call
+     after side-by-side review — perceptibly off dead-centre without Muthal sinking,
+     worst-case 3.43 percentage points of margin under the tightest safe-fit clamp (FG,
+     which allows up to 7.16% before tripping — the other four surfaces allow far more).
   3. **Fixed width** — ink width = `WIDTH_RATIO (2.4741) × band height`; each wordmark is
      x-stretched to it and centred, so **ink left/right** land at the same x in every icon.
      (Letter-spacing was evaluated and rejected: with one letter-gap per wordmark it triples
