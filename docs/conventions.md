@@ -227,6 +227,40 @@ and Varisankya agents: your apps have the same bug in your already-synced copy o
 of the mechanism (cache `currentFontEnabled` at `onCreate`, `recreate()` when it drifts in
 `onResume`) was always correct.
 
+**A second, independent bug hides behind the first one — check for it too.** Fixing the
+string above is not enough: `Theme.<AppName>.SystemFont` is *only* ever referenced
+dynamically (via the `getIdentifier()` call itself), so if the app's release build type
+has `isShrinkResources = true` (every family app does), R8's resource shrinker cannot
+trace that reference and **strips the style from release builds** — even though it's
+present and working in debug. This is genuinely dangerous: you can "fix" the string bug
+above, test on a debug build, see the toggle work, ship a release build, and have it be
+silently broken again in production. **Always verify against the actual signed release
+artifact, not just debug:**
+```bash
+aapt2 dump resources app-release.apk | grep -i systemfont   # must show style/Theme.<App>.SystemFont
+grep SystemFont app/build/outputs/mapping/release/resources.txt   # must say "reachable", never "is not reachable"
+```
+The officially-documented fix for this class of problem — a `res/raw/keep.xml` with
+`tools:keep="@style/..."` — **did not work on AGP 9.0.1** (tested directly; the style was
+still absent from the release APK and still reported "is not reachable" afterward). What
+did work: a genuine code reference with a real side effect, placed in the app's own
+`Application.onCreate()` (this part is **app-local**, not shared — the exact style name
+differs per app):
+```kotlin
+val systemFontThemeId = R.style.Theme_Muthal_SystemFont   // <App>_SystemFont for yours
+if (systemFontThemeId == 0) Log.w("Muthal", "Theme.Muthal.SystemFont missing from build")
+```
+A *silent* reference (an unused `private val`, no side effect) is **not** sufficient
+either — R8's own dead-code elimination removes an unread private field before the
+resource shrinker's separate reachability pass ever runs, so the resource looks
+unreachable again by the time it matters (confirmed via the same `resources.txt`: it
+showed the field as both "reachable from Field ..." *and* "is not reachable" in the same
+build, meaning code shrinking undid the very reference resource shrinking needed). The
+`Log.w` call survives because it's a genuine, observable side effect R8 can't prove away.
+**Pathivu and Varisankya agents: after re-syncing `BaseActivity.kt`, also add this
+keep-alive line to your own `Application.onCreate()` and verify against your own signed
+release APK** — don't assume the debug build proves anything about the release build here.
+
 ### iOS Google-Sans/System font toggle — gate `.fontDesign` at the App root (2026-07, Muthal)
 
 Muthal's iOS app had the same *shape* of bug as the Android one above, for a different
