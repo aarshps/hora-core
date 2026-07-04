@@ -8,26 +8,35 @@ description: Generate ALL Hora-family app icons (Android launcher + notification
 **As of 2026-06 there IS a shared engine** — use it, don't hand-tune per app. The family icon is the
 app's short Malayalam name (Pathivu **പതി**, Varisankya **വരി**, Muthal **മുത**) set in **Baloo Chettan 2**
 (700, +45% vertical stretch), slate **#445353** on **#FCFCFC**, centered.
-**Geometry (locked 2026-07-03 — the v3 "six-line rule"):** in every icon, on every surface, four
-guides are family invariants — the base-letter **band top** + **baseline** (band renders exactly
-`BAND_FRAC × canvas` high, centred; per-surface constants in the engine) and the **ink left/right**
-edges (ink width = `2.4741 × band height`, each wordmark x-stretched to it — Pathivu 1.0 reference,
-Varisankya 1.116, Muthal 1.066). Vowel-sign ascenders/descenders extend naturally (per-app), and the
-full ink is verified against each surface's safe circle (adaptive 0.305, maskable 0.40); the engine
-raises if a new wordmark needs an x-stretch outside `[0.98, 1.20]` — a family decision, not a per-app
-tweak. Canonical generator + font + full spec:
-**[`brand/launcher-icon/`](../../../brand/launcher-icon/README.md)** → `gen_launcher_icon.py`.
+**Geometry (locked 2026-07-03 — the v3 "six-line rule"; Y-shift added 2026-07-04):** in every icon,
+on every surface, four guides are family invariants — the base-letter **band top** + **baseline**
+(band renders exactly `BAND_FRAC × canvas` high, centred **`Y_SHIFT_FRAC` (4%) of canvas below**
+canvas centre — dead-centre read as too high on review) and the **ink left/right** edges (ink width
+= `2.4741 × band height`, each wordmark x-stretched to it — Pathivu 1.0 reference, Varisankya 1.116,
+Muthal 1.066). Vowel-sign ascenders/descenders extend naturally (per-app), and the full ink is
+verified against each surface's safe circle (adaptive 0.305, maskable 0.40 — the 4% shift keeps
+>=3pp of margin under the tightest one); the engine raises if a new wordmark needs an x-stretch
+outside `[0.98, 1.20]` — a family decision, not a per-app tweak. Canonical generator + font + full
+spec: **[`brand/launcher-icon/`](../../../brand/launcher-icon/README.md)** → `gen_launcher_icon.py`.
 
 ```
 pip install uharfbuzz freetype-py fonttools brotli numpy pillow
 python gen_launcher_icon.py <app>      # writes launcher (all densities) + monochrome + legacy/round
                                        # + notification (ic_notification) + iOS + web + Play 512
+                                       # + the Play feature graphic (play_feature_graphic.png)
 ```
 
 It uses harfbuzz (shaping) + **FreeType** (the font's own nonzero rasteriser — correct fill, no holes
 in self-intersecting glyphs like ത). Add a new sibling by adding an `APPS` entry (Malayalam name +
-initial + repo path + iOS dir). **Always get explicit user sign-off before shipping — this icon is
-highly scrutinised.**
+initial + repo path + iOS dir + English `name_en`/`tagline_en` for the feature graphic). **Always
+get explicit user sign-off before shipping — this icon is highly scrutinised.**
+
+**Play Store feature graphic (`feature_graphic()`, added 2026-07-04):** same wordmark engine
+composed into the fixed 1024×500 Play slot — glyph left, Latin name (bold) + tagline (regular) in
+Google Sans Flex at `'ROND'` maxed to 100 to the right, slate accent bar on the right edge. The
+text column shrinks to fit (raises if the tagline doesn't fit even at the smallest allowed size —
+shorten it, don't widen the column). Full listing design language (store icon, screenshots,
+title/description copy conventions): `conventions.md` → "Play Store listing design language".
 
 The legacy material below (matching the old hand-drawn Varisankya reference with per-app font tuning,
 `varisankya-vari-reference.xml`) is **superseded** by the engine; kept only as history.

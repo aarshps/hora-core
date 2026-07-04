@@ -16,7 +16,7 @@ import os, sys, math
 import numpy as np
 import uharfbuzz as hb
 import freetype
-from PIL import Image, ImageChops, ImageDraw
+from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FONTS = os.path.join(HERE, "fonts")
@@ -39,7 +39,11 @@ EM        = 2000     # FreeType em pixels (hi-res master for crisp downsamples)
 #   R1 FIXED LETTER SIZE — the band renders BAND_FRAC*canvas high on each surface.
 #                          (Replaces the earlier circle-diagonal rule, which coupled
 #                          letter size to wordmark width: an 8.9% size spread.)
-#   R2 FIXED POSITION    — the band's vertical centre sits on the canvas centre.
+#   R2 FIXED POSITION    — the band's vertical centre sits Y_SHIFT_FRAC*canvas BELOW the
+#                          canvas centre (locked 2026-07-04: dead-centre read as too high;
+#                          4% down is clearly perceptible with >=3pp of margin under the
+#                          tightest safe-fit clamp — FG allows up to 7.16% before tripping,
+#                          PLAY/LAUNCHER/FLAT/MASK all allow 10.76-24.82%).
 #   R3 FIXED WIDTH       — ink width = WIDTH_RATIO * band height; each wordmark is
 #                          x-stretched to it. Same anisotropic-scaling family move as
 #                          YSTRETCH, on the other axis. Tracking was evaluated and
@@ -64,6 +68,7 @@ LAUNCHER_BAND_FRAC = 0.2398   # Android legacy + round launcher (slate-on-BG squ
 FG_BAND_FRAC       = 0.1720   # Android adaptive foreground + monochrome
 MASK_BAND_FRAC     = 0.1678   # maskable web icon
 WIDTH_RATIO        = 2.4741   # family ink width / band height (R3)
+Y_SHIFT_FRAC       = 0.04     # band centre offset below canvas centre, all surfaces (R2)
 XS_MIN, XS_MAX     = 0.98, 1.20  # allowed per-app x-stretch; outside -> family decision
 FG_SAFE_HARD   = 0.305   # adaptive-icon safe circle — full ink must never exceed this
 MASK_SAFE_HARD = 0.40    # W3C maskable safe circle — full ink must never exceed this
@@ -125,12 +130,14 @@ def _band():
 
 def render(text, canvas_px, color, band_frac=FLAT_BAND_FRAC, bg=None, circle=False, ss=4, hard_rfrac=0.5):
     """Wordmark rendered under the v3 six-line geometry: the base-letter BAND renders
-    band_frac*canvas high (R1) with its centre on the canvas centre (R2); the ink is
-    x-stretched to WIDTH_RATIO*band_h wide (R3) and centred; ascenders/descenders
-    extend naturally beyond the band (R4). `hard_rfrac` is the R5 safe-fit clamp —
-    under the family constants it must never bind; if a future wordmark trips it the
-    engine warns loudly (the icon would fall off-standard) and scales down to fit,
-    band kept centred. Optional bg / circle mask as before."""
+    band_frac*canvas high (R1) with its centre Y_SHIFT_FRAC*canvas below the canvas
+    centre (R2); the ink is x-stretched to WIDTH_RATIO*band_h wide (R3) and centred;
+    ascenders/descenders extend naturally beyond the band (R4). `hard_rfrac` is the R5
+    safe-fit clamp — under the family constants it must never bind; if a future
+    wordmark trips it the engine warns loudly (the icon would fall off-standard) and
+    scales down to fit, band kept at its shifted centre. Optional bg / circle mask as
+    before. The safe-fit clamp is measured from the CANVAS centre (not the shifted
+    band centre), since the safe circle itself is canvas-centred."""
     S = canvas_px * ss
     m, base = wordmark_mask_with_baseline(text); w, h = m.size
     band_h, band_top_rel = _band()
@@ -144,18 +151,30 @@ def render(text, canvas_px, color, band_frac=FLAT_BAND_FRAC, bg=None, circle=Fal
         m = m.resize((max(1, round(w * xs)), h), Image.LANCZOS); w = m.width
     band_center = base + band_top_rel + band_h / 2.0        # row of band centre in mask
     s = band_frac * S / band_h                              # R1 fixed letter size
-    # R5 safe-fit clamp on the FULL ink box (corner farthest from the canvas centre).
-    d_top = abs(0 - band_center); d_bot = abs(h - band_center)
-    dmax = max(math.hypot(w / 2.0, d_top), math.hypot(w / 2.0, d_bot))
-    if s * dmax > hard_rfrac * S:
+    cy = S / 2.0 + Y_SHIFT_FRAC * S                          # R2 shifted band centre
+
+    def _corner_dist(scale):
+        """Farthest ink corner's distance from the CANVAS centre (S/2,S/2) — the safe
+        circle is canvas-centred, not shifted-band-centred, so this must be measured
+        from the true centre even though the ink itself sits lower."""
+        top_y = cy - band_center * scale; bot_y = cy + (h - band_center) * scale
+        dx = (w * scale) / 2.0
+        return max(math.hypot(dx, abs(top_y - S / 2.0)), math.hypot(dx, abs(bot_y - S / 2.0)))
+
+    # R5 safe-fit clamp on the FULL ink box. Fixed-point correction (the shift means
+    # dmax isn't purely linear in s) — converges in a couple of steps; current family
+    # constants never enter this branch (verified with margin for all 3 apps).
+    dmax = _corner_dist(s)
+    if dmax > hard_rfrac * S:
         print(f"WARNING: '{text}' trips the {hard_rfrac} safe-fit clamp — this icon is "
               "OFF-standard (smaller letters than its siblings); revisit the family "
               "constants instead of shipping it.", file=sys.stderr)
-        s = hard_rfrac * S / dmax
+        for _ in range(4):
+            s *= (hard_rfrac * S) / _corner_dist(s)
     tw = max(1, round(w * s)); th = max(1, round(h * s))
     m = m.resize((tw, th), Image.LANCZOS)
     alpha = Image.new("L", (S, S), 0)
-    alpha.paste(m, ((S - tw) // 2, round(S / 2.0 - band_center * s)))
+    alpha.paste(m, ((S - tw) // 2, round(cy - band_center * s)))
     img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     if bg is not None:
         if circle:
@@ -196,6 +215,65 @@ def play_icon(text, out_path):
 def flat_icon(text, out_path, px=1024, band_frac=FLAT_BAND_FRAC, hard_rfrac=0.5):
     """Flat square icon (iOS AppIcon, web favicon/PWA) — slate wordmark on near-white, no mask."""
     _save(render(text, px, SLATE, band_frac=band_frac, bg=BG, hard_rfrac=hard_rfrac).convert("RGB"), out_path)
+
+# --- Play Store listing design language: feature graphic --------------------------
+# Locked with Aarsh, 2026-07-04. Same brand primitives as the icons (Baloo wordmark,
+# slate/BG, the band-rule render() incl. its Y-shift) plus Google Sans Flex at ROND=100
+# for the Latin name + tagline (per the "Marketing & static-image typography" rule).
+GSF_VARIABLE = os.path.join(HERE, "..", "..", "shared", "android", "res", "font",
+                             "google_sans_flex_variable.ttf")
+FEATURE_W, FEATURE_H = 1024, 500     # Play Store's fixed feature-graphic size
+FEATURE_GLYPH_BAND_FRAC = 0.26       # tuned for the glyph area in this composition
+FEATURE_ACCENT_W = 34                # right-edge slate accent bar
+
+def _fit_font(draw, text, max_w, start_px, min_px, axes):
+    """Largest font size <= start_px (never below min_px) whose rendered width of
+    `text` fits max_w. Raises rather than silently overflowing/clipping — a tagline
+    that doesn't fit even at the floor size needs shortening, not silent damage."""
+    px = start_px
+    while px > min_px:
+        f = ImageFont.truetype(GSF_VARIABLE, px); f.set_variation_by_axes(axes(px))
+        bbox = draw.textbbox((0, 0), text, font=f)
+        if bbox[2] - bbox[0] <= max_w:
+            return f, bbox
+        px -= 2
+    f = ImageFont.truetype(GSF_VARIABLE, min_px); f.set_variation_by_axes(axes(min_px))
+    bbox = draw.textbbox((0, 0), text, font=f)
+    if bbox[2] - bbox[0] > max_w:
+        raise ValueError(f"'{text}' doesn't fit even at the {min_px}px floor "
+                          f"({bbox[2] - bbox[0]}px needed vs {max_w}px available) — "
+                          "shorten the tagline or widen the text column")
+    return f, bbox
+
+def feature_graphic(text, name_en, tagline_en, out_path):
+    """Play Store feature graphic (1024x500): the Malayalam wordmark glyph (rendered by
+    the same render() used for every icon, so it carries the family band rule + Y-shift
+    verbatim) on the left, the Latin app name (bold) + one-line tagline (regular) — both
+    Google Sans Flex at ROND=100, shrunk to fit the column so a long tagline never
+    overflows or clips — to its right, and a slate accent bar on the right edge."""
+    img = Image.new("RGB", (FEATURE_W, FEATURE_H), BG)
+    glyph_px = FEATURE_H
+    glyph = render(text, glyph_px, SLATE, band_frac=FEATURE_GLYPH_BAND_FRAC, bg=None)
+    img.paste(glyph, (40, 0), glyph)
+
+    d = ImageDraw.Draw(img)
+    text_x = 40 + glyph_px + 20
+    max_text_w = FEATURE_W - FEATURE_ACCENT_W - 30 - text_x
+
+    f_name, name_bbox = _fit_font(d, name_en, max_text_w, 84, 48,
+                                   lambda px: [max(48, min(96, px)), 100, 700, 0, 100, 0])
+    f_tag, tag_bbox = _fit_font(d, tagline_en, max_text_w, 34, 20,
+                                 lambda px: [px, 100, 500, 0, 100, 0])
+
+    gap = 18
+    block_h = (name_bbox[3] - name_bbox[1]) + gap + (tag_bbox[3] - tag_bbox[1])
+    y0 = (FEATURE_H - block_h) / 2 - name_bbox[1]
+    d.text((text_x, y0), name_en, font=f_name, fill=SLATE)
+    y1 = y0 + name_bbox[3] + gap - tag_bbox[1]   # tag ink-top = name ink-bottom + gap
+    d.text((text_x, y1), tagline_en, font=f_tag, fill=SLATE)
+
+    d.rectangle([FEATURE_W - FEATURE_ACCENT_W, 0, FEATURE_W, FEATURE_H], fill=SLATE)
+    _save(img, out_path)
 
 # --- Notification small icon: solid disc with the app's initial knocked out -------
 import re as _re
@@ -265,14 +343,17 @@ APPS = {
     "pathivu": dict(
         text="പതി", letter="പ", ios_dir="Pathivu",
         repo=r"C:\Users\Aarsh\Source\pathivu\pathivu",
+        name_en="Pathivu", tagline_en="Habit tracker",
     ),
     "varisankya": dict(
         text="വരി", letter="വ", ios_dir="Varisankya",
         repo=r"C:\Users\Aarsh\Source\varisankya\varisankya",
+        name_en="Varisankya", tagline_en="Subscription & recurring-payment tracker",
     ),
     "muthal": dict(
         text="മുത", letter="മ", ios_dir="Muthal",
         repo=r"C:\Users\Aarsh\Source\muthal\muthal",
+        name_en="Muthal", tagline_en="Income & expense ledger for institutions",
     ),
 }
 
@@ -290,6 +371,8 @@ def generate_all(cfg):
     flat_icon(cfg["text"], os.path.join(web, "public", "icon-maskable-512.png"), 512,
               band_frac=MASK_BAND_FRAC, hard_rfrac=MASK_SAFE_HARD)
     play_icon(cfg["text"], os.path.join(repo, "android", "play_icon_512.png"))
+    feature_graphic(cfg["text"], cfg["name_en"], cfg["tagline_en"],
+                     os.path.join(repo, "android", "play_feature_graphic.png"))  # Play Store listing
 
 if __name__ == "__main__":
     import sys

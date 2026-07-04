@@ -412,77 +412,127 @@ status-bar icon, the iOS AppIcon, web favicon/PWA icons, and the Play 512 — is
 generated from **one engine and one spec**: the app's Malayalam wordmark set in
 **Baloo Chettan 2** (700), slate `#445353` on near-white `#FCFCFC`, shaped with
 harfbuzz and rasterised by FreeType (so self-intersecting glyphs like ത fill with no
-holes). Geometry follows the **v3 six-line standard** (locked 2026-07-03): on every
-surface the base-letter band renders at the same fixed size, centred, and the ink at
-the same fixed width (`2.4741 ×` band height, via per-app horizontal stretch — Pathivu
-is the 1.0 reference), with vowel-sign ascenders/descenders extending naturally and the
-full ink verified against each surface's safe circle. The notification icon is
-specifically a **solid white disc with the app's Malayalam initial knocked out as a
-hollow** (single `evenOdd` path) drawn from the same Baloo glyph. Canonical standard,
-generator, and per-app config live in
+holes). The notification icon is specifically a **solid white disc with the app's
+Malayalam initial knocked out as a hollow** (single `evenOdd` path) drawn from the same
+Baloo glyph. Canonical standard, generator, and per-app config live in
 [`brand/launcher-icon/`](../brand/launcher-icon/README.md). These are firm family
 conventions, not hedged references — do not revert to hand-authored raster tuning, nor
 to a framed or stroked-glyph notification treatment.
 
-**Wordmark sizing — the BAND rule (locked with Aarsh, 2026-07-02).** Malayalam vowel
-signs break naive bounding-box fitting: **ു descends below** the base letters (Muthal
-"മുത") while **ീ/ി ascend above** them (Pathivu "പതി", Varisankya "വരി"). Fit the full
-ink box and the *base letters* render at different sizes and different vertical
-positions per app — icons never look standardised. So all scaling and centering is done
-on the **base-letter band**, not the ink box:
+**Icon geometry — the v3 six-line rule (locked 2026-07-03, Y-shift added 2026-07-04).**
+Malayalam vowel signs break naive bounding-box fitting: **ു descends below** the base
+letters (Muthal "മുത") while **ീ/ി ascend above** them (Pathivu "പതി", Varisankya "വരി"),
+and wordmark widths differ ~10% app to app. Fitting the full ink box (or a circle around
+it) couples letter size to width and ascender/descender extent — icons never read as
+standardised. So the engine fixes **four family-invariant guides** per icon, on every
+surface, and leaves only two guides natural per app:
 
-- The **band** is the ink band of a plain base consonant (`REF_BAND_GLYPH = "പ"` in the
-  engine — all Baloo Chettan 2 base consonants share the same band height, sitting on
-  the baseline). The engine measures it once through the identical shaping/stretch
-  pipeline and locates it inside each wordmark via the baseline.
-- **Scale:** the circle of radius `r_frac × canvas` circumscribes the box
-  *(full ink width × band height)*.
-- **Position:** the band's vertical centre sits on the canvas centre; ascenders and
-  descenders extend naturally above/below the band.
-- **Safety clamp:** the *full ink* must still fit inside a per-surface hard circle
-  (`FG_SAFE_HARD = 0.305` adaptive safe zone, `MASK_SAFE_HARD = 0.40` W3C maskable,
-  `0.5` otherwise) — if a long ascender/descender would poke out, the whole wordmark
-  scales down with the band kept centred.
+- **Band top / baseline (R1 + R2)** — the *base-letter band* (`REF_BAND_GLYPH = "പ"`;
+  all Baloo Chettan 2 base consonants share one band height, measured once via the
+  baseline) renders exactly `BAND_FRAC × canvas` high, and its vertical centre sits
+  **`Y_SHIFT_FRAC` (4%) of canvas below** the canvas centre — dead-centre read as too
+  high, and 4% down is clearly perceptible while keeping >=3 percentage points of
+  margin under the tightest safe-fit clamp (see below).
+- **Ink left / ink right (R3)** — ink width is fixed at `WIDTH_RATIO (2.4741) × band
+  height`; each wordmark is **x-stretched** to it (the same anisotropic-scaling move as
+  the long-standing `YSTRETCH = 1.45`, on the other axis). Pathivu is the 1.0 reference;
+  Varisankya stretches 1.116×, Muthal 1.066×. Letter-spacing was evaluated and rejected
+  (each wordmark has exactly one grapheme-cluster gap; Varisankya's would triple and
+  read as two words).
+- **Ascender top / descender bottom (R4)** — vowel signs extend **naturally** beyond the
+  band; compression variants were reviewed and declined.
+- **Safety clamp (R5)** — the *full ink* (extenders included) must still fit a
+  per-surface safe circle, measured from the **canvas centre** (not the shifted band
+  centre, since the safe zone itself is canvas-centred): `FG_SAFE_HARD = 0.305`
+  (adaptive), `MASK_SAFE_HARD = 0.40` (W3C maskable), `0.5` otherwise. The engine warns
+  loudly if a wordmark ever trips this (an off-standard icon must never ship — revisit
+  the family constants instead), and **raises** if a new wordmark's required x-stretch
+  falls outside `[0.98, 1.20]` (a deliberate family decision, never a silent per-app
+  tweak).
 
-Result: every app's **base letters render at the same size and sit on the same optical
-line**; only the marks differ. Per-surface constants (re-calibrated ×0.9329 — the
-Pathivu band/full diagonal ratio — so Pathivu's rendered base-letter size is unchanged
-from its previously shipped icons):
+Result: every app's **base letters render at the same size, at the same (shifted)
+vertical position, and the same width** — only the vowel marks differ. Per-surface
+`BAND_FRAC` constants (calibrated so Pathivu's rendering under the prior rule drifts
+<=0.02%):
 
-| Surface | Constant | `r_frac` (band-box) |
+| Surface | Constant | `BAND_FRAC` |
 | --- | --- | --- |
-| Play Store 512 listing icon | `PLAY_RFRAC` | **0.3825** |
-| Flat square — iOS AppIcon + web favicon / PWA "any" icons | `FLAT_RFRAC` | **0.2799** |
-| Android legacy + round launcher (full-bleed slate-on-BG) | `LAUNCHER_RFRAC` | **0.3200** |
-| Android adaptive foreground + monochrome | `FG_RFRAC` | **0.2295** |
-| Maskable web icon | `MASK_RFRAC` | **0.2239** |
+| Play Store 512 listing icon | `PLAY_BAND_FRAC` | **0.2867** |
+| Flat square — iOS AppIcon + web favicon / PWA "any" icons | `FLAT_BAND_FRAC` | **0.2098** |
+| Android legacy + round launcher (full-bleed slate-on-BG) | `LAUNCHER_BAND_FRAC` | **0.2398** |
+| Android adaptive foreground + monochrome | `FG_BAND_FRAC` | **0.1720** |
+| Maskable web icon | `MASK_BAND_FRAC` | **0.1678** |
 
-History: a "fill the safe circle" experiment (unified 0.5) read as oversized and was
-reverted; the pre-band per-surface values (0.41/0.30/0.343/0.246/0.24) fitted the full
-ink box and mis-sized wordmarks with descenders. The band rule supersedes both.
-**Pathivu/Varisankya agents:** re-run `python gen_launcher_icon.py <app>` on your next
-pass — your base letters keep their current size, but vertical centering improves (the
-band, not the box, is now centred).
+History (superseded, in order): a "fill the safe circle" experiment (unified 0.5, read
+as oversized) → per-surface full-ink-box values (0.41/0.30/0.343/0.246/0.24, mis-sized
+wordmarks with descenders) → the 2026-07-02 BAND rule (fixed letter size only, still
+coupled to wordmark width — an 8.9% base-letter size spread) → **v3 (current)**, which
+also fixes width and adds the downward shift. Full spec + evaluated/rejected
+alternatives: wiki **Icon-Geometry-Standard**. **App agents:** re-run
+`python gen_launcher_icon.py <app>` on your next pass and reship — this is a **visible**
+change (position + width), not a no-op, for every app including the reference.
 
-### Marketing & static-image typography — Google Sans Flex, ROND maxed
+### Play Store listing design language (store icon, feature graphic, screenshots, copy)
 
-Any English text baked into a **static image asset** — a Play Store feature graphic,
-a promo/banner image, a marketing screenshot overlay, a social-preview card, etc. —
-is set in the literal **Google Sans Flex** variable font (the same file the Android
-apps ship: `shared/android/res/font/google_sans_flex_variable.ttf`), with the
-**`'ROND'` (roundness) axis maxed at 100** — i.e. `fontVariationSettings: "'ROND' 100,
-'wght' <weight>"` — matching the family's native Android type scale (`type.xml`,
-`TextAppearance.App.*`) exactly. This is distinct from the runtime web app, which
-uses **Nunito** as a bundleable open-source approximation of Google Sans Flex
+Every family app's Play Store listing follows one visual and verbal identity, so a user
+browsing the family's apps recognises them as siblings — locked 2026-07-04. The listing
+has four assets/fields; the first two are **generated** (code, byte-reproducible), the
+last two are **conventions** (app-specific content, a documented template):
+
+1. **Store icon (512×512)** — the same wordmark engine, `play_icon()` /
+   `PLAY_BAND_FRAC` — see "App icons" above. Not a separate asset from the launcher icon
+   system, just a different `BAND_FRAC`.
+2. **Feature graphic (1024×500)** — generated by `feature_graphic()` in
+   `brand/launcher-icon/gen_launcher_icon.py`: the Malayalam wordmark glyph (rendered by
+   the same `render()` every icon uses, so it carries the band rule + Y-shift verbatim)
+   on the left; the Latin app name (bold) + a one-line English tagline (regular) to its
+   right, both in **Google Sans Flex at `'ROND'` maxed to 100** (see the typography rule
+   below); a slate accent bar on the right edge. The name/tagline column **shrinks to
+   fit** (font-size search, floor 48px/20px) rather than ever clipping or overflowing —
+   a tagline that doesn't fit even at the floor raises, rather than shipping a clipped
+   asset; shorten the tagline instead of widening the column. Per-app `name_en` /
+   `tagline_en` live in the `APPS` dict alongside the wordmark/initial; `generate_all()`
+   writes `android/play_feature_graphic.png` (upload to the listing manually — the Play
+   listing API doesn't accept graphics reliably on fresh apps, see `hora-play-store`).
+3. **Screenshots** — phone screenshots (portrait, ≤ 2:1, e.g. 1080×2160) are **plain
+   device captures with no added caption bar, frame, or overlay text** — the app's own
+   UI (which already follows `splash-and-home-standards` / `settings-page-standards`)
+   is the whole image. This is a deliberate simplicity choice over a captioned-banner
+   template: it means zero extra asset-generation work per screenshot and never drifts
+   from the shipped UI. Order: Home (populated, not empty-state) first, then Settings,
+   then any other core screen. Capture at the device's native resolution, no status-bar
+   redaction needed (the family's own status bar is already brand-neutral).
+4. **Title & description copy** — the Play **title** field is the bare app name (e.g.
+   "Pathivu"), Title Case, no tagline/keywords stuffed in. The **short description**
+   (≤ 80 chars) is the same one-line tagline used in the feature graphic (kept
+   identical on purpose — one sentence describing the app, family-wide). The **full
+   description** opens with that same tagline as its first line, then 2-4 short
+   paragraphs in plain, factual language (what it does, who it's for, the one or two
+   things that make it different) — no marketing hyperbole ("revolutionary",
+   "game-changing"), no emoji bullets, plain-ASCII formatting only. Closes with one
+   line inviting feedback (the family already runs a `<app>-testers@googlegroups.com`
+   per "Tester recruitment" above). This is a **prose template**, not generated code —
+   the actual copy is app-specific content and isn't templated here.
+
+**Marketing & static-image typography — Google Sans Flex, ROND maxed.** Any English
+text baked into a **static image asset** — the feature graphic above, a promo/banner
+image, a social-preview card, etc. — is set in the literal **Google Sans Flex**
+variable font (the same file the Android apps ship:
+`shared/android/res/font/google_sans_flex_variable.ttf`), with the **`'ROND'`
+(roundness) axis maxed at 100** — i.e. `fontVariationSettings: "'ROND' 100, 'wght'
+<weight>"` — matching the family's native Android type scale (`type.xml`,
+`TextAppearance.App.*`) exactly. This is distinct from the runtime web app, which uses
+**Nunito** as a bundleable open-source approximation of Google Sans Flex
 (licensing/bundle-size reasons don't apply to a one-off rendered PNG) — a static
-marketing image has no such constraint, so it uses the real brand font at its
-roundest setting, not the Nunito approximation and not a system font (Segoe UI,
-Arial, etc.). iOS's `.design(.rounded)` (SF Rounded) remains iOS-only, runtime-only —
-never used for authoring a marketing image either. When generating a feature graphic
-or similar asset (e.g. with Pillow/PIL), load
-`google_sans_flex_variable.ttf` and set its variation axes to `ROND=100` at the
-weight that matches the design (400 regular / 500 medium / 700 bold), the same
-axis values `google_sans_flex.xml` already declares for the app UI.
+marketing image has no such constraint, so it uses the real brand font at its roundest
+setting, not the Nunito approximation and not a system font (Segoe UI, Arial, etc.).
+iOS's `.design(.rounded)` (SF Rounded) remains iOS-only, runtime-only — never used for
+authoring a marketing image either. `feature_graphic()` is the reference
+implementation: load `google_sans_flex_variable.ttf` (Pillow's
+`ImageFont.set_variation_by_axes`, axis order `[opsz, wdth, wght, GRAD, ROND, slnt]`)
+and set `ROND=100` at the weight that matches the design (700 bold for the name, 500
+medium for the tagline) — the same axis values `google_sans_flex.xml` already declares
+for the app UI.
 
 ## Cross-language code sharing
 

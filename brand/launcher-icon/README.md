@@ -14,12 +14,16 @@ all platforms. One engine, one look.
 - **Proportions:** **+45% vertical stretch** (`YSTRETCH=1.45`), plus the per-app **horizontal
   stretch** required by the width rule below (Pathivu 1.0 — the reference; Varisankya 1.116;
   Muthal 1.066).
-- **Geometry — the six-line rule (locked 2026-07-03):** four guides are **family invariants**
-  (identical in every app, on every surface); two are per-app:
+- **Geometry — the six-line rule (locked 2026-07-03; Y-shift added 2026-07-04):** four
+  guides are **family invariants** (identical in every app, on every surface); two are
+  per-app:
   1. **Fixed letter size** — the *base-letter band* (the ink band of a plain base consonant,
      പ/മ/വ/ത — they share one band in this font) renders exactly `BAND_FRAC × canvas` high.
-  2. **Fixed position** — the band's centre sits on the canvas centre, so **band top** and
-     **baseline** land at the same y in every icon.
+  2. **Fixed position** — the band's centre sits `Y_SHIFT_FRAC` (4%) of canvas **below** the
+     canvas centre, so **band top** and **baseline** land at the same (shifted) y in every
+     icon. Dead-centre read as too high on review; 4% down is clearly perceptible while
+     keeping >=3 percentage points of margin under the tightest safe-fit clamp (FG, which
+     allows up to 7.16% before tripping — the other four surfaces allow 10.76-24.82%).
   3. **Fixed width** — ink width = `WIDTH_RATIO (2.4741) × band height`; each wordmark is
      x-stretched to it and centred, so **ink left/right** land at the same x in every icon.
      (Letter-spacing was evaluated and rejected: with one letter-gap per wordmark it triples
@@ -42,18 +46,33 @@ all platforms. One engine, one look.
   strokes (e.g. ത) fill correctly with **no holes**, and edges are crisp.
 
 ## The engine — `gen_launcher_icon.py`
-Generates **every** icon for an app from the one spec:
+Generates **every** icon (and the Play Store feature graphic) for an app from the one spec:
 - Android launcher: `mipmap-*/ic_launcher_foreground.png` (all densities), `drawable-nodpi/ic_launcher_monochrome.png`, legacy `ic_launcher.png` + `ic_launcher_round.png`.
 - Android notification: `drawable/ic_notification.xml` (a solid disc with the app's initial in Baloo Chettan 2 knocked out — `notification_icon('പ', …)`).
-- iOS: `AppIcon-1024.png`. Web: `app/icon.png`, `public/{apple-touch-icon,icon-192,icon-512,icon-maskable-512}.png`. Play: `play_icon_512.png` (written outside `res/`; upload to the listing manually).
+- iOS: `AppIcon-1024.png`. Web: `app/icon.png`, `public/{apple-touch-icon,icon-192,icon-512,icon-maskable-512}.png`. Play: `play_icon_512.png` + `play_feature_graphic.png` (both written outside `res/`; upload to the listing manually — see `hora-play-store`).
 
 Run (Pathivu is the reference consumer):
 ```
 pip install uharfbuzz freetype-py fonttools brotli numpy pillow
 python gen_launcher_icon.py pathivu      # or:  python gen_launcher_icon.py varisankya
 ```
-Per-app config (text, initial letter, repo path, iOS module dir) is the `APPS` dict in the script.
+Per-app config (text, initial letter, repo path, iOS module dir, **English name +
+tagline**) is the `APPS` dict in the script.
 **Varisankya's agent** adds/uses its config and runs `… varisankya` to adopt the standard — same algorithm, same look.
+
+## Play Store feature graphic — `feature_graphic()`
+Same brand primitives as every icon, composed for the Play Store's fixed 1024×500 slot:
+the Malayalam wordmark (via `render()`, so it carries the band rule + Y-shift verbatim)
+on the left; the Latin `name_en` (bold) + one-line `tagline_en` (regular) to its right,
+both in **Google Sans Flex at `'ROND'` maxed to 100** (`fonts/` ships the icon face;
+the variable font lives at `shared/android/res/font/google_sans_flex_variable.ttf` and
+is loaded from there — see "Marketing & static-image typography" in `conventions.md`);
+a slate accent bar on the right edge. The text column **shrinks to fit** (a font-size
+search down to a 48px/20px floor) so a long tagline (Varisankya's is the longest in the
+family) never overflows past the accent bar or clips — it raises instead, telling you to
+shorten the copy rather than silently shipping a broken asset. Full design-language
+conventions (store icon, screenshots, title/description copy) are in `conventions.md`
+→ "Play Store listing design language".
 
 ## Notification icon — same standard, same engine
 The notification-shade icon is **a solid white disc with the app's Malayalam initial
@@ -70,12 +89,14 @@ stroked-glyph treatment. The glyph is a *filled silhouette knocked out of the di
 outline frame around a stroked letter — that is superseded.)
 
 ## Reusing for a new sibling app
-Add an entry to `APPS` (its Malayalam short name + initial + repo + iOS dir) and run it.
-Nothing else to tune — the standard (font, weight, stretch, geometry, colours, rasteriser)
-is fixed here. The engine computes the new wordmark's x-stretch automatically and **raises**
-if it falls outside `[0.98, 1.20]` — that means the wordmark is too narrow/wide for the
-family width and revisiting `WIDTH_RATIO` is a deliberate family decision (all apps regen
-together), never a silent per-app tweak.
+Add an entry to `APPS` (its Malayalam short name + initial + repo + iOS dir + English
+`name_en`/`tagline_en` for the feature graphic) and run it. Nothing else to tune — the
+standard (font, weight, stretch, geometry, colours, rasteriser) is fixed here. The engine
+computes the new wordmark's x-stretch automatically and **raises** if it falls outside
+`[0.98, 1.20]` — that means the wordmark is too narrow/wide for the family width and
+revisiting `WIDTH_RATIO` is a deliberate family decision (all apps regen together), never
+a silent per-app tweak. `feature_graphic()` similarly raises if `tagline_en` doesn't fit
+its column even at the smallest allowed size — shorten the tagline.
 
 ## Legacy
 `varisankya-vari-reference.xml/.png` are the **old** hand-authored "വരി" vector (the prior gold
