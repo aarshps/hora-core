@@ -12,8 +12,10 @@ the right area before editing.
 
 - `brand/` — shared visual identity (Material 3 tokens, family logos, and the unified
   Baloo Chettan 2 icon engine `launcher-icon/gen_launcher_icon.py` that generates every
-  app icon — launcher, notification, iOS, web, Play — from one spec). Start with
-  `brand/README.md`.
+  brand mark on every surface — Android launcher/adaptive/monochrome/legacy/round +
+  notification, iOS, web favicon/PWA, Play icon + feature graphic, web OG/social image,
+  GitHub repo social preview — from one spec; STRICT, no hand-authored exceptions, see
+  `conventions.md` → "Brand mark standard"). Start with `brand/README.md`.
 - `shared/android/` — canonical Android **source** shared verbatim across apps (dimens /
   type / chip-color resources + `ChipHelper`/`ThemeHelper`/`AnimationHelper.kt`). Synced
   into each app via `templates/sync_shared_android.sh`; the `shared-android-source` skill

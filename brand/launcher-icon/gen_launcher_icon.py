@@ -1,16 +1,27 @@
 #!/usr/bin/env python3
 """
-Hora-family launcher-icon engine (FINAL).
+Hora-family brand-mark engine (FINAL) — the single source for every icon and every
+wide-card brand asset the family ships, on every platform and every surface.
 
-The family icon is a Malayalam wordmark (Pathivu "പതി", Varisankya "വരി", Muthal "മുത")
+The family mark is a Malayalam wordmark (Pathivu "പതി", Varisankya "വരി", Muthal "മുത")
 set in **Baloo Chettan 2** (rounded, OFL) in slate on near-white, laid out under the
 **v3 six-line geometry standard** (see the constants block): in every icon, on every
 surface, the base letters render at the same fixed size, centred, and the ink at the
 same fixed width. Rendering uses harfbuzz (shaping) + FreeType (the font's own nonzero
 rasterizer — no fill-rule holes), so edges are crisp and the ത/പ counters are correct.
 
-One algorithm, every app: pass a different `text` (and res dir). Run from anywhere.
-Deps: uharfbuzz, freetype-py, fontTools (woff2->ttf), numpy, Pillow.
+This is a STRICT, exhaustive family standard, not a hedged reference — it covers every
+icon surface (Android launcher/adaptive/monochrome/legacy/round, the notification disc,
+iOS AppIcon, web favicon/PWA/maskable) AND every wide "glyph + name + tagline" brand
+card (Play Store listing icon + feature graphic, the Next.js Open Graph/Twitter social
+image, the GitHub repository social-preview card) through the ONE `_wide_card()`
+composer. There is no surface where a Hora app's brand mark is hand-authored, ad-hoc,
+or a platform default (a generic favicon, GitHub's auto-generated social card, no
+social-share image at all) — see `conventions.md` -> "Brand mark standard" for the
+full enumerated list and the MUST-language rule.
+
+One algorithm, every app, every surface: pass a different `text` (and paths). Run from
+anywhere. Deps: uharfbuzz, freetype-py, fontTools (woff2->ttf), numpy, Pillow.
 """
 import os, sys, math
 import numpy as np
@@ -233,9 +244,19 @@ def flat_icon(text, out_path, px=1024, band_frac=FLAT_BAND_FRAC, hard_rfrac=0.5)
 # for the Latin name + tagline (per the "Marketing & static-image typography" rule).
 GSF_VARIABLE = os.path.join(HERE, "..", "..", "shared", "android", "res", "font",
                              "google_sans_flex_variable.ttf")
-FEATURE_W, FEATURE_H = 1024, 500     # Play Store's fixed feature-graphic size
-FEATURE_GLYPH_BAND_FRAC = 0.26       # tuned for the glyph area in this composition
-FEATURE_ACCENT_W = 34                # right-edge slate accent bar
+# Wide-card standard (locked 2026-07-04, extended 2026-07-04): ONE composer, reused at
+# every "glyph + Latin name + tagline" surface the family needs — Play feature graphic,
+# Next.js Open Graph / Twitter social image, GitHub repo social preview. Font sizes and
+# margins below are calibrated at the Play feature graphic's 500px height and scale
+# proportionally to whatever height the caller asks for, so every surface reads as the
+# same design at a different aspect ratio, never a re-tuned one-off.
+_CARD_REF_H = 500                    # the height the constants below were tuned at
+_CARD_GLYPH_BAND_FRAC = 0.26         # tuned for the glyph area in this composition
+_CARD_ACCENT_W = 34                  # right-edge slate accent bar, at _CARD_REF_H
+_CARD_MARGIN = 40                    # left margin + glyph-to-text gap, at _CARD_REF_H
+_CARD_NAME_PX = (84, 48)             # (start, floor) font size for the name, at _CARD_REF_H
+_CARD_TAG_PX = (34, 20)              # (start, floor) font size for the tagline, at _CARD_REF_H
+_CARD_GAP = 18                       # name-to-tagline vertical gap, at _CARD_REF_H
 
 def _fit_font(draw, text, max_w, start_px, min_px, axes):
     """Largest font size <= start_px (never below min_px) whose rendered width of
@@ -256,34 +277,119 @@ def _fit_font(draw, text, max_w, start_px, min_px, axes):
                           "shorten the tagline or widen the text column")
     return f, bbox
 
-def feature_graphic(text, name_en, tagline_en, out_path):
-    """Play Store feature graphic (1024x500): the Malayalam wordmark glyph (rendered by
-    the same render() used for every icon, so it carries the family band rule + Y-shift
-    verbatim) on the left, the Latin app name (bold) + one-line tagline (regular) — both
-    Google Sans Flex at ROND=100, shrunk to fit the column so a long tagline never
-    overflows or clips — to its right, and a slate accent bar on the right edge."""
-    img = Image.new("RGB", (FEATURE_W, FEATURE_H), BG)
-    glyph_px = FEATURE_H
-    glyph = render(text, glyph_px, SLATE, band_frac=FEATURE_GLYPH_BAND_FRAC, bg=None)
-    img.paste(glyph, (40, 0), glyph)
+def _wide_card(text, name_en, tagline_en, out_path, w, h):
+    """The family's one 'glyph + Latin name + tagline' wide-card composer: the
+    Malayalam wordmark glyph (rendered by the same render() used for every icon, so
+    it carries the family band rule + Y-shift verbatim) on the left, the Latin app
+    name (bold) + one-line tagline (regular) — both Google Sans Flex at ROND=100,
+    shrunk to fit the column so a long tagline never overflows or clips — to its
+    right, and a slate accent bar on the right edge. `w`/`h` scale every metric
+    proportionally from the reference tuning at `_CARD_REF_H`, so every surface built
+    on this composer (Play feature graphic, Next.js OG image, GitHub social preview)
+    is the same design, not a re-tuned one-off."""
+    k = h / _CARD_REF_H
+    margin = _CARD_MARGIN * k
+    accent_w = _CARD_ACCENT_W * k
+    gap = _CARD_GAP * k
+    # Only the START size scales with canvas height — the FLOOR is an absolute
+    # legibility limit, not a proportion, and narrower-aspect cards (OG 1.9:1,
+    # GitHub 2.0:1 vs the feature graphic's 2.05:1) need the full shrink range to
+    # fit longer taglines (Varisankya's is the longest in the family).
+    name_start, name_floor = _CARD_NAME_PX[0] * k, _CARD_NAME_PX[1]
+    tag_start, tag_floor = _CARD_TAG_PX[0] * k, _CARD_TAG_PX[1]
+
+    img = Image.new("RGB", (w, h), BG)
+    glyph_px = h
+    glyph = render(text, glyph_px, SLATE, band_frac=_CARD_GLYPH_BAND_FRAC, bg=None)
+    img.paste(glyph, (round(margin), 0), glyph)
 
     d = ImageDraw.Draw(img)
-    text_x = 40 + glyph_px + 20
-    max_text_w = FEATURE_W - FEATURE_ACCENT_W - 30 - text_x
+    text_x = margin + glyph_px + margin / 2.0
+    max_text_w = w - accent_w - margin * 0.75 - text_x
 
-    f_name, name_bbox = _fit_font(d, name_en, max_text_w, 84, 48,
+    f_name, name_bbox = _fit_font(d, name_en, max_text_w, name_start, name_floor,
                                    lambda px: [max(48, min(96, px)), 100, 700, 0, 100, 0])
-    f_tag, tag_bbox = _fit_font(d, tagline_en, max_text_w, 34, 20,
+    f_tag, tag_bbox = _fit_font(d, tagline_en, max_text_w, tag_start, tag_floor,
                                  lambda px: [px, 100, 500, 0, 100, 0])
 
-    gap = 18
     block_h = (name_bbox[3] - name_bbox[1]) + gap + (tag_bbox[3] - tag_bbox[1])
-    y0 = (FEATURE_H - block_h) / 2 - name_bbox[1]
+    y0 = (h - block_h) / 2 - name_bbox[1]
     d.text((text_x, y0), name_en, font=f_name, fill=SLATE)
     y1 = y0 + name_bbox[3] + gap - tag_bbox[1]   # tag ink-top = name ink-bottom + gap
     d.text((text_x, y1), tagline_en, font=f_tag, fill=SLATE)
 
-    d.rectangle([FEATURE_W - FEATURE_ACCENT_W, 0, FEATURE_W, FEATURE_H], fill=SLATE)
+    d.rectangle([w - accent_w, 0, w, h], fill=SLATE)
+    _save(img, out_path)
+
+FEATURE_W, FEATURE_H = 1024, 500     # Play Store's fixed feature-graphic size
+OG_W, OG_H = 1200, 630               # Next.js / Open Graph / Twitter card standard size
+GITHUB_SOCIAL_W, GITHUB_SOCIAL_H = 1280, 640   # GitHub's recommended social-preview size
+
+def feature_graphic(text, name_en, tagline_en, out_path):
+    """Play Store feature graphic (1024x500) — see _wide_card()."""
+    _wide_card(text, name_en, tagline_en, out_path, FEATURE_W, FEATURE_H)
+
+def og_image(text, name_en, tagline_en, out_path):
+    """Next.js Open Graph / Twitter social-share image (1200x630), written to
+    web/app/opengraph-image.png (Next.js's special-file convention auto-injects the
+    og:image/twitter:image meta tags — no code change needed in the app). Closes a
+    real gap: none of the family's web apps had a social-share image before this;
+    sharing a link showed no preview or a browser default. Same composer as the Play
+    feature graphic — see _wide_card()."""
+    _wide_card(text, name_en, tagline_en, out_path, OG_W, OG_H)
+
+def github_social_preview(text, name_en, tagline_en, out_path):
+    """GitHub repository social-preview card (1280x640, GitHub's recommended size).
+    Closes a real gap: every family repo currently shows GitHub's generic
+    auto-generated card (repo name + the owner's personal avatar photo + stats) with
+    no brand mark at all. GitHub has no API for this — the generated PNG must be
+    uploaded by hand: repo Settings -> General -> Social preview -> Edit -> upload
+    image. Same composer as the Play feature graphic — see _wide_card()."""
+    _wide_card(text, name_en, tagline_en, out_path, GITHUB_SOCIAL_W, GITHUB_SOCIAL_H)
+
+def family_social_preview(out_path, w=GITHUB_SOCIAL_W, h=GITHUB_SOCIAL_H,
+                           name_en="hora-core", tagline_en="Shared building blocks for the Hora family"):
+    """The hora-core repo's OWN GitHub social-preview card: not one app's wordmark but
+    all of them side by side (every entry currently in APPS, in dict order), since this
+    repo is the shared foundation under all three, not a consumer app itself. Same
+    right-column composition as _wide_card() (name bold / tagline regular / accent bar)
+    but the left area is a row of every family wordmark glyph instead of one — so this
+    card updates automatically the day a new sibling app is added to APPS."""
+    k = h / _CARD_REF_H
+    margin = _CARD_MARGIN * k
+    accent_w = _CARD_ACCENT_W * k
+    gap = _CARD_GAP * k
+    glyph_row_h = h * 0.30   # 3 glyphs side by side need far less height each than 1 alone
+    glyphs = [render(cfg["text"], round(glyph_row_h), SLATE,
+                      band_frac=_CARD_GLYPH_BAND_FRAC, bg=None) for cfg in APPS.values()]
+    glyph_gap = margin * 0.5
+    row_w = sum(g.width for g in glyphs) + glyph_gap * (len(glyphs) - 1)
+
+    img = Image.new("RGB", (w, h), BG)
+    gx = round(margin)
+    gy = round((h - glyph_row_h) / 2)
+    for g in glyphs:
+        img.paste(g, (gx, gy), g)
+        gx += g.width + round(glyph_gap)
+
+    d = ImageDraw.Draw(img)
+    text_x = margin + row_w + margin
+    max_text_w = w - accent_w - margin * 0.75 - text_x
+
+    name_start, name_floor = _CARD_NAME_PX[0] * k, _CARD_NAME_PX[1]
+    tag_start, tag_floor = _CARD_TAG_PX[0] * k, _CARD_TAG_PX[1]
+    f_name, name_bbox = _fit_font(d, name_en, max_text_w, name_start, name_floor,
+                                   lambda px: [max(48, min(96, px)), 100, 700, 0, 100, 0])
+    f_tag, tag_bbox = _fit_font(d, tagline_en, max_text_w, tag_start, tag_floor,
+                                 lambda px: [px, 100, 500, 0, 100, 0])
+
+    block_h = (name_bbox[3] - name_bbox[1]) + gap + (tag_bbox[3] - tag_bbox[1])
+    y0 = (h - block_h) / 2 - name_bbox[1]
+    d.text((text_x, y0), name_en, font=f_name, fill=SLATE)
+    y1 = y0 + name_bbox[3] + gap - tag_bbox[1]
+    d.text((text_x, y1), tagline_en, font=f_tag, fill=SLATE)
+
+    d.rectangle([w - accent_w, 0, w, h], fill=SLATE)
     _save(img, out_path)
 
 # --- Notification small icon: solid disc with the app's initial knocked out -------
@@ -384,9 +490,15 @@ def generate_all(cfg):
     play_icon(cfg["text"], os.path.join(repo, "android", "play_icon_512.png"))
     feature_graphic(cfg["text"], cfg["name_en"], cfg["tagline_en"],
                      os.path.join(repo, "android", "play_feature_graphic.png"))  # Play Store listing
+    og_image(cfg["text"], cfg["name_en"], cfg["tagline_en"],
+             os.path.join(web, "app", "opengraph-image.png"))  # Next.js OG/Twitter card
+    github_social_preview(cfg["text"], cfg["name_en"], cfg["tagline_en"],
+                           os.path.join(repo, "github_social_preview.png"))  # manual upload, see docstring
 
 if __name__ == "__main__":
     import sys
     app = sys.argv[1] if len(sys.argv) > 1 else "pathivu"
     generate_all(APPS[app])
-    print(f"generated all {app} icons (launcher + notification + iOS + web + Play)")
+    print(f"generated all {app} icons (launcher + notification + iOS + web + Play + "
+          "OG image + GitHub social preview) -- upload github_social_preview.png by "
+          "hand: repo Settings -> General -> Social preview")

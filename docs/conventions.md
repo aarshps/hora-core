@@ -405,22 +405,69 @@ Web apps seed their Material 3 palette from the app's own brand icon color via
 Material Color Utilities (`SchemeTonalSpot`) rather than wallpaper-based Dynamic
 Color, since a browser has no wallpaper — each app picks its own seed color.
 
-### App icons (launcher, notification, iOS, web, Play)
+## Brand mark standard — every icon and wide card, on every surface (STRICT)
 
-Every family icon — launcher foreground/legacy/round/monochrome, the notification
-status-bar icon, the iOS AppIcon, web favicon/PWA icons, and the Play 512 — is
-generated from **one engine and one spec**: the app's Malayalam wordmark set in
-**Baloo Chettan 2** (700), slate `#445353` on near-white `#FCFCFC`, shaped with
-harfbuzz and rasterised by FreeType (so self-intersecting glyphs like ത fill with no
-holes). The notification icon is specifically a **solid white disc with the app's
+**This is a strict, exhaustive family standard, not a hedged reference.** There is
+**no surface, anywhere, on any platform, where a Hora app's brand mark is hand-authored,
+ad-hoc, or left at a platform default** — no hand-tuned raster icon, no generic favicon,
+no unbranded GitHub social-preview card showing the owner's personal photo, no web link
+that shares with no preview image at all. Every one of these is generated from the
+**same one engine and one spec** —
+[`brand/launcher-icon/gen_launcher_icon.py`](../brand/launcher-icon/README.md) — the
+app's Malayalam wordmark set in **Baloo Chettan 2** (700), slate `#445353` on
+near-white `#FCFCFC`, shaped with harfbuzz and rasterised by FreeType (so
+self-intersecting glyphs like ത fill with no holes), laid out under the v3 six-line
+geometry (below). Canonical standard, generator, and per-app config live in
+[`brand/launcher-icon/`](../brand/launcher-icon/README.md).
+
+### Every surface, enumerated
+
+| # | Surface | Generator call | Written to |
+| --- | --- | --- | --- |
+| 1 | Android launcher foreground (all densities) | `generate()` | `mipmap-*/ic_launcher_foreground.png` |
+| 2 | Android adaptive monochrome | `generate()` | `drawable-nodpi/ic_launcher_monochrome.png` |
+| 3 | Android legacy launcher (all densities) | `generate()` | `mipmap-*/ic_launcher.png` |
+| 4 | Android round launcher (all densities) | `generate()` | `mipmap-*/ic_launcher_round.png` |
+| 5 | Android notification status-bar icon | `notification_icon()` | `drawable/ic_notification.xml` |
+| 6 | iOS AppIcon | `flat_icon()` | `AppIcon.appiconset/AppIcon-1024.png` |
+| 7 | Web favicon (Next.js auto-icon) | `flat_icon()` | `web/app/icon.png` |
+| 8 | Web Apple touch icon | `flat_icon()` | `web/public/apple-touch-icon.png` |
+| 9 | Web PWA icon 192 | `flat_icon()` | `web/public/icon-192.png` |
+| 10 | Web PWA icon 512 | `flat_icon()` | `web/public/icon-512.png` |
+| 11 | Web PWA maskable icon 512 | `flat_icon()` | `web/public/icon-maskable-512.png` |
+| 12 | Play Store 512 listing icon | `play_icon()` | `android/play_icon_512.png` |
+| 13 | Play Store feature graphic (1024×500) | `feature_graphic()` | `android/play_feature_graphic.png` |
+| 14 | Web social-share image — Next.js OG/Twitter card (1200×630) | `og_image()` | `web/app/opengraph-image.png` |
+| 15 | GitHub repo social-preview card (1280×640, per app) | `github_social_preview()` | `<repo root>/github_social_preview.png` (upload by hand — no API, see below) |
+| 16 | hora-core's own GitHub social-preview card (family lockup) | `family_social_preview()` | `hora-core/github_social_preview.png` (upload by hand) |
+
+Every row is written by one `python gen_launcher_icon.py <app>` run
+(`generate_all()`), except #16 (hora-core has no `APPS` entry of its own — it *is* the
+engine's home) and the manual upload step rows #15/#16 need (GitHub has no API to set
+a repository's social-preview image; it must be set by hand: repo **Settings → General
+→ Social preview → Edit → upload image**). Surfaces #14/#15/#16 closed real,
+previously-unstandardised gaps as of 2026-07-04: no family web app had a social-share
+image before (a shared link showed no preview or a bare browser default), and every
+family repo showed GitHub's generic auto-generated card (repo name + the **owner's
+personal avatar photo** + stats) with no brand mark at all — confirmed by fetching each
+repo's `opengraph-image` endpoint before landing the fix.
+
+Rows #13/#14/#15/#16 (the "wide card": glyph + Latin name + tagline + accent bar) are
+ALL produced by the **same** `_wide_card()` composer at different pixel dimensions —
+never a re-tuned one-off per surface. Row #16 uses a sibling composition
+(`family_social_preview()`) showing every app's wordmark side by side instead of one,
+since hora-core is the shared foundation under all three apps, not a consumer app
+itself — it updates automatically the day a new sibling is added to `APPS`.
+
+The notification icon (row #5) is specifically a **solid white disc with the app's
 Malayalam initial knocked out as a hollow** (single `evenOdd` path) drawn from the same
-Baloo glyph. Canonical standard, generator, and per-app config live in
-[`brand/launcher-icon/`](../brand/launcher-icon/README.md). These are firm family
-conventions, not hedged references — do not revert to hand-authored raster tuning, nor
-to a framed or stroked-glyph notification treatment.
+Baloo glyph. These are firm family conventions, not hedged references — do not revert
+to hand-authored raster tuning for any row above, nor to a framed or stroked-glyph
+notification treatment.
 
-**Icon geometry — the v3 six-line rule (locked 2026-07-03, Y-shift added and tuned
-2026-07-04).** Malayalam vowel signs break naive bounding-box fitting: **ു descends
+### Icon geometry — the v3 six-line rule (locked 2026-07-03, Y-shift added and tuned 2026-07-04)
+
+Malayalam vowel signs break naive bounding-box fitting: **ു descends
 below** the base letters (Muthal "മുത") while **ീ/ി ascend above** them (Pathivu "പതി",
 Varisankya "വരി"), and wordmark widths differ ~10% app to app. Fitting the full ink box
 (or a circle around it) couples letter size to width and ascender/descender extent —
@@ -480,29 +527,37 @@ alternatives: wiki **Icon-Geometry-Standard**. **App agents:** re-run
 `python gen_launcher_icon.py <app>` on your next pass and reship — this is a **visible**
 change (position + width), not a no-op, for every app including the reference.
 
-### Play Store listing design language (store icon, feature graphic, screenshots, copy)
+### Wide-card surfaces (Play feature graphic, web OG image, GitHub social preview)
+
+All produced by the **one** `_wide_card()` composer in `gen_launcher_icon.py` at
+different pixel dimensions (see the enumeration table above, rows #13/#14/#15/#16) —
+never a re-tuned one-off per surface: the Malayalam wordmark glyph (rendered by the
+same `render()` every icon uses, so it carries the band rule + Y-shift verbatim) on the
+left; the Latin app name (bold) + a one-line English tagline (regular) to its right,
+both in **Google Sans Flex at `'ROND'` maxed to 100** (see the typography rule below); a
+slate accent bar on the right edge. The name/tagline column **shrinks to fit** (font-size
+search; the floor is an absolute pixel legibility limit, not scaled by canvas size,
+since narrower-aspect cards like the OG image and GitHub preview need the full shrink
+range to fit Varisankya's tagline — the longest in the family) rather than ever clipping
+or overflowing — a tagline that doesn't fit even at the floor raises, rather than
+shipping a clipped asset; shorten the tagline instead of widening the column. Per-app
+`name_en` / `tagline_en` live in the `APPS` dict alongside the wordmark/initial;
+`generate_all()` writes all three per-app wide cards in one run. `feature_graphic()`'s
+output (`android/play_feature_graphic.png`) uploads to the Play listing manually — the
+Play listing API doesn't accept graphics reliably on fresh apps, see `hora-play-store`;
+`og_image()`'s output (`web/app/opengraph-image.png`) needs no manual step — Next.js's
+special-file convention auto-injects the `og:image`/`twitter:image` meta tags on
+deploy; `github_social_preview()`'s output needs the same manual step as GitHub itself
+has no API for it — repo **Settings → General → Social preview → Edit → upload image**.
+
+### Play Store listing copy & screenshots (app-specific conventions)
 
 Every family app's Play Store listing follows one visual and verbal identity, so a user
-browsing the family's apps recognises them as siblings — locked 2026-07-04. The listing
-has four assets/fields; the first two are **generated** (code, byte-reproducible), the
-last two are **conventions** (app-specific content, a documented template):
+browsing the family's apps recognises them as siblings — locked 2026-07-04. Unlike the
+wide-card surfaces above, these are **conventions** (app-specific content, a documented
+template), not generated code:
 
-1. **Store icon (512×512)** — the same wordmark engine, `play_icon()` /
-   `PLAY_BAND_FRAC` — see "App icons" above. Not a separate asset from the launcher icon
-   system, just a different `BAND_FRAC`.
-2. **Feature graphic (1024×500)** — generated by `feature_graphic()` in
-   `brand/launcher-icon/gen_launcher_icon.py`: the Malayalam wordmark glyph (rendered by
-   the same `render()` every icon uses, so it carries the band rule + Y-shift verbatim)
-   on the left; the Latin app name (bold) + a one-line English tagline (regular) to its
-   right, both in **Google Sans Flex at `'ROND'` maxed to 100** (see the typography rule
-   below); a slate accent bar on the right edge. The name/tagline column **shrinks to
-   fit** (font-size search, floor 48px/20px) rather than ever clipping or overflowing —
-   a tagline that doesn't fit even at the floor raises, rather than shipping a clipped
-   asset; shorten the tagline instead of widening the column. Per-app `name_en` /
-   `tagline_en` live in the `APPS` dict alongside the wordmark/initial; `generate_all()`
-   writes `android/play_feature_graphic.png` (upload to the listing manually — the Play
-   listing API doesn't accept graphics reliably on fresh apps, see `hora-play-store`).
-3. **Screenshots** — phone screenshots (portrait, ≤ 2:1, e.g. 1080×2160) are **plain
+1. **Screenshots** — phone screenshots (portrait, ≤ 2:1, e.g. 1080×2160) are **plain
    device captures with no added caption bar, frame, or overlay text** — the app's own
    UI (which already follows `splash-and-home-standards` / `settings-page-standards`)
    is the whole image. This is a deliberate simplicity choice over a captioned-banner
@@ -510,7 +565,7 @@ last two are **conventions** (app-specific content, a documented template):
    from the shipped UI. Order: Home (populated, not empty-state) first, then Settings,
    then any other core screen. Capture at the device's native resolution, no status-bar
    redaction needed (the family's own status bar is already brand-neutral).
-4. **Title & description copy** — the Play **title** field is the bare app name (e.g.
+2. **Title & description copy** — the Play **title** field is the bare app name (e.g.
    "Pathivu"), Title Case, no tagline/keywords stuffed in. The **short description**
    (≤ 80 chars) is the same one-line tagline used in the feature graphic (kept
    identical on purpose — one sentence describing the app, family-wide). The **full

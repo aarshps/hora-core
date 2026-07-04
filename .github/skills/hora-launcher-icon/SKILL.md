@@ -1,9 +1,14 @@
 ---
 name: hora-launcher-icon
-description: Generate ALL Hora-family app icons (Android launcher + notification, iOS, web, Play) from the shared Baloo Chettan 2 wordmark engine in hora-core. Use when creating or refining any Hora app's icons.
+description: Generate ALL Hora-family app icons AND brand-mark wide cards (Android launcher + notification, iOS, web, Play feature graphic, web OG/social image, GitHub repo social preview) from the shared Baloo Chettan 2 wordmark engine in hora-core. Use when creating or refining any Hora app's icons or brand marks, on any surface.
 ---
 
-# Hora app icons — one engine, Baloo Chettan 2 wordmark
+# Hora app icons & brand marks — one engine, Baloo Chettan 2 wordmark, every surface (STRICT)
+
+**No surface, anywhere, ships a hand-authored icon or an unbranded platform default** —
+not a generic favicon, not GitHub's auto-generated social card (owner's personal photo),
+not a web link with no share-preview image. Every icon and every wide brand card comes
+from this one engine. Full enumerated list: `conventions.md` → "Brand mark standard".
 
 **As of 2026-06 there IS a shared engine** — use it, don't hand-tune per app. The family icon is the
 app's short Malayalam name (Pathivu **പതി**, Varisankya **വരി**, Muthal **മുത**) set in **Baloo Chettan 2**
@@ -24,21 +29,31 @@ the tightest one, Muthal on FG); the engine raises if a new wordmark needs an x-
 ```
 pip install uharfbuzz freetype-py fonttools brotli numpy pillow
 python gen_launcher_icon.py <app>      # writes launcher (all densities) + monochrome + legacy/round
-                                       # + notification (ic_notification) + iOS + web + Play 512
-                                       # + the Play feature graphic (play_feature_graphic.png)
+                                       # + notification (ic_notification) + iOS + web
+                                       # + Play 512 + Play feature graphic
+                                       # + web OG/Twitter social image (opengraph-image.png)
+                                       # + GitHub repo social preview (github_social_preview.png)
 ```
 
 It uses harfbuzz (shaping) + **FreeType** (the font's own nonzero rasteriser — correct fill, no holes
 in self-intersecting glyphs like ത). Add a new sibling by adding an `APPS` entry (Malayalam name +
-initial + repo path + iOS dir + English `name_en`/`tagline_en` for the feature graphic). **Always
+initial + repo path + iOS dir + English `name_en`/`tagline_en` for the wide-card surfaces). **Always
 get explicit user sign-off before shipping — this icon is highly scrutinised.**
 
-**Play Store feature graphic (`feature_graphic()`, added 2026-07-04):** same wordmark engine
-composed into the fixed 1024×500 Play slot — glyph left, Latin name (bold) + tagline (regular) in
-Google Sans Flex at `'ROND'` maxed to 100 to the right, slate accent bar on the right edge. The
-text column shrinks to fit (raises if the tagline doesn't fit even at the smallest allowed size —
-shorten it, don't widen the column). Full listing design language (store icon, screenshots,
-title/description copy conventions): `conventions.md` → "Play Store listing design language".
+**Wide brand cards (`_wide_card()`, added 2026-07-04):** one composer, reused at every
+"glyph + Latin name + tagline" surface — glyph left, Latin name (bold) + tagline (regular) in
+Google Sans Flex at `'ROND'` maxed to 100 to the right, slate accent bar on the right edge. Three
+thin wrappers call it at different fixed sizes: `feature_graphic()` (Play, 1024×500), `og_image()`
+(Next.js Open Graph/Twitter, 1200×630 — written to `web/app/opengraph-image.png`, no manual step,
+Next.js auto-injects the meta tags), `github_social_preview()` (GitHub's recommended 1280×640 —
+**no API for this, upload by hand**: repo Settings → General → Social preview). The text column
+shrinks to fit (the *floor* is a fixed pixel legibility limit, not scaled by canvas size — narrower
+cards like OG/GitHub need the full range) and raises if the tagline doesn't fit even at the floor —
+shorten it, don't widen the column. hora-core's own repo uses `family_social_preview()` instead — all
+three apps' wordmarks side by side, since hora-core is the shared foundation, not a consumer app.
+Full listing design language (screenshots, title/description copy conventions): `conventions.md` →
+"Play Store listing copy & screenshots". Full enumerated surface list: `conventions.md` →
+"Brand mark standard".
 
 The legacy material below (matching the old hand-drawn Varisankya reference with per-app font tuning,
 `varisankya-vari-reference.xml`) is **superseded** by the engine; kept only as history.
