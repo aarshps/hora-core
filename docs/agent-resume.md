@@ -493,3 +493,9 @@
     - **UI Integrations:** Wired the loading overlay in `MainActivity.kt` and `SettingsActivity.kt` to show appropriate messages (e.g. "Creating institution...", "Deleting your account data...") and hide them when operations finish.
     - **Settings Optimization:** Refactored the account deletion memberships cleanup loop in `SettingsActivity.kt` to run concurrently using coroutines `async`/`awaitAll`.
     - Shipped **Muthal `1.0-beta.15` (vc 15)**: Android build and tests green -> Play internal testing (gpp).
+
+  - **Muthal 1.0-beta.16 — Implement Optimistic Transactions with Eventual Data Consistency (2026-07-05, Muthal agent; user-directed).**
+    - **Android Integration**: Updated `addCategory`, `deleteCategory`, `saveEntry`, and `deleteEntry` in `FirestoreRepo.kt` to accept an optional `onFailure` handler, using `addOnFailureListener` to capture async errors. Wired `MainActivity.kt` and `CategoriesActivity.kt` to trigger writes optimistically, dismiss dialogs instantly, and display toast alerts upon background failure.
+    - **Web Integration**: Modified `AddEntryDialog.tsx` to close entry save and delete sheets instantly without awaiting network completion. Added a custom state-based Toast notification system in `App.tsx` and wired `.catch` handlers on the optimistic Firestore promises to alert users of any async write failures.
+    - **Conventions Standard**: Documented the new "Optimistic Transactions with Eventual Data Consistency" UX standard in `hora-core/docs/conventions.md` to be adopted by all Hora sibling apps.
+    - Shipped **Muthal `1.0-beta.16` (vc 16)**: Android build and tests green -> Play internal testing (gpp).
