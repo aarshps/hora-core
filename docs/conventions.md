@@ -77,6 +77,15 @@ suite and asserts against. A platform's port is only "done" once it passes the s
 golden vectors as the others. This SPEC.md + golden-vectors.json pair is the shared
 **pattern** every app should use; the actual spec and vectors are app-specific business
 logic and are not templated here — see `templates/README.md`.
+### Optimistic Transactions with Eventual Data Consistency
+
+To achieve an ultra-smooth, responsive, and instant user experience (UX) across all platforms, every app in the family adopts the **Optimistic Write Pattern** for non-blocking mutations (e.g. saving/deleting entries, toggling states, adding/deleting categories):
+
+1. **Do Not Await in the UI Thread**: Trigger the write operation asynchronously in the background. The dialog or editor sheet must dismiss **instantly** without waiting for the network round-trip.
+2. **Local Cache / Latency Compensation**: The app relies on Firestore's built-in latency compensation to immediately update the local cache. The UI updates instantly via active live snapshot listeners (`onSnapshot` / `addSnapshotListener`).
+3. **Background Failure Handling**: Every optimistic write *must* register a background failure callback (`addOnFailureListener` on Android, `.catch()` on Web/JS, and standard catch blocks in Swift). If the write fails on the server (e.g. security rules rejection or network error):
+   - Display a non-blocking toast, snackbar, or system alert notifying the user of the failure (e.g., "Failed to save entry: [error]").
+   - The Firestore SDK automatically rolls back the local cache state, triggering the snapshot listener to revert the UI seamlessly.
 
 ## App versioning
 
