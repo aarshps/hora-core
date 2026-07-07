@@ -325,6 +325,14 @@ had neither — synced resources alone do nothing):
    (the manual theme set for the font preference otherwise overrides the global
    callback, which runs in `onActivityPreCreated`).
 
+### Scroll Haptics (Vibrations)
+
+To deliver a premium, tactile, and consistent mechanical feel across the Hora app family, every Android app must attach subtle scroll haptic ticks to its primary scrolling containers (`NestedScrollView`):
+
+1. **Preference Gating**: Scroll haptics must be gated on the user's haptic preference setting (checked via `PreferenceHelper.isHapticsEnabled(context)`).
+2. **Standard Listener**: Call `PreferenceHelper.attachNestedScrollHaptics(nestedScrollView)` on all main scrolling surfaces (e.g. `MainActivity`'s main list container, `SettingsActivity` scroll, `CategoriesActivity` scroll, and `SelectionBottomSheet` scroll views).
+3. **Threshold and Feedback**: The `attachNestedScrollHaptics` method accumulates scroll delta (`dy`) and triggers `HapticFeedbackConstants.CLOCK_TICK` every `40dp` of scrolling, resetting the accumulator. This creates a uniform "mechanical wheel tick" feeling as the user scrolls through list items and pages.
+
 Shared skills live in this repo at `.github/skills/<name>/SKILL.md` — that's the
 canonical location for family-wide skills, resolving the location question that
 otherwise varies per app (Pathivu uses `.claude/skills/`, Varisankya uses
