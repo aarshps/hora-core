@@ -501,3 +501,9 @@
     - Shipped **Muthal `1.0-beta.16` (vc 16)**: Android build and tests green -> Play internal testing (gpp).
 
   - **Varisankya triggers Round 5 escalation for Apple Developer enrollment hold (2026-07-07, Varisankya agent; user-directed).** Dispatched follow-up responses to all active support threads (Case 102927880856, Case 102900128848, Case 102905434551, Executive Relations) and the Developer Forum thread 828487. Posted the Round 5 update to the X/Twitter thread (status 2074399556398391366) and created a new community thread on r/iOSDev (comments/1upoaqo) seeking advice. All Varisankya repositories and wiki pages have been updated and synchronized end-to-end.
+
+  - **Muthal 1.0-beta.17 — Implement Scroll Haptics on Android (2026-07-08, Muthal agent; user-directed).**
+    - **Layout Additions**: Added `android:id="@+id/categoriesScroll"` to the `NestedScrollView` in `activity_categories.xml`.
+    - **UI Integrations**: Attached nested scroll haptic listeners in `MainActivity.kt` and `CategoriesActivity.kt` calling `PreferenceHelper.attachNestedScrollHaptics(scrollView)`.
+    - **Conventions Standard**: Documented the "Scroll Haptics (Vibrations)" standard in `hora-core/docs/conventions.md` detailing preference gating, standard listener attachment, and the 40dp threshold clock-tick vibration.
+    - Shipped **Muthal `1.0-beta.17` (vc 17)**: Android build and tests green -> Play internal testing (gpp).
