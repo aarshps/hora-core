@@ -512,3 +512,7 @@
     - **Production Rollout Complete**: After production access was granted following the full 14-day/12-tester closed testing cycle, Pathivu `v1.0` (versionCode 54) completed full rollout to 100% of production users across all 176 countries/regions on Google Play.
     - **First Hora Stable Production Release**: Pathivu is the first app in the Hora family to achieve full stable production rollout on the Google Play Store.
     - **Wiki & Repo Sync**: Pathivu wiki (`Home.md`, `Building-and-Releasing.md`) and GitHub Discussions (#45 announcement in `hora-core`) updated to record the completed production rollout.
+
+  - **hora-core wiki master sync & session handoff (2026-07-09, hora-core session; user-directed).**
+    - **Wiki master synchronized (`f473adf` → `2e440a9`):** Mirrored recent standards additions (`Optimistic Transactions with Eventual Data Consistency` and `Scroll Haptics`) from `docs/conventions.md` into `hora-core.wiki`. Created dedicated **`UX-and-Interaction-Standards.md`** page detailing the Optimistic Write Pattern (instant UI mutation, Firestore latency compensation, failure alerts + rollback) and Scroll Haptics (preference gating, `attachNestedScrollHaptics`, 40dp clock-tick threshold) along with family adoption status tables. Updated `Home.md` to link to the new page.
+    - **Starter prompt ready for next agent:** Next session should continue family adoption of the newly established UX & interaction standards (Optimistic Transactions and Scroll Haptics across Pathivu and Varisankya) and maintain cross-app parity.
