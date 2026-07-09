@@ -507,3 +507,8 @@
     - **UI Integrations**: Attached nested scroll haptic listeners in `MainActivity.kt` and `CategoriesActivity.kt` calling `PreferenceHelper.attachNestedScrollHaptics(scrollView)`.
     - **Conventions Standard**: Documented the "Scroll Haptics (Vibrations)" standard in `hora-core/docs/conventions.md` detailing preference gating, standard listener attachment, and the 40dp threshold clock-tick vibration.
     - Shipped **Muthal `1.0-beta.17` (vc 17)**: Android build and tests green -> Play internal testing (gpp).
+
+  - **Pathivu v1.0 (vc 54) completes 100% Full Rollout to Production on Google Play (2026-07-09, Pathivu agent; user-directed).**
+    - **Production Rollout Complete**: After production access was granted following the full 14-day/12-tester closed testing cycle, Pathivu `v1.0` (versionCode 54) completed full rollout to 100% of production users across all 176 countries/regions on Google Play.
+    - **First Hora Stable Production Release**: Pathivu is the first app in the Hora family to achieve full stable production rollout on the Google Play Store.
+    - **Wiki & Repo Sync**: Pathivu wiki (`Home.md`, `Building-and-Releasing.md`) and GitHub Discussions (#45 announcement in `hora-core`) updated to record the completed production rollout.
