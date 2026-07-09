@@ -20,6 +20,14 @@ two or more apps so they look and feel like siblings.
   default anywhere). The folder holds the engine, the bundled font (OFL), and the
   legacy "വരി" reference vector; the `hora-launcher-icon` skill is the procedure.
 
+- **[Notification design standard](../docs/conventions.md#notification-design-standard-material-3-bleeding-strict-family-standard)** —
+  Material 3 "bleeding notification" design applied family-wide. Every Android app sends
+  notifications with full-bleed background colour (via `setColorized(true)`), the app's
+  Malayalam initial as a monochrome 24×24dp small icon (system auto-tints based on Material
+  You theme), and consistent text hierarchy (title + secondary + optional multi-line expansion).
+  Notifications are immediately recognizable as Hora family while respecting the system
+  theme. Reference: `hora-notifications-standard` skill + example icon/code assets.
+
 ## What does not go here
 
 - App-specific screenshots, store listings, or one-off assets — keep those in the

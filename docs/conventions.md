@@ -333,6 +333,68 @@ To deliver a premium, tactile, and consistent mechanical feel across the Hora ap
 2. **Standard Listener**: Call `PreferenceHelper.attachNestedScrollHaptics(nestedScrollView)` on all main scrolling surfaces (e.g. `MainActivity`'s main list container, `SettingsActivity` scroll, `CategoriesActivity` scroll, and `SelectionBottomSheet` scroll views).
 3. **Threshold and Feedback**: The `attachNestedScrollHaptics` method accumulates scroll delta (`dy`) and triggers `HapticFeedbackConstants.CLOCK_TICK` every `40dp` of scrolling, resetting the accumulator. This creates a uniform "mechanical wheel tick" feeling as the user scrolls through list items and pages.
 
+### Notification Design Standard (Material 3 Bleeding, strict family standard)
+
+Every Hora app's notifications must follow Material 3's **bleeding notification design** (full-bleed background color, edge-to-edge presence) while preserving the Hora brand identity. This applies to all task reminders, updates, and user-facing notifications sent to the Android notification shade.
+
+**Core principles:**
+1. **Full-bleed background** — use `setColorized(true)` to enable Material 3 bleeding behaviour (system fills the notification card with a dynamic colour based on the app's Material You palette)
+2. **Single accent colour** — `setColor(ContextCompat.getColor(context, R.color.md_theme_primary, null))` drives both the background (when colorized) and accent elements
+3. **Monochrome small icon** — 24×24dp `.xml` vector drawable, monochrome line art in Material Symbols 2.0 style, system auto-tints it. The icon displays the app's Malayalam initial glyph (simple, recognizable at 24dp)
+4. **Text hierarchy** — `setContentTitle()` (bold, primary) + `setContentText()` (secondary) + optional multi-line expansion via `BigTextStyle()` or `InboxStyle()`; `setSubText()` for metadata (app name + time)
+5. **Dynamic colour integration** — Material You theme colours drive the notification appearance (no hardcoded brand colours override the theme)
+
+**NotificationCompat.Builder template (reference implementation):**
+```kotlin
+NotificationCompat.Builder(context, CHANNEL_ID)
+    .setSmallIcon(R.drawable.ic_notification_hora)       // 24×24dp monochrome, system-tinted
+    .setContentTitle("Summary line (bold)")              // Primary text
+    .setContentText("Optional detail line (secondary)")  // Secondary text
+    .setSubText(appName + " • " + formattedTime)         // Metadata: app name + time
+    .setStyle(BigTextStyle()                             // Multi-line support
+        .setBigContentTitle("Summary line")
+        .bigText("Optional detail\n• Bullet 1\n• Bullet 2"))
+    .setColor(ContextCompat.getColor(context, R.color.md_theme_primary, null))
+    .setColorized(true)                                  // Enable full-bleed background
+    .setPriority(NotificationCompat.PRIORITY_HIGH)       // Expanded by default
+    .setAutoCancel(true)                                 // Dismiss on tap
+    .setContentIntent(pendingIntent)                     // Launch app on tap
+    .setVibrate(if (PreferenceHelper.isHapticsEnabled(context)) longArrayOf(0, 200) else longArrayOf(0))
+    .build()
+```
+
+**Small icon design (24×24dp vector drawable, `ic_notification_hora_<app>.xml`):**
+- **Pathivu:** Simple outline of പ (Malayalam "pa"), Baloo Chettan 2 letterform, monochrome
+- **Varisankya:** Simple outline of വ (Malayalam "va"), Baloo Chettan 2 letterform, monochrome
+- **Muthal:** Simple outline of മ (Malayalam "ma"), Baloo Chettan 2 letterform, monochrome
+- Each app's icon is immediately recognizable as its own, while the unified design language keeps them cohesive as a family
+- The system auto-tints the vector drawable based on the active Material You theme (light/dark mode, dynamic colour)
+
+**Notification channel configuration (Android 8+):**
+```kotlin
+val channel = NotificationChannel(CHANNEL_ID, "App Notifications", NotificationManager.IMPORTANCE_HIGH)
+    .apply {
+        description = "Task reminders and updates from the app"
+        enableVibration(true)
+        vibrationPattern = longArrayOf(0, 200)  // Subtle tick
+        lightColor = Color.CYAN  // Material You system will override if available
+    }
+context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+```
+
+**Adoption checklist:**
+- [ ] Notifications appear with full-bleed background colour (not transparent/grey)
+- [ ] Small icon (24×24dp) renders crisp and system-tinted (monochrome, app-specific glyph)
+- [ ] Title text is bold and distinct from detail text (tested in both light/dark themes)
+- [ ] Time + app name visible in subtext (small, outline colour)
+- [ ] Multi-line content (reminders, lists) expands cleanly via BigTextStyle/InboxStyle
+- [ ] Vibration respects `PreferenceHelper.isHapticsEnabled()` preference
+- [ ] Tapping notification opens the app to the relevant screen (not generic launcher)
+- [ ] Notification is immediately recognizable as a Hora app (via small icon + colour scheme)
+- [ ] Tested on both Material You dynamic colour and fallback system theme
+
+**Reference:** Shared skills live in `.github/skills/hora-notifications-standard/` with code examples and per-app icon assets.
+
 Shared skills live in this repo at `.github/skills/<name>/SKILL.md` — that's the
 canonical location for family-wide skills, resolving the location question that
 otherwise varies per app (Pathivu uses `.claude/skills/`, Varisankya uses
