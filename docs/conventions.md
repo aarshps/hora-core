@@ -354,6 +354,24 @@ preference to gate `.fontDesign`, and that no descendant view re-hardcodes it af
 **Varisankya agent: apply the same fix** (either `@Observable` like Pathivu, or
 `@AppStorage` like Muthal — whichever fits your app's existing architecture).
 
+**Correction (2026-07-10, Varisankya): the claim above that Varisankya "has the identical
+bug Muthal had" was stale by the time Varisankya's agent checked** — `VarisankyaApp.swift`
+already gated `.fontDesign(preferences.useGoogleFont ? .rounded : .default)` correctly at
+the `WindowGroup` root. Root-gating is necessary but **not sufficient**: nearly every view
+in Varisankya (~50 call sites across 12 files) called `Font.system(_:design:_:)` with an
+**explicit `design: .rounded` parameter**. An explicit `design:` argument bakes the design
+into the `Font` value at that call site and makes SwiftUI ignore the `.fontDesign`
+environment modifier entirely, no matter how correctly the root gates it — so the toggle
+was reachable in theory but affected almost no actual text. Fixed by stripping the
+hardcoded `design: .rounded` from every `Font.system(...)` call so each one inherits the
+environment value instead (`grep -rn "design: \.rounded" ios/*/Views` finds them; a
+view/descendant should only ever pass an explicit design when it deliberately needs to
+diverge from the app-wide preference, e.g. `RootView`'s pre-content `LaunchSplash`/
+`AppLockGate`, which read `Preferences` directly since they render outside the normal
+environment-inherited tree). **Any app implementing this standard: after gating
+`.fontDesign` at the root, also grep every view file for a literal `design:` argument on
+`Font.system` — root-gating alone does not guarantee the toggle actually does anything.**
+
 ### Material You Dynamic Colors (required on every Android app)
 
 Every family Android app derives its palette from the user's wallpaper on Android 12+.
