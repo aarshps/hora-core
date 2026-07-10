@@ -291,6 +291,48 @@ build, meaning code shrinking undid the very reference resource shrinking needed
 keep-alive line to your own `Application.onCreate()` and verify against your own signed
 release APK** — don't assume the debug build proves anything about the release build here.
 
+**A third, deeper bug — and the actual dominant one — hides behind both of the above
+(2026-07-10, Pathivu).** Fixing `BaseActivity.kt` and the R8 keep-alive makes the theme
+swap *happen*, but on Pathivu the user still reported the toggle doing nothing anywhere
+in the app, not just on one screen. Root cause: the shared `type.xml`'s
+`TextAppearance.App.*` styles hardcoded the brand font by **literal reference**
+(`<item name="android:fontFamily">@font/google_sans_flex</item>`) instead of deferring to
+the theme. Any *other* style that references `TextAppearance.App.*` **by name** — not
+just a layout using the themed `?attr/textAppearanceX` attr — bakes in that literal font
+at compile time and ignores whichever theme (`Theme.<App>` vs `Theme.<App>.SystemFont`)
+is active at runtime. The worst offender on Pathivu: `Widget.App.Button` (wired as
+`materialButtonStyle` at the theme root, so it's every button in the app) sets
+`android:textAppearance="@style/TextAppearance.App.Button"` directly — meaning every
+button on every screen always rendered in the brand font regardless of the toggle, no
+matter how correct `BaseActivity.kt` was. A narrower first pass (patching only the one
+screen's layout that hardcoded a `TextAppearance.App.*` reference) fixed that one screen
+but left the rest of the app — and the real complaint — unaddressed.
+
+**Fixed in the canonical `shared/android/res/values/type.xml`:** every
+`TextAppearance.App.*` style now reads `android:fontFamily` / `fontFamily` via
+**`?attr/fontFamily`** instead of a literal `@font/...` resource. Each app's theme
+already declares this attr (`<item name="fontFamily">@font/<brand-font></item>` in the
+base theme); the `SystemFont` variant theme now needs only to null out that single attr —
+`<item name="fontFamily">@null</item>` — and every surface referencing
+`TextAppearance.App.*` by name picks up the change, including widget default styles.
+This also means the `SystemFont` theme's old pattern of overriding all 15
+`textAppearanceX` role attrs individually (pointing them at plain `TextAppearance.Material3.*`
+parents) is now both **redundant and a regression** — it drops the app's own
+bold/letterSpacing typography treatment along with the font. Remove that block; the
+single `fontFamily` null-out is sufficient and correct.
+
+**Verify the actual mechanism, not just "does it look right":** `aapt2 dump resources
+app-release.apk | grep -A6 "style/TextAppearance.App.Button$"` should show
+`fontFamily(...)=?attr/fontFamily` as an **unresolved theme-attribute reference** in the
+compiled resource table — if it instead shows a literal `@font/...` value, the style was
+baked at compile time and the toggle cannot work no matter what the theme declares.
+
+**Varisankya/Muthal agents: check your own shared type styles for this exact pattern**
+(`grep -n "@font/" res/values/type.xml` after sync) **and audit every widget default
+style** (`materialButtonStyle`, `chipStyle`, `toolbarStyle`, etc.) **for a literal
+`TextAppearance.<App>.*` reference** — those are invisible to a check that only greps
+layout XML files, since the reference lives in a style, not a layout.
+
 ### iOS Google-Sans/System font toggle — gate `.fontDesign` at the App root (2026-07, Muthal)
 
 Muthal's iOS app had the same *shape* of bug as the Android one above, for a different
