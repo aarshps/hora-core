@@ -356,11 +356,47 @@ override fun onCreateView(parent: View?, name: String, context: Context, attrs: 
 ```
 This is unconditional and style-agnostic — it can't be defeated by any hardcoded style
 reference anywhere in the resource tree, present or future, and needs no further style
-audits. It's already the canonical `shared/android/kotlin/BaseActivity.kt`; re-sync to
-pick it up. **Known gap:** `Chip` labels are drawn by `ChipDrawable`, not a real
-`TextView`, so this hook can't reach them — check separately if any chip label
-hardcodes the font directly (none do today across the family, since they inherit via
-the already-fixed `TextAppearance.App.Button`).
+audits.
+
+**But the factory hook alone is not enough — two structural gaps (found on Pathivu's
+Settings screen, 2026-07-10, after the hook shipped):**
+1. `AppCompatActivity.onCreateView` only intercepts **framework-named tags** ("TextView",
+   "Button", ...). Fully-qualified tags — every Material component declared as
+   `<com.google.android.material.chip.Chip>`, `<...MaterialToolbar>`, etc. — return
+   `null` from AppCompat's factory and are instantiated reflectively by the inflater,
+   bypassing the hook entirely.
+2. `CollapsingToolbarLayout`'s expanded/collapsed titles are drawn internally by
+   `CollapsingTextHelper` — **not a TextView child at all** — so no per-view typeface
+   override can reach them; they need the explicit
+   `setExpandedTitleTypeface()`/`setCollapsedTitleTypeface()` setters.
+
+The complete mechanism (both parts now in the canonical
+`shared/android/kotlin/BaseActivity.kt` — re-sync to pick it up): keep the factory hook
+above (it covers framework-named tags everywhere, including dialog/bottom-sheet windows,
+whose inflaters clone the host's factory chain but whose content views the tree walk
+below never sees), **and** add an `onContentChanged()` tree walk for everything the hook
+misses in the Activity's own window:
+```kotlin
+override fun onContentChanged() {
+    super.onContentChanged()
+    if (!currentFontEnabled) applySystemFontTree(window.decorView)
+}
+
+private fun applySystemFontTree(view: View) {
+    when (view) {
+        is TextView -> applySystemTypeface(view)   // covers Chip, MaterialButton, etc. — all TextView subclasses
+        is CollapsingToolbarLayout -> {
+            view.setExpandedTitleTypeface(Typeface.DEFAULT)
+            view.setCollapsedTitleTypeface(Typeface.DEFAULT)
+        }
+    }
+    if (view is ViewGroup) {
+        for (i in 0 until view.childCount) applySystemFontTree(view.getChildAt(i))
+    }
+}
+```
+(`Chip` extends `AppCompatCheckBox` → ultimately `TextView`, so the tree walk covers
+chip labels too — the earlier "ChipDrawable gap" note is superseded by this walk.)
 
 **Verify on-device, not just via `aapt2 dump`** — static resource-table checks passed
 twice on Pathivu (each fix was genuinely correct for what it covered) and the toggle
