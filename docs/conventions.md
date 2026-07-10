@@ -333,6 +333,46 @@ style** (`materialButtonStyle`, `chipStyle`, `toolbarStyle`, etc.) **for a liter
 `TextAppearance.<App>.*` reference** — those are invisible to a check that only greps
 layout XML files, since the reference lives in a style, not a layout.
 
+**Recommended durable fix: stop trusting the style/theme cascade at all (2026-07-10,
+Pathivu).** Even after fixing every hardcoded reference found above, Pathivu shipped
+*two more* rounds where the toggle still didn't reach some titles/buttons — each time a
+different hardcoded reference, each time invisible to the previous grep pass. Proving a
+large shared resource surface has zero remaining hardcoded font references is not
+tractable by static search alone. The durable fix: in `BaseActivity`, override
+`AppCompatActivity.onCreateView` (the documented hook for post-processing every view
+created by this Activity's `LayoutInflater`, including views inflated by hosted
+Fragments/`BottomSheetDialogFragment`s, since their inflaters clone the host's factory
+chain) and force every `TextView`'s typeface to the platform default when System font is
+selected:
+```kotlin
+override fun onCreateView(parent: View?, name: String, context: Context, attrs: AttributeSet): View? {
+    val view = super.onCreateView(parent, name, context, attrs)
+    if (!currentFontEnabled && view is TextView) {
+        val style = view.typeface?.style ?: Typeface.NORMAL
+        view.typeface = Typeface.create(Typeface.DEFAULT, style)
+    }
+    return view
+}
+```
+This is unconditional and style-agnostic — it can't be defeated by any hardcoded style
+reference anywhere in the resource tree, present or future, and needs no further style
+audits. It's already the canonical `shared/android/kotlin/BaseActivity.kt`; re-sync to
+pick it up. **Known gap:** `Chip` labels are drawn by `ChipDrawable`, not a real
+`TextView`, so this hook can't reach them — check separately if any chip label
+hardcodes the font directly (none do today across the family, since they inherit via
+the already-fixed `TextAppearance.App.Button`).
+
+**Verify on-device, not just via `aapt2 dump`** — static resource-table checks passed
+twice on Pathivu (each fix was genuinely correct for what it covered) and the toggle
+still failed elsewhere both times. Confirm with a real screenshot: write the preference
+directly into the app's `AppPrefs.xml` via `adb shell run-as <pkg> ...` (bypasses needing
+to navigate to Settings), relaunch, and screenshot a screen with the previously-broken
+element (a button is the highest-value target — `materialButtonStyle` is the pattern
+that kept resurfacing). If your local AVD's default GPU backend fails
+(`vkGetPhysicalDeviceProperties: Invalid physicalDevice` is a known Vulkan/gfxstream
+failure in some sandboxed environments), retry with `-gpu swiftshader_indirect` — slower
+and prone to ANRs under load, but it boots.
+
 ### iOS Google-Sans/System font toggle — gate `.fontDesign` at the App root (2026-07, Muthal)
 
 Muthal's iOS app had the same *shape* of bug as the Android one above, for a different
