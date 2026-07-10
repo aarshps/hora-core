@@ -18,8 +18,11 @@ import androidx.core.content.ContextCompat
  * 2. Call [sendNotification] whenever you need to send a notification
  *
  * **Icon setup:**
- * Copy example-icons/ic_notification_hora_<APP>.xml → app/src/main/res/drawable/ic_notification_hora.xml
- * (Each app has its own Malayalam initial; content is app-specific.)
+ * Use your app's existing engine-generated app/src/main/res/drawable/ic_notification.xml
+ * (from gen_launcher_icon.py's notification_icon()) via R.drawable.ic_notification below.
+ * Only if that file genuinely doesn't exist yet, fall back to copying
+ * example-icons/ic_notification_hora_<APP>.xml → ic_notification_hora.xml and swap the
+ * two R.drawable.ic_notification references below to R.drawable.ic_notification_hora.
  *
  * **Customization per app:**
  * - Replace CHANNEL_ID with your app's notification channel ID (e.g., "com.hora.pathivu.reminders")
@@ -80,7 +83,7 @@ object NotificationHelper {
         val appDisplayName = appName ?: context.getString(context.resources.getIdentifier("app_name", "string", context.packageName))
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(context.resources.getIdentifier("ic_notification_hora", "drawable", context.packageName))
+            .setSmallIcon(context.resources.getIdentifier("ic_notification", "drawable", context.packageName))
             .setContentTitle(title)
             .setSubText("$appDisplayName • $timestamp")  // Metadata: app name + time
             .setColorized(true)  // Full-bleed background
@@ -169,7 +172,7 @@ object NotificationHelper {
         }
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(context.resources.getIdentifier("ic_notification_hora", "drawable", context.packageName))
+            .setSmallIcon(context.resources.getIdentifier("ic_notification", "drawable", context.packageName))
             .setContentTitle(title)
             .setContentText(if (items.isNotEmpty()) items[0] else "No items")
             .setSubText("$appDisplayName • $timestamp")

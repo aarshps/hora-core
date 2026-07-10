@@ -16,7 +16,7 @@ After: All Hora notifications share a unified structural design while each app r
 
 ```kotlin
 NotificationCompat.Builder(context, CHANNEL_ID)
-    .setSmallIcon(R.drawable.ic_notification_hora)       // 24×24dp monochrome
+    .setSmallIcon(R.drawable.ic_notification)            // your app's engine-generated icon
     .setContentTitle("Summary (bold, primary)")          
     .setContentText("Optional detail (secondary)")       
     .setSubText("App Name • Time")                        
@@ -32,9 +32,33 @@ NotificationCompat.Builder(context, CHANNEL_ID)
 
 ## Implementation guide
 
-### 1. Create the small icon (24×24dp vector drawable)
+### 1. Small icon (24×24dp vector drawable) — reuse your existing engine-generated one, don't hand-draw a new one
 
-Each app has its own icon reflecting its Malayalam initial. Copy the reference example below and adapt for your app's letter.
+**Check first: your app almost certainly already has the right icon.** Every family app's
+`brand/launcher-icon/gen_launcher_icon.py` run (all apps have done this since the icon-geometry
+overhaul, beta.35-era) already produces `app/src/main/res/drawable/ic_notification.xml` —
+a solid disc with the app's *real* Baloo Chettan 2 Malayalam glyph knocked out (`evenOdd` path,
+purpose-built for 24dp legibility, not a naive shrink of the launcher icon). **Use that file and
+`setSmallIcon(R.drawable.ic_notification)` directly — do not copy a new `ic_notification_hora.xml`
+placeholder.**
+
+**Real incident (Pathivu, 2026-07-10/11):** the notifications-standard rollout copied the
+hand-drawn placeholder below into `ic_notification_hora.xml` and switched `setSmallIcon()` to
+it, silently regressing the notification shade from the correct engine-generated disc+glyph to a
+crude single-stroke approximation. The user caught it as "the notification shade icon is messed
+up now, it was correct" — a full release cycle after the regression shipped. Fixed by reverting
+`setSmallIcon()` to `R.drawable.ic_notification` and deleting the placeholder file.
+**Muthal/Varisankya: check your own `setSmallIcon()` call — if it points at
+`ic_notification_hora`, you may have the same regression** (Varisankya's own agent already
+caught and declined this trap during its adoption pass — see the wiki adoption table).
+
+**Only if your app genuinely has no `ic_notification.xml`** (pre-dates the launcher-icon engine,
+or was never regenerated) — regenerate it: `python gen_launcher_icon.py <app>` writes it via
+`notification_icon()`, matching the launcher wordmark's letterform. The hand-drawn fallback below
+is a last resort, not the recommended path, and is kept only for that gap case.
+
+<details>
+<summary>Fallback: hand-drawn placeholder icon (only if no engine-generated icon exists)</summary>
 
 **File:** `app/src/main/res/drawable/ic_notification_hora.xml` (shared name across all apps; content is app-specific)
 
@@ -61,12 +85,13 @@ Each app has its own icon reflecting its Malayalam initial. Copy the reference e
 - **Colour:** `@android:color/white` (vector drawable uses white; system auto-tints it based on theme)
 - **Padding:** minimal (the glyph should nearly touch the 24×24 viewport edge for maximum visibility)
 
-**Why simplified Malayalam glyphs?** At 24×24dp, fine details are lost. A full Baloo Chettan 2 rendering of പ/വ/മ is illegible. Instead, create a **stylized monogram** — a simple, recognizable lettermark that's:
-- Instantly readable as the app's initial
-- Scalable without detail loss
-- Consistent with Material Symbols 2.0 line-art philosophy
+**Why simplified Malayalam glyphs?** At 24×24dp, fine details are lost — but this is exactly what
+the launcher-icon engine's `notification_icon()` already solves (disc + `evenOdd` knockout, not a
+naive shrink of the full wordmark), which is why it's the preferred path above, not this fallback.
 
 **Inspiration:** See `shared/android/res/drawable/ic_*.xml` in hora-core for reference icon style.
+
+</details>
 
 ### 2. Configure the notification channel
 
