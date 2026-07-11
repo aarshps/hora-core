@@ -1,93 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Shared Hora-family type scale (forces Google Sans Flex on every M3 text appearance).
+  Shared Hora-family type scale. Each TextAppearance.App.* style defers its actual
+  font choice to the active theme's ?attr/fontFamily (declared per-theme, e.g.
+  fontFamily = @font/google_sans_flex normally, @null under a "System font" theme
+  variant) rather than hardcoding a literal font resource — this is what lets a
+  runtime theme swap (BaseActivity setTheme) actually change the rendered font on
+  every surface that references TextAppearance.App.* by name (widget default
+  styles like a themed Button, not just layouts using ?attr/textAppearanceX).
   Canonical source: hora-core/shared/android. GENERATED into each app by
   tools/sync_shared_android.sh — do not hand-edit the app copy; edit here and re-sync.
-  Requires the app to ship res/font/google_sans_flex (brand font).
+  Each app must declare its own ?attr/fontFamily theme item (both namespaced and
+  unnamespaced) pointing at its brand font, per app.
 -->
 <resources>
     <!-- Custom Text Appearances that force Google Sans Flex -->
 
     <!-- Display -->
     <style name="TextAppearance.App.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
     </style>
     <style name="TextAppearance.App.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="TextAppearance.App.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
     </style>
 
     <!-- Headline -->
     <style name="TextAppearance.App.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
     </style>
     <style name="TextAppearance.App.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
     </style>
     <style name="TextAppearance.App.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
     </style>
 
     <!-- Title -->
     <style name="TextAppearance.App.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="TextAppearance.App.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="TextAppearance.App.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
     </style>
 
     <!-- Body -->
     <style name="TextAppearance.App.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
     </style>
     <style name="TextAppearance.App.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
     </style>
     <style name="TextAppearance.App.BodySmall" parent="TextAppearance.Material3.BodySmall">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
     </style>
 
     <!-- Label -->
     <style name="TextAppearance.App.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
     </style>
     <style name="TextAppearance.App.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
     </style>
     <style name="TextAppearance.App.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
     </style>
 
     <!-- Expressive Button Typography -->
     <style name="TextAppearance.App.Button" parent="TextAppearance.Material3.LabelLarge">
-        <item name="android:fontFamily">@font/google_sans_flex</item>
-        <item name="fontFamily">@font/google_sans_flex</item>
+        <item name="android:fontFamily">?attr/fontFamily</item>
+        <item name="fontFamily">?attr/fontFamily</item>
         <item name="android:textStyle">bold</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:letterSpacing">0.05</item>
