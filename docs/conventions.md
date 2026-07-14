@@ -476,14 +476,14 @@ Every Hora app's notifications must follow Material 3's **bleeding notification 
 **Core principles:**
 1. **Full-bleed background** — use `setColorized(true)` to enable Material 3 bleeding behaviour (system fills the notification card with a dynamic colour based on the app's Material You palette)
 2. **Single accent colour** — `setColor(ContextCompat.getColor(context, R.color.md_theme_primary, null))` drives both the background (when colorized) and accent elements
-3. **Monochrome small icon** — 24×24dp `.xml` vector drawable, monochrome line art in Material Symbols 2.0 style, system auto-tints it. The icon displays the app's Malayalam initial glyph (simple, recognizable at 24dp)
+3. **Monochrome small icon** — reuse your app's existing `res/drawable/ic_notification.xml` (a solid disc with the app's Baloo Chettan 2 Malayalam initial knocked out, produced by `gen_launcher_icon.py`'s `notification_icon()` — see "Icon geometry" above). **Do not hand-draw or copy a placeholder icon** — see the incident note below.
 4. **Text hierarchy** — `setContentTitle()` (bold, primary) + `setContentText()` (secondary) + optional multi-line expansion via `BigTextStyle()` or `InboxStyle()`; `setSubText()` for metadata (app name + time)
 5. **Dynamic colour integration** — Material You theme colours drive the notification appearance (no hardcoded brand colours override the theme)
 
 **NotificationCompat.Builder template (reference implementation):**
 ```kotlin
 NotificationCompat.Builder(context, CHANNEL_ID)
-    .setSmallIcon(R.drawable.ic_notification_hora)       // 24×24dp monochrome, system-tinted
+    .setSmallIcon(R.drawable.ic_notification)            // your app's engine-generated icon, not a placeholder
     .setContentTitle("Summary line (bold)")              // Primary text
     .setContentText("Optional detail line (secondary)")  // Secondary text
     .setSubText(appName + " • " + formattedTime)         // Metadata: app name + time
@@ -499,12 +499,24 @@ NotificationCompat.Builder(context, CHANNEL_ID)
     .build()
 ```
 
-**Small icon design (24×24dp vector drawable, `ic_notification_hora_<app>.xml`):**
-- **Pathivu:** Simple outline of പ (Malayalam "pa"), Baloo Chettan 2 letterform, monochrome
-- **Varisankya:** Simple outline of വ (Malayalam "va"), Baloo Chettan 2 letterform, monochrome
-- **Muthal:** Simple outline of മ (Malayalam "ma"), Baloo Chettan 2 letterform, monochrome
+**Small icon design (24×24dp vector drawable, `res/drawable/ic_notification.xml` — already exists in
+every app from the launcher-icon engine; there is no separate `_hora_<app>` variant):**
+- **Pathivu:** solid disc, പ (Malayalam "pa") knocked out, Baloo Chettan 2 letterform
+- **Varisankya:** solid disc, വ (Malayalam "va") knocked out, Baloo Chettan 2 letterform
+- **Muthal:** solid disc, മ (Malayalam "ma") knocked out, Baloo Chettan 2 letterform
 - Each app's icon is immediately recognizable as its own, while the unified design language keeps them cohesive as a family
 - The system auto-tints the vector drawable based on the active Material You theme (light/dark mode, dynamic colour)
+- Missing the file? Regenerate it — `python gen_launcher_icon.py <app>` — never hand-draw a substitute.
+
+**Incident (2026-07-10/11, Pathivu + Muthal):** an earlier version of this standard shipped an
+example `ic_notification_hora_<app>.xml` placeholder (a crude hand-drawn glyph) and told adopters
+to copy it in, silently regressing both apps from their correct engine-generated disc+glyph icon to
+the placeholder. Pathivu's user caught it a release cycle later; Muthal caught it proactively from
+Pathivu's writeup. Varisankya's agent avoided it by declining the placeholder from the start. Fixed
+by reverting both apps to `R.drawable.ic_notification` and deleting the placeholder assets
+family-wide (`hora-notifications-standard` skill's `example-icons/` no longer exists). **There is no
+hand-drawn fallback in this standard anymore** — if an app has no `ic_notification.xml`, regenerate
+it via the engine, don't improvise one.
 
 **Notification channel configuration (Android 8+):**
 ```kotlin

@@ -20,9 +20,8 @@ import androidx.core.content.ContextCompat
  * **Icon setup:**
  * Use your app's existing engine-generated app/src/main/res/drawable/ic_notification.xml
  * (from gen_launcher_icon.py's notification_icon()) via R.drawable.ic_notification below.
- * Only if that file genuinely doesn't exist yet, fall back to copying
- * example-icons/ic_notification_hora_<APP>.xml → ic_notification_hora.xml and swap the
- * two R.drawable.ic_notification references below to R.drawable.ic_notification_hora.
+ * If that file genuinely doesn't exist yet, regenerate it — `python gen_launcher_icon.py <app>` —
+ * don't hand-draw a substitute (see the skill's "Small icon" section for why).
  *
  * **Customization per app:**
  * - Replace CHANNEL_ID with your app's notification channel ID (e.g., "com.hora.pathivu.reminders")

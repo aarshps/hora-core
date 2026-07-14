@@ -52,46 +52,13 @@ up now, it was correct" — a full release cycle after the regression shipped. F
 `ic_notification_hora`, you may have the same regression** (Varisankya's own agent already
 caught and declined this trap during its adoption pass — see the wiki adoption table).
 
-**Only if your app genuinely has no `ic_notification.xml`** (pre-dates the launcher-icon engine,
-or was never regenerated) — regenerate it: `python gen_launcher_icon.py <app>` writes it via
-`notification_icon()`, matching the launcher wordmark's letterform. The hand-drawn fallback below
-is a last resort, not the recommended path, and is kept only for that gap case.
-
-<details>
-<summary>Fallback: hand-drawn placeholder icon (only if no engine-generated icon exists)</summary>
-
-**File:** `app/src/main/res/drawable/ic_notification_hora.xml` (shared name across all apps; content is app-specific)
-
-#### Pathivu example (പ — "pa")
-```xml
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path android:fillColor="@android:color/white"
-        android:pathData="M6.5,4c-1.38,0 -2.5,1.12 -2.5,2.5v11c0,1.38 1.12,2.5 2.5,2.5h11c1.38,0 2.5,-1.12 2.5,-2.5v-11c0,-1.38 -1.12,-2.5 -2.5,-2.5h-11zm5,3h3v3h-3v-3zm0,4h3v3h-3v-3zm-3,-2h2v2h-2v-2z" />
-</vector>
-```
-
-**Design guidelines for your icon:**
-- **Size:** 24×24dp viewport
-- **Style:** Monochrome outline/simple fill, Material Symbols 2.0 aesthetic
-- **Stroke:** Single uniform weight (no thin/heavy contrast)
-- **Content:** The app's Malayalam initial glyph, **simplified for small scale**
-  - Pathivu (പ): single main stroke without serifs or complex curves
-  - Varisankya (വ): triangular/angular letterform, distinct shape
-  - Muthal (മ): taller/more complex form, but distilled to essentials
-- **Colour:** `@android:color/white` (vector drawable uses white; system auto-tints it based on theme)
-- **Padding:** minimal (the glyph should nearly touch the 24×24 viewport edge for maximum visibility)
-
-**Why simplified Malayalam glyphs?** At 24×24dp, fine details are lost — but this is exactly what
-the launcher-icon engine's `notification_icon()` already solves (disc + `evenOdd` knockout, not a
-naive shrink of the full wordmark), which is why it's the preferred path above, not this fallback.
-
-**Inspiration:** See `shared/android/res/drawable/ic_*.xml` in hora-core for reference icon style.
-
-</details>
+**If your app genuinely has no `ic_notification.xml`** (pre-dates the launcher-icon engine, or was
+never regenerated) — regenerate it, don't hand-draw one: `python gen_launcher_icon.py <app>` writes
+it via `notification_icon()`, matching the launcher wordmark's letterform. **There is no hand-drawn
+fallback** — a copy-pasteable placeholder XML used to live here and it caused the exact regression
+described above (twice — Pathivu and Muthal both hit it). If the engine can't run in your
+environment, stop and get the file some other way (ask the user, or run it in a session that has
+the deps) rather than substituting a hand-drawn approximation.
 
 ### 2. Configure the notification channel
 
@@ -120,7 +87,7 @@ fun createNotificationChannel(context: Context) {
 ```kotlin
 fun sendNotification(context: Context, title: String, detail: String?, timestamp: String) {
     val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-        .setSmallIcon(R.drawable.ic_notification_hora)
+        .setSmallIcon(R.drawable.ic_notification)  // your app's engine-generated icon — not a placeholder
         .setContentTitle(title)  // "24 Pathivus to go today"
         .setSubText("Pathivu • $timestamp")
         
@@ -250,10 +217,9 @@ Before shipping, verify:
 
 ## Files to copy/reference
 
-- **Icon template:** See this skill's `example-icons/` folder
-  - `ic_notification_hora_pathivu.xml`
-  - `ic_notification_hora_varisankya.xml`
-  - `ic_notification_hora_muthal.xml`
+- **Icon:** none to copy — use your app's own `res/drawable/ic_notification.xml` (regenerate via
+  `python gen_launcher_icon.py <app>` if it's missing). No example-icons/ directory exists in this
+  skill; it was removed after causing the icon-regression incident described above.
 - **Kotlin code:** See `example-code/NotificationHelper.kt` for a reusable notification sender
 
 ## When to use this skill
