@@ -469,6 +469,19 @@ To deliver a premium, tactile, and consistent mechanical feel across the Hora ap
 2. **Standard Listener**: Call `PreferenceHelper.attachNestedScrollHaptics(nestedScrollView)` on all main scrolling surfaces (e.g. `MainActivity`'s main list container, `SettingsActivity` scroll, `CategoriesActivity` scroll, and `SelectionBottomSheet` scroll views).
 3. **Threshold and Feedback**: The `attachNestedScrollHaptics` method accumulates scroll delta (`dy`) and triggers `HapticFeedbackConstants.CLOCK_TICK` every `40dp` of scrolling, resetting the accumulator. This creates a uniform "mechanical wheel tick" feeling as the user scrolls through list items and pages.
 
+### Extended FAB style — Tertiary variant (family standard, 2026-07-11, Muthal issue #3)
+
+Every family Android app's primary Extended FAB uses
+`style="@style/Widget.Material3.ExtendedFloatingActionButton.Tertiary"` rather than the
+default (`Primary`) style. This was independently and identically adopted by Muthal,
+Pathivu, and Varisankya without cross-app coordination — Muthal's owner flagged it as
+worth formalizing (aarshps/muthal#3) after noticing how well the softer, Material-You-driven
+`tertiaryContainer`/`onTertiaryContainer` tint reads against the app's dynamic palette,
+compared to the more assertive `Primary` FAB style. Codified here as the family default;
+a secondary FAB in a non-primary role (e.g. Varisankya's small in-screen FAB on
+`UnifiedHistoryActivity`) may use a different M3 style variant as appropriate — this
+standard applies to the **primary** add/create action only.
+
 ### Notification Design Standard (Material 3 Bleeding, strict family standard)
 
 Every Hora app's notifications must follow Material 3's **bleeding notification design** (full-bleed background color, edge-to-edge presence) while preserving the Hora brand identity. This applies to all task reminders, updates, and user-facing notifications sent to the Android notification shade.
