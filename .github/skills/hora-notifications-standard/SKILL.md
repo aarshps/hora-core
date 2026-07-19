@@ -21,7 +21,7 @@ NotificationCompat.Builder(context, CHANNEL_ID)
     .setContentText("Optional detail (secondary)")       
     .setSubText("App Name • Time")                        
     .setStyle(BigTextStyle().bigText("Multi-line…"))     
-    .setColor(ContextCompat.getColor(context, R.color.md_theme_primary, null))
+    .setColor(MaterialColors.getColor(context, android.R.attr.colorPrimary, fallbackColor))
     .setColorized(true)                                  // Full-bleed background
     .setPriority(NotificationCompat.PRIORITY_HIGH)       
     .setAutoCancel(true)                                 
@@ -107,7 +107,7 @@ fun sendNotification(context: Context, title: String, detail: String?, timestamp
     
     // Colour + haptics
     builder
-        .setColor(ContextCompat.getColor(context, R.color.md_theme_primary, null))
+        .setColor(MaterialColors.getColor(context, android.R.attr.colorPrimary, fallbackColor))
         .setColorized(true)  // Full-bleed background
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .setAutoCancel(true)
@@ -214,6 +214,7 @@ Before shipping, verify:
 6. **Ignoring vibration gating** — always check `PreferenceHelper.isHapticsEnabled()` before vibrating.
 7. **Missing `setSubText()`** — include app name + time so users know which app sent the notification.
 8. **Overflowing text** — test multi-line content on real devices; use `…` for overflow if needed.
+9. **Referencing a literal `R.color.md_theme_primary`** — no Hora app's `colors.xml` defines that name; a compile-time reference fails to build, and a `resources.getIdentifier("md_theme_primary", "color", ...)` lookup silently returns `0`, then `ContextCompat.getColor(context, 0, null)` crashes with `Resources.NotFoundException` the first time a notification is sent. Use `MaterialColors.getColor(context, android.R.attr.colorPrimary, fallbackColor)` instead — resolves the live Material You primary at runtime regardless of what the app's own colour resources are named. All three apps hit this independently before converging on the same fix.
 
 ## Files to copy/reference
 
@@ -239,3 +240,4 @@ Before shipping, verify:
 ## Changelog
 
 - **2026-07-09** — Standard locked, icon templates and code examples finalized. All three apps (Pathivu, Varisankya, Muthal) ready to adopt.
+- **2026-07-20** — Fixed a second latent bug this skill's own reference code still had (the icon-placeholder trap was already fixed separately): `setColor()` referenced a non-existent `R.color.md_theme_primary`, which crashes on first send (`Resources.NotFoundException`) since the resource doesn't exist in any app's `colors.xml`. Replaced with what all three apps actually ship: `MaterialColors.getColor(context, android.R.attr.colorPrimary, fallbackColor)`. Also closed stale GitHub issue #32 (all five `shared/android` candidates it tracked — `BiometricAuthManager`, `BaseActivity`, `SelectionBottomSheet`+layout, the shared font, and the drawable set — were confirmed already promoted).

@@ -475,7 +475,7 @@ Every Hora app's notifications must follow Material 3's **bleeding notification 
 
 **Core principles:**
 1. **Full-bleed background** — use `setColorized(true)` to enable Material 3 bleeding behaviour (system fills the notification card with a dynamic colour based on the app's Material You palette)
-2. **Single accent colour** — `setColor(ContextCompat.getColor(context, R.color.md_theme_primary, null))` drives both the background (when colorized) and accent elements
+2. **Single accent colour** — `setColor(MaterialColors.getColor(context, android.R.attr.colorPrimary, fallbackColor))` drives both the background (when colorized) and accent elements. **Not a literal `R.color.md_theme_primary` resource** — no Hora app's `colors.xml` actually defines that name (all three independently hit the resulting `Resources.NotFoundException` and converged on this `MaterialColors` runtime-attr lookup instead); the theme attr resolves to the live Material You primary at any API level, colorized or not.
 3. **Monochrome small icon** — reuse your app's existing `res/drawable/ic_notification.xml` (a solid disc with the app's Baloo Chettan 2 Malayalam initial knocked out, produced by `gen_launcher_icon.py`'s `notification_icon()` — see "Icon geometry" above). **Do not hand-draw or copy a placeholder icon** — see the incident note below.
 4. **Text hierarchy** — `setContentTitle()` (bold, primary) + `setContentText()` (secondary) + optional multi-line expansion via `BigTextStyle()` or `InboxStyle()`; `setSubText()` for metadata (app name + time)
 5. **Dynamic colour integration** — Material You theme colours drive the notification appearance (no hardcoded brand colours override the theme)
@@ -490,7 +490,7 @@ NotificationCompat.Builder(context, CHANNEL_ID)
     .setStyle(BigTextStyle()                             // Multi-line support
         .setBigContentTitle("Summary line")
         .bigText("Optional detail\n• Bullet 1\n• Bullet 2"))
-    .setColor(ContextCompat.getColor(context, R.color.md_theme_primary, null))
+    .setColor(MaterialColors.getColor(context, android.R.attr.colorPrimary, fallbackColor))
     .setColorized(true)                                  // Enable full-bleed background
     .setPriority(NotificationCompat.PRIORITY_HIGH)       // Expanded by default
     .setAutoCancel(true)                                 // Dismiss on tap

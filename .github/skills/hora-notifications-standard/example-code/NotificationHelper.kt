@@ -8,7 +8,7 @@ import android.content.Intent
 import android.graphics.Color
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
+import com.google.android.material.color.MaterialColors
 
 /**
  * Hora Notifications Standard — Material 3 Bleeding Notification helper.
@@ -86,13 +86,7 @@ object NotificationHelper {
             .setContentTitle(title)
             .setSubText("$appDisplayName • $timestamp")  // Metadata: app name + time
             .setColorized(true)  // Full-bleed background
-            .setColor(
-                ContextCompat.getColor(
-                    context,
-                    context.resources.getIdentifier("md_theme_primary", "color", context.packageName),
-                    null
-                )
-            )
+            .setColor(MaterialColors.getColor(context, android.R.attr.colorPrimary, Color.BLUE))
             .setPriority(NotificationCompat.PRIORITY_HIGH)  // Expanded by default
             .setAutoCancel(true)  // Dismiss on tap
 
@@ -177,13 +171,7 @@ object NotificationHelper {
             .setSubText("$appDisplayName • $timestamp")
             .setStyle(inboxStyle)
             .setColorized(true)
-            .setColor(
-                ContextCompat.getColor(
-                    context,
-                    context.resources.getIdentifier("md_theme_primary", "color", context.packageName),
-                    null
-                )
-            )
+            .setColor(MaterialColors.getColor(context, android.R.attr.colorPrimary, Color.BLUE))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
 
