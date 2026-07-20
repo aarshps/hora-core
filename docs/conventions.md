@@ -482,6 +482,19 @@ a secondary FAB in a non-primary role (e.g. Varisankya's small in-screen FAB on
 `UnifiedHistoryActivity`) may use a different M3 style variant as appropriate — this
 standard applies to the **primary** add/create action only.
 
+**Web (family standard, 2026-07-21, extends the same Muthal issue #3 request):** unlike
+Android, Web had never actually adopted the tertiary tint — the shared `Fab.tsx` used
+`primary-container`. Fixed at the source: `shared/web/res/css/web_shared.css` gained
+`--tertiary-container`/`--on-tertiary-container` role tokens (mapped from the per-app
+`--md-tertiary-container`/`--md-on-tertiary-container` palette that `theme.css` already
+generated but the role-token layer never exposed) plus the matching `--color-tertiary-container`/
+`--color-on-tertiary-container` Tailwind `@theme` aliases, and `shared/web/components/Fab.tsx`
+now uses `bg-tertiary-container`/`text-on-tertiary-container`. Apps re-sync via
+`web/scripts/sync_shared_web.sh` to pick it up — no local edits needed since the FAB
+component and its colour are both fully sourced from the shared layer. iOS has no
+Extended-FAB equivalent (toolbar/nav-bar actions instead), so this standard does not apply
+there.
+
 ### Notification Design Standard (Material 3 Bleeding, strict family standard)
 
 Every Hora app's notifications must follow Material 3's **bleeding notification design** (full-bleed background color, edge-to-edge presence) while preserving the Hora brand identity. This applies to all task reminders, updates, and user-facing notifications sent to the Android notification shade.
